@@ -1,19 +1,18 @@
-# Makefile - 构建 bootloader 并用 QEMU 启动
+RISCV_PREFIX = riscv64-unknown-elf
+CC = $(RISCV_PREFIX)-gcc
+LD = $(RISCV_PREFIX)-ld
+OBJCOPY = $(RISCV_PREFIX)-objcopy
 
-OUT_DIR = build
-BOOT_BIN = $(OUT_DIR)/boot.bin
+all: build/kernel.bin
 
-.PHONY: all run clean
+build:
+	mkdir -p build
 
-all: $(BOOT_BIN)
+build/kernel.elf: start.S | build
+	$(CC) -nostartfiles -T linker.ld -o $@ $<
 
-# 编译 boot.asm 为 16 位裸机 bin 文件
-$(BOOT_BIN): boot.asm
-	mkdir -p $(OUT_DIR)
-	nasm -f bin boot.asm -o $(BOOT_BIN)
+build/kernel.bin: build/kernel.elf
+	$(OBJCOPY) -O binary $< $@
 
-run: all
-	qemu-system-i386 -fda $(BOOT_BIN)
-
-clean:
-	rm -rf $(OUT_DIR)
+run: build/kernel.bin
+	qemu-system-riscv64 -machine virt -nographic -bios default -kernel $<
