@@ -8,12 +8,9 @@ BOOT_BIN = $(OUT_DIR)/boot.bin
 all: $(BOOT_BIN)
 
 # 编译 boot.asm 为 16 位裸机 bin 文件
-$(BOOT_BIN): boot.asm
+$(BOOT_BIN): io.c io.h
 	mkdir -p $(OUT_DIR)
-	nasm -f bin boot.asm -o $(BOOT_BIN)
-
-run: all
-	qemu-system-i386 -fda $(BOOT_BIN)
+	riscv64-unknown-elf-gcc io.c kput.S
 
 clean:
 	rm -rf $(OUT_DIR)
