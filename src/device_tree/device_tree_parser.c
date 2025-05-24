@@ -1,0 +1,64 @@
+#include "../../include/endian.h"
+#include "kstring.h"
+#include "device_tree_parser.h"
+//
+// Created by katherinesolar on 25-5-24.
+//
+
+//解析设备树
+void parse_device_tree(struct fdt_header* header) {
+	if (be32toh(header->magic) != 0xd00dfeed) {
+	}
+	// 获取关键偏移量
+	uint32_t struct_block = be32toh(header->off_dt_struct);
+	uint32_t strings_block = be32toh(header->off_dt_strings);
+
+	// 获取StructBlock开头位置
+	uint32_t *ptr = (uint32_t*)((void *)header + struct_block);
+
+	// 解析设备树
+	while (1) {
+		uint32_t token = be32toh(*ptr);
+		ptr++;
+
+		switch (token) {
+			case FDT_BEGIN_NODE: {
+				// 节点名称（以 \0 结尾）
+				char *name = (char*)ptr;
+				ptr += (kstrlen(name) + 4) / 4; // 按 4 字节对齐
+				break;
+			}
+			case FDT_PROP: {
+				// 属性长度和名称偏移
+				uint32_t len = be32toh(ptr[0]);
+				uint32_t nameoff = be32toh(ptr[1]);
+				char *prop_name = (char*)((void *)header + strings_block + nameoff);
+				void *prop_data = (void*)(ptr + 2);
+
+				// 提取内存信息
+				if (kstrcmp(prop_name, "reg") == 0) {
+					parse_memory_reg(prop_data, len);
+				}
+
+				ptr += 2 + (len + 3) / 4; // 数据按 4 字节对齐
+				break;
+			}
+			case FDT_END_NODE:
+				// 节点结束
+					break;
+			case FDT_END:
+				// 整个设备树解析完成
+					return;
+			default:
+				// 未知标记（如 FDT_NOP）
+					break;
+		}
+	}
+}
+struct memory memory;
+// 假设父节点定义了 #address-cells=2 和 #size-cells=2
+void parse_memory_reg(void *data, uint32_t len) {
+	uint64_t *reg = (uint64_t*)data;
+	memory.base = be64toh(reg[0]); // 内存起始地址
+	memory.size = be64toh(reg[1]); // 内存大小
+}
