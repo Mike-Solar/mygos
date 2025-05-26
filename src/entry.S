@@ -119,7 +119,7 @@
 .globl switch_to
 .balign 4
 switch_to:
-    csrrw   t6, mscratch, t6        // 交换 t6 与 mscratch 的值
+    csrrw   t6, mscratch, t6        // 交换 t6 与 mscratch 的值：把原本 t6 的值暂时保存在 mscratch 中，等会换回来
     beqz    t6, 1f                  // 如果 t6 为 0，说明是第一次调用 switch_to（来自 sched_init），这是一个特殊情况，不需要保存当前上下文
 
     // 保存当前任务的寄存器上下文到 t6 指向的地址

@@ -6,8 +6,8 @@
 /* defined in entry.S */
 extern void switch_to(struct context* next);
 
-#define MAX_TASKS 10
-#define STACK_SIZE 1024
+#define MAX_TASKS 10    // 编号 0 - 9
+#define STACK_SIZE 1024 // 任务栈大小
 
 /*/
  * In the standard RISC-V calling convention, the stack pointer sp is always 16-byte aligned.
@@ -86,15 +86,15 @@ task_yield()
 int
 task_create(void (*start_routine)(void))
 {
-    if(_top < MAX_TASKS)
-    {
-        ctx_tasks[_top].sp = (reg_t)&task_stack[_top][STACK_SIZE];
-        ctx_tasks[_top].ra = (reg_t)start_routine;
+    // 保证任务数量不超过最大值
+    if(_top >= MAX_TASKS) return -1;
 
-        _top++;
-        return 0;
-    }
-    else return -1;
+    ctx_tasks[_top].ra = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
+    ctx_tasks[_top].sp = (reg_t)(&task_stack[_top][STACK_SIZE]); // 设置栈指针为任务栈的顶部
+
+    _top++;
+
+    return 0;
 }
 
 /*/
