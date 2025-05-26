@@ -10,6 +10,8 @@ SRCS_C = \
 	src/page.c \
 	src/sched.c \
 	src/user.c \
+	src/trap.c \
+	src/riscv.c \
 
 # Common part for the Makefile.
 # This file will be included by the Makefile of each project.
