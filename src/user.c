@@ -47,10 +47,25 @@ user_task1(void)
     }
 }
 
+void
+user_task2(void)
+{
+    uart_puts("Task 2: Created!\n");
+    uart_puts("Task 2: This task only loops 30 times.\n");
+    for(int i = 0; i < 30; i++)
+    {
+        printf("Task 2: Loop %d\n", i);
+        task_delay(DELAY);
+        task_yield();
+    }
+    uart_puts("Task 2: Finished!\n");
+}
+
 /* NOTICE: DON'T LOOP INFINITELY IN main() */
 void
 os_main(void)
 {
     task_create(user_task0);
     task_create(user_task1);
+    task_create(user_task2);
 }
