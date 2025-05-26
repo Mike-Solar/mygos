@@ -121,8 +121,9 @@
 switch_to:
     csrrw   t6, mscratch, t6        // 交换 t6 与 mscratch 的值
     beqz    t6, 1f                  // 如果 t6 为 0，说明是第一次调用 switch_to（来自 sched_init），这是一个特殊情况，不需要保存当前上下文
-                                 
-    reg_save t6                     // 保存当前任务的寄存器上下文到 t6 指向的地址
+
+    // 保存当前任务的寄存器上下文到 t6 指向的地址
+    reg_save t6
 
     // 保存实际的 t6 寄存器（它刚才被交换到 mscratch 中）
     mv      t5, t6                  // t5 也指向当前任务上下文
@@ -131,11 +132,11 @@ switch_to:
 
 1:
     // 切换 mscratch，使其指向下一个任务的上下文
-    csrw    mscratch, a0            // a0就是参数
+    csrw    mscratch, a0            // a0就是参数，表示一个 context 结构体的地址
+    mv      t6, a0                  // 使用 t6 指向下一个任务的上下文
 
-    // 使用 t6 指向下一个任务的上下文
-    mv      t6, a0
-    reg_restore t6                  // 恢复下一个任务的所有通用寄存器
+    // 恢复下一个任务的所有通用寄存器
+    reg_restore t6
 
     // 执行真正的上下文切换（ret = 返回到下一个任务）
     ret

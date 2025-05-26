@@ -40,6 +40,7 @@ task_delay(volatile int count)
     while(count-- > 0);
 }
 
+// 用户任务0
 void
 user_task0(void)
 {
@@ -51,15 +52,17 @@ user_task0(void)
     }
 }
 
+// 初始化调度器
 void
 sched_init()
 {
-    w_mscratch(0);
+    w_mscratch(0);                                // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
 
-    ctx_task.sp = (reg_t)&task_stack[STACK_SIZE];
-    ctx_task.ra = (reg_t)user_task0;
+    ctx_task.sp = (reg_t)&task_stack[STACK_SIZE]; // 设置栈指针为任务栈的顶部
+    ctx_task.ra = (reg_t)user_task0;              // 设置返回地址为用户任务0的入口地址
 }
 
+// 切换到下一个任务
 void
 schedule()
 {
