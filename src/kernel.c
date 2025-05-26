@@ -11,6 +11,7 @@ extern void uart_init(void);
 extern void page_init(void);
 extern void sched_init(void);
 extern void schedule(void);
+extern void os_main(void);
 
 void
 start_kernel(void)
@@ -21,6 +22,8 @@ start_kernel(void)
     page_init();
 
     sched_init();
+
+    os_main();
 
     schedule();
 

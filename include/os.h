@@ -20,7 +20,11 @@ extern void panic(char* s);
 extern void* page_alloc(int npages);
 extern void  page_free(void* p);
 
-// task management
+/* task management */
+extern int  task_create(void (*task)(void));
+extern void task_delay(volatile int count);
+extern void task_yield();
+
 // 任务上下文
 struct context
 {
@@ -58,7 +62,5 @@ struct context
     reg_t t6;  // [31] 临时寄存器 06
 };
 
-extern int  task_create(void (*task)(void));
-extern void task_delay(volatile int count);
 
 #endif /* __OS_H__ */
