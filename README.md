@@ -96,6 +96,30 @@
 
 ---
 
+### RISC-V 架构手册中定义的标准编码（常见的 M 模式 Machine Mode 原因）：
+
+| `mcause` 值（十进制） | 中断/异常 | 宏定义（常见写法）             | 原因说明                         |
+| --------------------- | --------- | ------------------------------ | -------------------------------- |
+| 0                     | 异常      | `InstructionAddressMisaligned` | 指令地址未对齐                   |
+| 1                     | 异常      | `InstructionAccessFault`       | 指令访问故障（如取指页面不存在） |
+| 2                     | 异常      | `IllegalInstruction`           | 非法指令                         |
+| 3                     | 异常      | `Breakpoint`                   | 断点（调试）                     |
+| 4                     | 异常      | `LoadAddressMisaligned`        | 读地址未对齐                     |
+| 5                     | 异常      | `LoadAccessFault`              | 加载访问故障                     |
+| 6                     | 异常      | `StoreAddressMisaligned`       | 写地址未对齐                     |
+| 7                     | 异常      | `StoreAccessFault`             | 写访问故障                       |
+| 8                     | 异常      | `EnvironmentCallFromUMode`     | U 模式发出的系统调用（ecall）    |
+| 9                     | 异常      | `EnvironmentCallFromSMode`     | S 模式发出的系统调用（ecall）    |
+| 11                    | 异常      | `EnvironmentCallFromMMode`     | M 模式发出的系统调用（ecall）    |
+| 12                    | 异常      | `InstructionPageFault`         | 指令页错误（Sv32）               |
+| 13                    | 异常      | `LoadPageFault`                | 加载页错误                       |
+| 15                    | 异常      | `StorePageFault`               | 存储页错误                       |
+| 0x80000000 + 3        | 中断      | `MachineSoftwareInterrupt`     | 软件中断（由 MSIP 触发）         |
+| 0x80000000 + 7        | 中断      | `MachineTimerInterrupt`        | 定时器中断（mtimecmp）           |
+| 0x80000000 + 11       | 中断      | `MachineExternalInterrupt`     | 外部中断（PLIC）                 |
+
+---
+
 ## 内存空间 MemoryMap
 
 | 地址范围     | 设备        | 描述                                |
