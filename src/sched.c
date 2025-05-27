@@ -35,6 +35,10 @@ void
 sched_init()
 {
     w_mscratch(0); // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
+
+
+    /* enable machine-mode software interrupts. */
+    w_mie(r_mie() | MIE_MSIE);
 }
 
 /*/
@@ -62,7 +66,8 @@ schedule()
 void
 task_yield()
 {
-    schedule();
+    /* trigger a machine-level software interrupt */
+    *(uint32_t*)CLINT_MSIP(r_mhartid()) = 1;
 }
 
 /*/
@@ -79,8 +84,10 @@ task_create(void (*start_routine)(void))
     // 保证任务数量不超过最大值
     if(_top >= MAX_TASKS) return -1;
 
-    ctx_tasks[_top].ra = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
+    ctx_tasks[_top].pc = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
     ctx_tasks[_top].sp = (reg_t)(&task_stack[_top][STACK_SIZE]); // 设置栈指针为任务栈的顶部
+
+    printf("Task[%d]: %p\n", _top, start_routine);
 
     _top++;
 

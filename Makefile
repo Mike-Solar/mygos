@@ -15,6 +15,8 @@ SRCS_C = \
 	src/timer.c \
 	# src/riscv.c \
 
+GDBINIT = ./gdbinit
+
 # Common part for the Makefile.
 # This file will be included by the Makefile of each project.
 
@@ -104,7 +106,7 @@ debug: all
 	@echo "Press Ctrl-C and then input 'quit' to exit GDB and QEMU"
 	@echo "-------------------------------------------------------"
 	@${QEMU} ${QFLAGS} -kernel ${ELF} -s -S &
-	@${GDB} ${ELF} -q -x ../gdbinit
+	@${GDB} ${ELF} -q -x ${GDBINIT}
 
 
 .PHONY : code

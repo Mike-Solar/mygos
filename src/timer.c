@@ -3,6 +3,10 @@
 
 #include "os.h"
 
+
+extern void schedule(void);
+
+
 // interval ~= 1s
 // 时间间隔约等于 1 秒
 #define TIMER_INTERVAL CLINT_TIMEBASE_FREQ
@@ -37,7 +41,7 @@ timer_init()
 
     // enable machine-mode global interrupts.
     // 启用机器模式下的全局中断
-    w_mstatus(r_mstatus() | MSTATUS_MIE);
+    // w_mstatus(r_mstatus() | MSTATUS_MIE);
 }
 
 // 定时器中断处理函数
@@ -48,4 +52,6 @@ timer_handler()
     printf("tick: %d\n", _tick);
 
     timer_load(TIMER_INTERVAL);
+
+    schedule(); // 抢占式多任务跳转
 }

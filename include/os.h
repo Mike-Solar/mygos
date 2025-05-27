@@ -65,6 +65,9 @@ struct context
     reg_t t4;  // [29] 临时寄存器 04
     reg_t t5;  // [30] 临时寄存器 05
     reg_t t6;  // [31] 临时寄存器 06
+
+    // save the pc to run in next schedule cycle
+    reg_t pc; // offset: 31 * sizeof(reg_t)
 };
 
 
