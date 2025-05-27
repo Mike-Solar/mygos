@@ -23,19 +23,12 @@ external_interrupt_handler()
     // 返回中断源号
     int irq = plic_claim();
 
-    if(irq == UART0_IRQ)
-    {
-        uart_isr();
-    }
-    else if(irq)
-    {
-        printf("unexpected interrupt irq = %d\n", irq);
-    }
+    // 处理中断
+    if(irq == UART0_IRQ) uart_isr();
+    else if(irq) printf("unexpected interrupt irq = %d\n", irq);
 
-    if(irq)
-    {
-        plic_complete(irq);
-    }
+    // 将中断标记为已响应
+    if(irq) plic_complete(irq);
 }
 
 reg_t
@@ -51,24 +44,26 @@ trap_handler(reg_t epc, reg_t cause)
         {
         case 3:
             uart_puts("software interruption!\n");
-            /*/
-             * acknowledge the software interrupt by clearing
-             * the MSIP bit in mip.
-            /*/
-            *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 标记为已响应
+            *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 通过清除 mip 中的 MSIP 位来确认软中断。
             schedule();
 
             break;
+
         case 7:
             uart_puts("timer interruption!\n");
             timer_handler();
+
             break;
+
         case 11:
             uart_puts("external interruption!\n");
             external_interrupt_handler();
+
             break;
+
         default:
             printf("Unknown async exception! Code = %ld\n", cause_code);
+
             break;
         }
     }
@@ -77,7 +72,7 @@ trap_handler(reg_t epc, reg_t cause)
         /* Synchronous trap - exception */
         printf("Sync exceptions! Code = %ld\n", cause_code);
         printf("Exception occurred at address: %p\n", epc);
-        panic("OOPS! What can I do!");
+        panic("出现异常，摆了！");
         // return_pc += 4;
     }
 

@@ -5,7 +5,7 @@
 
 #define DELAY 1000
 
-extern void trap_test(void);
+extern void trap_test();
 
 void
 user_task0t(void)
