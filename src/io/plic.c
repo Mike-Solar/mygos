@@ -2,11 +2,10 @@
 // plic.c
 
 #include "os.h"
-#include "riscv.h"
 
 
 void
-plic_init(void)
+plic_init()
 {
     int hart = r_tp();
 
@@ -64,7 +63,7 @@ plic_init(void)
  *	is no pending interrupt.
 /*/
 int
-plic_claim(void)
+plic_claim()
 {
     int hart = r_tp();
     int irq  = *(uint32_t*)PLIC_MCLAIM(hart);

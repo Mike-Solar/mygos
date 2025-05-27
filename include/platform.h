@@ -39,7 +39,7 @@ see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
 #define UART0 0x10000000L
 
 
-/*
+/*/
  * UART0 interrupt source
  * see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  * enum {
@@ -49,8 +49,8 @@ see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
  *
  * UART0 的中断号，用于中断控制器（PLIC）识别。
  * 参考 QEMU 的硬件头文件定义：UART0_IRQ = 10
- */
-#define UART0_IRQ 10
+/*/
+#define UART0_IRQ 10 // UART0 的中断号，用于中断控制器（PLIC）识别
 
 /*/
 
@@ -67,26 +67,16 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 #define VIRT_PLIC_ENABLE_STRIDE 0x80
 #define VIRT_PLIC_CONTEXT_BASE 0x200000
 #define VIRT_PLIC_CONTEXT_STRIDE 0x1000
-#define VIRT_PLIC_SIZE(__num_context) \
-    (VIRT_PLIC_CONTEXT_BASE + (__num_context) * VIRT_PLIC_CONTEXT_STRIDE)
-
-| 宏名                     | 说明                                   |
-| ------------------------ | -------------------------------------- |
-| `PLIC_PRIORITY(id)`      | 设置设备中断优先级                     |
-| `PLIC_PENDING(id)`       | 查询设备是否有挂起中断                 |
-| `PLIC_MENABLE(hart, id)` | 启用某 hart 的某个中断                 |
-| `PLIC_MTHRESHOLD(hart)`  | 设置中断门槛（优先级高于此值才会中断） |
-| `PLIC_MCLAIM(hart)`      | 获取当前正在处理的中断 ID              |
-| `PLIC_MCOMPLETE(hart)`   | 完成中断处理，写入该 ID 通知 PLIC      |
+#define VIRT_PLIC_SIZE(__num_context) (VIRT_PLIC_CONTEXT_BASE + (__num_context) * VIRT_PLIC_CONTEXT_STRIDE)
 
 /*/
-#define PLIC_BASE 0x0c000000L
-#define PLIC_PRIORITY(id) (PLIC_BASE + (id) * 4)
-#define PLIC_PENDING(id) (PLIC_BASE + 0x1000 + ((id) / 32) * 4)
-#define PLIC_MENABLE(hart, id) (PLIC_BASE + 0x2000 + (hart) * 0x80 + ((id) / 32) * 4)
-#define PLIC_MTHRESHOLD(hart) (PLIC_BASE + 0x200000 + (hart) * 0x1000)
-#define PLIC_MCLAIM(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)
-#define PLIC_MCOMPLETE(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)
+#define PLIC_BASE 0x0c000000L                                                         // 外设基地址
+#define PLIC_PRIORITY(id) (PLIC_BASE + (id) * 4)                                      // 设置设备中断优先级
+#define PLIC_PENDING(id) (PLIC_BASE + 0x1000 + ((id) / 32) * 4)                       // 查询设备是否有挂起中断
+#define PLIC_MENABLE(hart, id) (PLIC_BASE + 0x2000 + (hart) * 0x80 + ((id) / 32) * 4) // 启用某 hart 的某个中断
+#define PLIC_MTHRESHOLD(hart) (PLIC_BASE + 0x200000 + (hart) * 0x1000)                // 设置中断门槛（优先级高于此值才会中断）
+#define PLIC_MCLAIM(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)                    // 获取当前正在处理的中断ID
+#define PLIC_MCOMPLETE(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)                 // 完成中断处理，写入该 ID 通知 PLIC
 
 
 /*/
@@ -127,7 +117,7 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  *
  * 我们可以通过写入 msip 来产生机器模式的软件中断。
  * 一个挂起的软件中断可以通过将 msip 写为 0 来清除 mip 中的 MSIP 位。
- * 在复位时，每个 msip 寄存器都被清零（不触发中断）     。
+ * 在复位时，每个 msip 寄存器都被清零（不触发中断）。
 /*/
 
 #define CLINT_BASE 0x2000000L                                       // CLINT 模块基地址（从这里开始访问各种中断相关寄存器）
