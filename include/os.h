@@ -5,6 +5,7 @@
 #define __OS_H__
 
 #include "platform.h"
+#include "riscv.h"
 #include "types.h"
 
 
@@ -24,6 +25,10 @@ extern void  page_free(void* p);
 extern int  task_create(void (*task)(void));
 extern void task_delay(volatile int count);
 extern void task_yield();
+
+/* plic */
+extern int  plic_claim(void);
+extern void plic_complete(int irq);
 
 // 任务上下文
 struct context
@@ -60,6 +65,9 @@ struct context
     reg_t t4;  // [29] 临时寄存器 04
     reg_t t5;  // [30] 临时寄存器 05
     reg_t t6;  // [31] 临时寄存器 06
+
+    // save the pc to run in next schedule cycle
+    reg_t pc; // offset: 31 * sizeof(reg_t)
 };
 
 

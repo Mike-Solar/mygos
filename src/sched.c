@@ -6,8 +6,8 @@
 /* defined in entry.S */
 extern void switch_to(struct context* next);
 
-#define MAX_TASKS 10
-#define STACK_SIZE 1024
+#define MAX_TASKS 10    // 编号 0 - 9
+#define STACK_SIZE 1024 // 任务栈大小
 
 /*/
  * In the standard RISC-V calling convention, the stack pointer sp is always 16-byte aligned.
@@ -30,21 +30,15 @@ static int _top     = 0;
 static int _current = -1;
 
 
-/*/
- * 用于向 RISC-V 架构的 mscratch 寄存器写入一个值。
- * mscratch 是 RISC-V 架构下的一个机器模式控制与状态寄存器，常用于操作系统内核保存和恢复任务切换时的临时数据。
-/*/
-static void
-w_mscratch(reg_t x)
-{
-    asm volatile("csrw mscratch, %0" : : "r"(x));
-}
-
 // 初始化调度器
 void
 sched_init()
 {
     w_mscratch(0); // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
+
+
+    /* enable machine-mode software interrupts. */
+    w_mie(r_mie() | MIE_MSIE);
 }
 
 /*/
@@ -72,7 +66,8 @@ schedule()
 void
 task_yield()
 {
-    schedule();
+    /* trigger a machine-level software interrupt */
+    *(uint32_t*)CLINT_MSIP(r_mhartid()) = 1;
 }
 
 /*/
@@ -86,15 +81,17 @@ task_yield()
 int
 task_create(void (*start_routine)(void))
 {
-    if(_top < MAX_TASKS)
-    {
-        ctx_tasks[_top].sp = (reg_t)&task_stack[_top][STACK_SIZE];
-        ctx_tasks[_top].ra = (reg_t)start_routine;
+    // 保证任务数量不超过最大值
+    if(_top >= MAX_TASKS) return -1;
 
-        _top++;
-        return 0;
-    }
-    else return -1;
+    ctx_tasks[_top].pc = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
+    ctx_tasks[_top].sp = (reg_t)(&task_stack[_top][STACK_SIZE]); // 设置栈指针为任务栈的顶部
+
+    printf("Task[%d]: %p\n", _top, start_routine);
+
+    _top++;
+
+    return 0;
 }
 
 /*/
