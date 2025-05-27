@@ -2,15 +2,37 @@
 // trap.c
 
 #include "os.h"
-#include "riscv.h"
+
 
 extern void trap_vector(void);
+extern void uart_isr(void);
 
 void
 trap_init()
 {
     // set the trap-vector base-address for machine-mode
     w_mtvec((reg_t)trap_vector);
+}
+
+void
+external_interrupt_handler()
+{
+    // 返回中断源号
+    int irq = plic_claim();
+
+    if(irq == UART0_IRQ)
+    {
+        uart_isr();
+    }
+    else if(irq)
+    {
+        printf("unexpected interrupt irq = %d\n", irq);
+    }
+
+    if(irq)
+    {
+        plic_complete(irq);
+    }
 }
 
 reg_t
@@ -32,6 +54,7 @@ trap_handler(reg_t epc, reg_t cause)
             break;
         case 11:
             uart_puts("external interruption!\n");
+            external_interrupt_handler();
             break;
         default:
             printf("Unknown async exception! Code = %ld\n", cause_code);

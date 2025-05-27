@@ -55,7 +55,7 @@ user_task2(void)
     uart_puts("Task 2: Created!\n");
     uart_puts("Task 2: This task only loops 30 times.\n");
 
-    trap_test();
+    // trap_test();
 
     for(int i = 0; i < 30; i++)
     {

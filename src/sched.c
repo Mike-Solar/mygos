@@ -30,16 +30,6 @@ static int _top     = 0;
 static int _current = -1;
 
 
-/*/
- * 用于向 RISC-V 架构的 mscratch 寄存器写入一个值。
- * mscratch 是 RISC-V 架构下的一个机器模式控制与状态寄存器，常用于操作系统内核保存和恢复任务切换时的临时数据。
-/*/
-static void
-w_mscratch(reg_t x)
-{
-    asm volatile("csrw mscratch, %0" : : "r"(x));
-}
-
 // 初始化调度器
 void
 sched_init()
