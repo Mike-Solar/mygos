@@ -1,3 +1,95 @@
 # My Great Operating System
 
 ### 简称 MyGOS
+
+---
+
+### 缩写速查
+
+| 缩写  | 英文全称                                    | 中文全称             | 功能描述                                                            |
+| ----- | ------------------------------------------- | -------------------- | ------------------------------------------------------------------- |
+| CLINT | Core Local Interruptor                      | 核心本地中断控制器   | 管理每个 hart（核心）本地的软件和定时器中断。                       |
+| PLIC  | Platform-Level Interrupt Controller         | 平台级中断控制器     | 接收外部设备的中断并分发给各个 hart。                               |
+| UART  | Universal Asynchronous Receiver-Transmitter | 通用异步收发器       | 用于串口通信，提供终端输入输出接口。                                |
+| IRQ   | Interrupt Request                           | 中断请求             | 外设向处理器请求服务的信号。                                        |
+| WARL  | Write-Any Read-Legal                        | 可写任意、读合法     | 某些 CSR 类型，写入任意值但读取会被硬件过滤为合法值。               |
+| QEMU  | Quick Emulator                              | 快速模拟器           | 支持模拟多种 CPU 架构的虚拟机，常用于操作系统实验开发。             |
+| HART  | Hardware Thread                             | 硬件线程（处理器核） | 表示一个逻辑 CPU 核心，在 RISC-V 中 hart 是并行执行单元的基本单位。 |
+| GPR   | General Purpose Register                    | 通用寄存器           | 用于存储临时数据和计算结果的寄存器。                                |
+| CSR   | Control and Status Register                 | 控制与状态寄存器     | 用于控制和监视 CPU 状态的特殊寄存器。                               |
+| MMIO  |
+
+---
+
+### 中断相关 CSR 位缩写
+
+| 缩写 | 英文全称                             | 中文全称               | 功能描述                                               | 位置 |
+| ---- | ------------------------------------ | ---------------------- | ------------------------------------------------------ | ---- |
+| MSIP | Machine Software Interrupt Pending   | 机器软件中断挂起位     | 指示软件中断是否挂起，由 CLINT 控制并映射至 `mip` 中。 |
+| MSIE | Machine Software Interrupt Enable    | 软件中断使能           | `mie` 中的一位，控制是否响应软件中断。                 |
+| MTIE | Machine Timer Interrupt Enable       | 定时器中断使能         | `mie` 中的一位，控制是否响应定时器中断。               |
+| MEIE | Machine External Interrupt Enable    | 外部中断使能           | `mie` 中的一位，控制是否响应外部中断（如 UART 中断）。 |
+| MIE  | Machine Interrupt Enable             | 机器中断总使能         | `mstatus` 中的一位，启用机器模式下的全局中断响应能力。 |
+| SIE  | Supervisor Interrupt Enable          | 监督模式中断总使能     | `mstatus` 中的一位，启用 S 模式中断。                  |
+| UIE  | User Interrupt Enable                | 用户模式中断总使能     | `mstatus` 中的一位，启用 U 模式中断。                  |
+| MPIE | Machine Previous Interrupt Enable    | 上次中断使能状态（M）  | 中断时自动保存先前的中断使能状态。                     |
+| SPIE | Supervisor Previous Interrupt Enable | 上次中断使能状态（S）  | 同上，适用于 S 模式。                                  |
+| UPIE | User Previous Interrupt Enable       | 上次中断使能状态（U）  | 同上，适用于 U 模式。                                  |
+| MPP  | Machine Previous Privilege           | 上次特权级（M 模式中） | 表示陷入中断前的特权级。                               |
+| SPP  | Supervisor Previous Privilege        | 上次特权级（S 模式中） | 表示陷入中断前的特权级（仅两级特权时使用）。           |
+
+---
+
+### RISC-V 通用寄存器（GPR）速查表
+
+| 编号 | 缩写  | ABI 名称                  | 中文名称              | 功能描述                                                      |
+| ---- | ----- | ------------------------- | --------------------- | ------------------------------------------------------------- |
+| x0   | zero  | zero                      | 常数 0                | 只读寄存器，始终为零，写入无效。                              |
+| x1   | ra    | return address            | 返回地址寄存器        | 用于函数调用返回地址（`jal` 等跳转指令保存处）。              |
+| x2   | sp    | stack pointer             | 栈指针                | 指向当前栈顶，函数调用、局部变量分配等操作依赖此寄存器。      |
+| x3   | gp    | global pointer            | 全局指针              | 一般由编译器使用，指向全局数据段基址（RV GCC ABI）。          |
+| x4   | tp    | thread pointer            | 线程指针              | 多线程环境下指向当前线程控制块，或 hart ID。                  |
+| x5   | t0    | temporary 0               | 临时寄存器 0          | 用作中间运算，不需在函数调用间保留值。                        |
+| x6   | t1    | temporary 1               | 临时寄存器 1          | 同上。                                                        |
+| x7   | t2    | temporary 2               | 临时寄存器 2          | 同上。                                                        |
+| x8   | s0/fp | saved 0/frame pointer     | 保存寄存器 0 / 帧指针 | 函数调用中保存值；当作帧指针（frame pointer）时用于栈帧管理。 |
+| x9   | s1    | saved 1                   | 保存寄存器 1          | 函数调用中必须保留的值（callee-saved）。                      |
+| x10  | a0    | argument 0 / return value | 参数 0 / 返回值       | 用于函数参数或返回值（前 2 个参数/返回值寄存器）。            |
+| x11  | a1    | argument 1 / return value | 参数 1 / 返回值       | 同上。                                                        |
+| x12  | a2    | argument 2                | 参数 2                | 函数参数传递使用。                                            |
+| x13  | a3    | argument 3                | 参数 3                | 同上。                                                        |
+| x14  | a4    | argument 4                | 参数 4                | 同上。                                                        |
+| x15  | a5    | argument 5                | 参数 5                | 同上。                                                        |
+| x16  | a6    | argument 6                | 参数 6                | 同上（总共最多支持 8 个参数）。                               |
+| x17  | a7    | argument 7                | 参数 7                | 同上。                                                        |
+| x18  | s2    | saved 2                   | 保存寄存器 2          | Callee-saved 寄存器，函数调用必须保存和恢复。                 |
+| x19  | s3    | saved 3                   | 保存寄存器 3          | 同上。                                                        |
+| x20  | s4    | saved 4                   | 保存寄存器 4          | 同上。                                                        |
+| x21  | s5    | saved 5                   | 保存寄存器 5          | 同上。                                                        |
+| x22  | s6    | saved 6                   | 保存寄存器 6          | 同上。                                                        |
+| x23  | s7    | saved 7                   | 保存寄存器 7          | 同上。                                                        |
+| x24  | s8    | saved 8                   | 保存寄存器 8          | 同上。                                                        |
+| x25  | s9    | saved 9                   | 保存寄存器 9          | 同上。                                                        |
+| x26  | s10   | saved 10                  | 保存寄存器 10         | 同上。                                                        |
+| x27  | s11   | saved 11                  | 保存寄存器 11         | 同上。                                                        |
+| x28  | t3    | temporary 3               | 临时寄存器 3          | 用于中间结果，caller-saved。                                  |
+| x29  | t4    | temporary 4               | 临时寄存器 4          | 同上。                                                        |
+| x30  | t5    | temporary 5               | 临时寄存器 5          | 同上。                                                        |
+| x31  | t6    | temporary 6               | 临时寄存器 6          | 同上。                                                        |
+
+---
+
+### RISC-V 特殊寄存器缩写全称表
+
+| 缩写     | 类型 | 英文全称                          | 中文全称             | 功能描述                                                 |
+| -------- | ---- | --------------------------------- | -------------------- | -------------------------------------------------------- |
+| mhartid  | CSR  | Machine Hardware Thread ID        | 硬件线程编号         | 当前 hart（核心）的 ID，用于多核系统区分处理器。         |
+| mepc     | CSR  | Machine Exception Program Counter | 异常返回地址寄存器   | 保存异常/中断发生前的 PC 值。                            |
+| mscratch | CSR  | Machine Scratch Register          | 机器暂存寄存器       | 由操作系统使用，在中断处理期间保存临时数据（如上下文）。 |
+| mtvec    | CSR  | Machine Trap-Vector Base Address  | 陷阱向量表地址寄存器 | 设置 trap（中断/异常）处理函数入口地址。                 |
+| mstatus  | CSR  | Machine Status Register           | 机器状态寄存器       | 包含中断使能、特权级等重要状态位。                       |
+| mie      | CSR  | Machine Interrupt Enable          | 中断使能寄存器       | 各类中断源的使能控制位。                                 |
+| mcause   | CSR  | Machine Cause Register            | 中断/异常原因寄存器  | 指明 trap 原因，是中断还是异常及具体类型。               |
+| mip      | CSR  | Machine Interrupt Pending         | 中断挂起寄存器       | 显示哪些中断正在等待处理中。                             |
+| mtimecmp | MMIO | Machine Timer Compare Register    | 定时器比较寄存器     | 当 `mtime >= mtimecmp` 时触发定时器中断，由 CLINT 提供。 |
+| mtime    | MMIO | Machine Timer Register            | 机器时间寄存器       | 记录自系统启动以来的计时器周期数，由 CLINT 提供。        |

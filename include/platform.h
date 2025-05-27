@@ -1,36 +1,9 @@
 
 // platform.h
 
-/*/
-
-| 缩写         | 英文全称                                    | 中文全称                 | 中文解释                                                          |
-| ------------ | ------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
-| **CLINT**    | Core Local Interruptor                      | 核心本地中断控制器       | 管理软件中断和定时器中断的硬件模块，针对每个 CPU 核（hart）独立。 |
-| **PLIC**     | Platform-Level Interrupt Controller         | 平台级中断控制器         | 管理外设硬件中断并分发给各个 CPU 核。                             |
-| **MSIP**     | Machine Software Interrupt Pending          | 机器模式软件中断挂起位   | `mip` 寄存器中的一位，表示该 hart 的软件中断是否挂起。            |
-| **MTIMECMP** | Machine Timer Compare Register              | 机器模式定时器比较寄存器 | 控制定时器中断何时触发，当 `mtime >= mtimecmp` 时触发。           |
-| **MTIME**    | Machine Timer Register                      | 机器模式时间寄存器       | 记录自系统启动以来的时钟周期数。                                  |
-| **MSIE**     | Machine Software Interrupt Enable           | 机器模式软件中断使能     | `mie` 寄存器中的一位，用于开启/关闭软件中断。                     |
-| **MTIE**     | Machine Timer Interrupt Enable              | 机器模式定时器中断使能   | `mie` 中的某位，控制是否响应定时器中断。                          |
-| **MEIE**     | Machine External Interrupt Enable           | 机器模式外部中断使能     | `mie` 中的某位，控制是否响应外部中断（如 UART）。                 |
-| **UART**     | Universal Asynchronous Receiver-Transmitter | 通用异步收发器           | 一个串口通信控制器，用于终端输入输出。                            |
-| **IRQ**      | Interrupt Request                           | 中断请求                 | 外部设备向处理器发出的一种中断信号。                              |
-| **WARL**     | Write-Any Read-Legal                        | 可写任意值、只读合法值   | RISC-V 的寄存器类型，写时可以任意值，读出的是被接受的合法值。     |
-| **CSR**      | Control and Status Register                 | 控制与状态寄存器         | 包含各种控制和状态信息的特殊寄存器集合。                          |
-| **MIP**      | Machine Interrupt Pending                   | 机器中断挂起寄存器       | 记录哪些中断正在等待处理。                                        |
-| **MIE**      | Machine Interrupt Enable                    | 机器中断使能寄存器       | 控制哪些中断允许被处理。                                          |
-| **MTVEC**    | Machine Trap-Vector Base Address            | 机器模式陷阱向量基地址   | 设置中断或异常时跳转的处理函数地址。                              |
-| **MSCRATCH** | Machine Scratch Register                    | 机器模式暂存寄存器       | 用于中断时保存中间数据（由软件使用）。                            |
-| **MEPC**     | Machine Exception Program Counter           | 机器异常程序计数器       | 异常发生时，记录被中断的指令地址。                                |
-| **MCAUSE**   | Machine Cause Register                      | 机器异常原因寄存器       | 保存异常或中断的原因。                                            |
-| **MSTATUS**  | Machine Status Register                     | 机器状态寄存器           | 控制处理器模式、中断权限等重要状态。                              |
-| **HART**     | Hardware Thread                             | 硬件线程（处理器核）     | 每个 hart 表示一个独立的执行单元，相当于“核”。                    |
-| **QEMU**     | Quick Emulator                              | 快速模拟器               | 支持模拟多种架构，包括 RISC-V 的虚拟机。                          |
-
-/*/
-
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
+
 
 /*/
  * QEMU RISC-V Virt machine with 16550a UART and VirtIO MMIO
