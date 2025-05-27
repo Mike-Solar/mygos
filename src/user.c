@@ -50,7 +50,7 @@ user_task0(void)
         else sum++;
 
         task_delay(DELAY);
-        task_yield();
+        // task_yield();
     }
 }
 
@@ -71,7 +71,7 @@ user_task1(void)
         else product *= 2;
 
         task_delay(DELAY);
-        task_yield();
+        // task_yield();
     }
 }
 
@@ -87,7 +87,7 @@ user_task2(void)
     {
         printf("Task 2: Loop %d\n", i);
         task_delay(DELAY);
-        task_yield();
+        // task_yield();
     }
     uart_puts("Task 2: Finished!\n");
 }
@@ -96,7 +96,7 @@ user_task2(void)
 void
 os_main(void)
 {
-    task_create(user_task0t);
-    task_create(user_task1t);
+    task_create(user_task0);
+    task_create(user_task1);
     // task_create(user_task2);
 }
