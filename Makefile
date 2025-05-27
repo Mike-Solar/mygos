@@ -5,13 +5,14 @@ SRCS_ASM = \
 
 SRCS_C = \
 	src/kernel.c \
-	src/print/uart.c \
-	src/print/printf.c \
+	src/io/uart.c \
+	src/io/printf.c \
+	src/io/plic.c \
 	src/page.c \
 	src/sched.c \
 	src/user.c \
 	src/trap.c \
-	src/plic.c \
+	# src/riscv.c \
 
 # Common part for the Makefile.
 # This file will be included by the Makefile of each project.

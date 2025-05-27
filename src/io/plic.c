@@ -1,13 +1,16 @@
 
+// plic.c
+
 #include "os.h"
 #include "riscv.h"
+
 
 void
 plic_init(void)
 {
     int hart = r_tp();
 
-    /*
+    /*/
      * Set priority for UART0.
      *
      * Each PLIC interrupt source can be assigned a priority by writing
@@ -19,18 +22,18 @@ plic_init(void)
      * Ties between global interrupts of the same priority are broken by
      * the Interrupt ID; interrupts with the lowest ID have the highest
      * effective priority.
-     */
+    /*/
     *(uint32_t*)PLIC_PRIORITY(UART0_IRQ) = 1;
 
-    /*
+    /*/
      * Enable UART0
      *
      * Each global interrupt can be enabled by setting the corresponding
      * bit in the enables registers.
-     */
+    /*/
     *(uint32_t*)PLIC_MENABLE(hart, UART0_IRQ) = (1 << (UART0_IRQ % 32));
 
-    /*
+    /*/
      * Set priority threshold for UART0.
      *
      * PLIC will mask all interrupts of a priority less than or equal to threshold.
@@ -38,7 +41,7 @@ plic_init(void)
      * For example, a threshold value of zero permits all interrupts with
      * non-zero priority, whereas a value of 7 masks all interrupts.
      * Notice, the threshold is global for PLIC, not for each interrupt source.
-     */
+    /*/
     *(uint32_t*)PLIC_MTHRESHOLD(hart) = 0;
 
     /* enable machine-mode external interrupts. */
@@ -48,7 +51,7 @@ plic_init(void)
     w_mstatus(r_mstatus() | MSTATUS_MIE);
 }
 
-/*
+/*/
  * DESCRIPTION:
  *	Query the PLIC what interrupt we should serve.
  *	Perform an interrupt claim by reading the claim register, which
@@ -59,7 +62,7 @@ plic_init(void)
  * RETURN VALUE:
  *	the ID of the highest-priority pending interrupt or zero if there
  *	is no pending interrupt.
- */
+/*/
 int
 plic_claim(void)
 {
@@ -68,7 +71,7 @@ plic_claim(void)
     return irq;
 }
 
-/*
+/*/
  * DESCRIPTION:
  *	Writing the interrupt ID it received from the claim (irq) to the
  *	complete register would signal the PLIC we've served this IRQ.
@@ -77,7 +80,7 @@ plic_claim(void)
  *	interrupt source that is currently enabled for the target, the completion
  *	is silently ignored.
  * RETURN VALUE: none
- */
+/*/
 void
 plic_complete(int irq)
 {
