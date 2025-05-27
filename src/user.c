@@ -94,11 +94,57 @@ user_task2(int id)
     task_delete(id); // 删除任务 2
 }
 
+void
+task_count30(int id)
+{
+    uart_puts("Task Count 30: Created!\n");
+    for(int i = 0; i < 30; i++)
+    {
+        printf("Task Count 30: Loop %d\n", i);
+        task_delay(DELAY);
+    }
+    uart_puts("Task Count 30: Finished!\n");
+
+    task_delete(id); // 删除任务 Count 30
+}
+
+void
+task_count50(int id)
+{
+    uart_puts("Task Count 50: Created!\n");
+    for(int i = 0; i < 50; i++)
+    {
+        printf("Task Count 50: Loop %d\n", i);
+        task_delay(DELAY);
+    }
+    uart_puts("Task Count 50: Finished!\n");
+
+    task_delete(id); // 删除任务 Count 50
+}
+
+void
+task_count70(int id)
+{
+    uart_puts("Task Count 70: Created!\n");
+    for(int i = 0; i < 70; i++)
+    {
+        printf("Task Count 70: Loop %d\n", i);
+        task_delay(DELAY);
+    }
+    uart_puts("Task Count 70: Finished!\n");
+
+    task_delete(id); // 删除任务 Count 70
+}
+
 /* NOTICE: DON'T LOOP INFINITELY IN main() */
 void
 os_main(void)
 {
-    task_create(user_task0);
-    task_create(user_task1);
-    task_create(user_task2);
+    // task_create(user_task0);
+    // task_create(user_task1);
+    // task_create(user_task2);
+
+    task_create(task_count30);
+    task_create(task_count50);
+    task_create(task_count70);
 }

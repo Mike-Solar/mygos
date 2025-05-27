@@ -26,8 +26,9 @@ struct context ctx_tasks[MAX_TASKS] = { 0 };
  * -top 用来标记任务上下文的最大可用位置
  * -current 用来指向当前任务的上下文
 /*/
-static int _top     = 0;
-static int _current = -1;
+static int _top        = 0;
+static int _current    = -1;
+static int active_task = 0; // 当前活动任务数
 
 
 // 初始化调度器
@@ -48,6 +49,11 @@ schedule()
     if(_top <= 0)
     {
         panic("Num of task should be greater than zero!");
+        return;
+    }
+    else if(active_task <= 0)
+    {
+        panic("No active task to run!");
         return;
     }
 
@@ -93,6 +99,7 @@ task_create(void (*start_routine)(int))
     printf("Task[%d] Created: sp = 0x%08x, pc = 0x%08x\n", _top, ctx_tasks[_top].sp, ctx_tasks[_top].pc);
 
     _top++;
+    active_task++; // 增加活动任务数
 
     return 0;
 }
@@ -107,6 +114,9 @@ task_delete(int task_id)
     }
 
     ctx_tasks[task_id].flags = 0; // 将任务标志位设置为 0，表示任务已删除
+
+    active_task--;                // 减少活动任务数
+
     printf("Task[%d] Deleted\n", task_id);
 
     task_yield(); // 触发一次任务切换，确保删除的任务不会被调度到
