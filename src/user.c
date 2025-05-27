@@ -34,7 +34,7 @@ user_task1t(void)
 
 
 void
-user_task0(void)
+user_task0(int id)
 {
     static int sum = 0;
 
@@ -55,7 +55,7 @@ user_task0(void)
 }
 
 void
-user_task1(void)
+user_task1(int id)
 {
     static int product = 1;
 
@@ -76,7 +76,7 @@ user_task1(void)
 }
 
 void
-user_task2(void)
+user_task2(int id)
 {
     uart_puts("Task 2: Created!\n");
     uart_puts("Task 2: This task only loops 30 times.\n");
@@ -90,6 +90,8 @@ user_task2(void)
         // task_yield();
     }
     uart_puts("Task 2: Finished!\n");
+
+    task_delete(id); // 删除任务 2
 }
 
 /* NOTICE: DON'T LOOP INFINITELY IN main() */
@@ -98,5 +100,5 @@ os_main(void)
 {
     task_create(user_task0);
     task_create(user_task1);
-    // task_create(user_task2);
+    task_create(user_task2);
 }

@@ -17,7 +17,7 @@ extern void switch_to(struct context* next);
 uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE];
 
 // 任务上下文结构体列表
-struct context ctx_tasks[MAX_TASKS];
+struct context ctx_tasks[MAX_TASKS] = { 0 };
 
 /*/
  * _top is used to mark the max available position of ctx_tasks
@@ -34,11 +34,8 @@ static int _current = -1;
 void
 sched_init()
 {
-    w_mscratch(0); // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
-
-
-    /* enable machine-mode software interrupts. */
-    w_mie(r_mie() | MIE_MSIE);
+    w_mscratch(0);             // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
+    w_mie(r_mie() | MIE_MSIE); // 启用机器模式软件中断
 }
 
 /*/
@@ -54,7 +51,11 @@ schedule()
         return;
     }
 
-    _current = (_current + 1) % _top;  // 实现循环调度，如果超出最后一个就会回到第一个
+    do
+    {
+        _current = (_current + 1) % _top; // 实现循环调度，如果超出最后一个就会回到第一个
+    } while(ctx_tasks[_current].flags == 0); // 如果当前任务的标志位为 0，表示任务未创建，则继续寻找下一个任务
+
     switch_to(&(ctx_tasks[_current])); // 切换任务
 }
 
@@ -79,19 +80,36 @@ task_yield()
  * 	-1: if error occurred
 /*/
 int
-task_create(void (*start_routine)(void))
+task_create(void (*start_routine)(int))
 {
     // 保证任务数量不超过最大值
     if(_top >= MAX_TASKS) return -1;
 
-    ctx_tasks[_top].pc = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
-    ctx_tasks[_top].sp = (reg_t)(&task_stack[_top][STACK_SIZE]); // 设置栈指针为任务栈的顶部
+    ctx_tasks[_top].pc    = (reg_t)(start_routine);                 // 设置返回地址为任务入口函数
+    ctx_tasks[_top].sp    = (reg_t)(&task_stack[_top][STACK_SIZE]); // 设置栈指针为任务栈的顶部
+    ctx_tasks[_top].a0    = _top;                                   // 将任务 ID 传递给任务入口函数，作为第一个参数
+    ctx_tasks[_top].flags = 1;                                      // 设置任务标志位为 1，表示任务已创建
 
-    printf("Task[%d]: %p\n", _top, start_routine);
+    printf("Task[%d] Created: sp = 0x%08x, pc = 0x%08x\n", _top, ctx_tasks[_top].sp, ctx_tasks[_top].pc);
 
     _top++;
 
     return 0;
+}
+
+void
+task_delete(int task_id)
+{
+    if(task_id < 0 || task_id >= _top)
+    {
+        panic("Invalid task ID!");
+        return;
+    }
+
+    ctx_tasks[task_id].flags = 0; // 将任务标志位设置为 0，表示任务已删除
+    printf("Task[%d] Deleted\n", task_id);
+
+    task_yield(); // 触发一次任务切换，确保删除的任务不会被调度到
 }
 
 /*/

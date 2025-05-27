@@ -22,7 +22,8 @@ extern void* page_alloc(int npages);
 extern void  page_free(void* p);
 
 /* task management */
-extern int  task_create(void (*task)(void));
+extern int  task_create(void (*task)(int));
+extern void task_delete(int task_id);
 extern void task_delay(volatile int count);
 extern void task_yield();
 
@@ -68,6 +69,8 @@ struct context
 
     // save the pc to run in next schedule cycle
     reg_t pc; // offset: 31 * sizeof(reg_t)
+
+    uint8_t flags;
 };
 
 
