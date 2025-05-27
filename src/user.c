@@ -5,6 +5,8 @@
 
 #define DELAY 1000
 
+extern void trap_test(void);
+
 void
 user_task0(void)
 {
@@ -52,6 +54,9 @@ user_task2(void)
 {
     uart_puts("Task 2: Created!\n");
     uart_puts("Task 2: This task only loops 30 times.\n");
+
+    trap_test();
+
     for(int i = 0; i < 30; i++)
     {
         printf("Task 2: Loop %d\n", i);
