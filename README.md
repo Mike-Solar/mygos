@@ -93,3 +93,18 @@
 | mip      | CSR  | Machine Interrupt Pending         | 中断挂起寄存器       | 显示哪些中断正在等待处理中。                             |
 | mtimecmp | MMIO | Machine Timer Compare Register    | 定时器比较寄存器     | 当 `mtime >= mtimecmp` 时触发定时器中断，由 CLINT 提供。 |
 | mtime    | MMIO | Machine Timer Register            | 机器时间寄存器       | 记录自系统启动以来的计时器周期数，由 CLINT 提供。        |
+
+---
+
+## 关于多任务
+
+1. 协作式多任务 (Cooperative Multitasking)：
+
+   协作式环境下，下一个任务被调度的前提是当前任务
+   主动放弃处理器。
+
+2. 抢占式多任务 (Preemptive Multitasking)：
+
+   抢占式环境下，操作系统完全决定任务调度方案，操
+   作系统可以剥夺当前任务对处理器的使用，将处理
+   器提供给其它任务。
