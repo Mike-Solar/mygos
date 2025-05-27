@@ -12,6 +12,7 @@ SRCS_C = \
 	src/sched.c \
 	src/user.c \
 	src/trap.c \
+	src/timer.c \
 	# src/riscv.c \
 
 # Common part for the Makefile.

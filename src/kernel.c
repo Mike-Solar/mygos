@@ -18,6 +18,7 @@ extern void schedule(void);   // 开始调度
 extern void trap_init(void);  // 初始化异常/中断处理
 extern void plic_init(void);  // 初始化外部中断处理
 extern void os_main(void);    // 创建任务
+extern void timer_init(void);
 
 
 void
@@ -30,6 +31,7 @@ start_kernel(void)
     sched_init();
     trap_init();
     plic_init();
+    timer_init();
 
     os_main();
 
