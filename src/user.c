@@ -8,6 +8,32 @@
 extern void trap_test(void);
 
 void
+user_task0t(void)
+{
+    uart_puts("Task 0: Created!\n");
+
+    task_yield();
+    uart_puts("Task 0: I'm back!\n");
+    while(1)
+    {
+        uart_puts("Task 0: Running...\n");
+        task_delay(DELAY);
+    }
+}
+
+void
+user_task1t(void)
+{
+    uart_puts("Task 1: Created!\n");
+    while(1)
+    {
+        uart_puts("Task 1: Running...\n");
+        task_delay(DELAY);
+    }
+}
+
+
+void
 user_task0(void)
 {
     static int sum = 0;
@@ -70,7 +96,7 @@ user_task2(void)
 void
 os_main(void)
 {
-    task_create(user_task0);
-    task_create(user_task1);
-    task_create(user_task2);
+    task_create(user_task0t);
+    task_create(user_task1t);
+    // task_create(user_task2);
 }

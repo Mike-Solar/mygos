@@ -7,6 +7,7 @@
 extern void trap_vector(void);
 extern void uart_isr(void);
 extern void timer_handler(void);
+extern void schedule(void);
 
 
 void
@@ -50,6 +51,13 @@ trap_handler(reg_t epc, reg_t cause)
         {
         case 3:
             uart_puts("software interruption!\n");
+            /*/
+             * acknowledge the software interrupt by clearing
+             * the MSIP bit in mip.
+            /*/
+            *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 标记为已响应
+            schedule();
+
             break;
         case 7:
             uart_puts("timer interruption!\n");
@@ -68,6 +76,7 @@ trap_handler(reg_t epc, reg_t cause)
     {
         /* Synchronous trap - exception */
         printf("Sync exceptions! Code = %ld\n", cause_code);
+        printf("Exception occurred at address: %p\n", epc);
         panic("OOPS! What can I do!");
         // return_pc += 4;
     }

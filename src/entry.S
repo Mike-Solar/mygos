@@ -127,25 +127,15 @@
 .globl switch_to
 .balign 4
 switch_to:
-    csrrw   t6, mscratch, t6        // 交换 t6 与 mscratch 的值：把原本 t6 的值暂时保存在 mscratch 中，等会换回来
-    beqz    t6, 1f                  // 如果 t6 为 0，说明是第一次调用 switch_to（来自 sched_init），这是一个特殊情况，不需要保存当前上下文
-    reg_save t6                     // 保存当前任务的寄存器上下文到 t6 指向的地址
+	csrw	mscratch, a0            // 把 mscratch 指向目标上下文结构体
 
+    LOAD	a1, 31*SIZE_REG(a0)     // 加载目标上下文结构体的 mepc
+    csrw	mepc, a1                // 写入 mepc 准备跳转到这个地址
 
-    // 保存实际的 t6 寄存器（它刚才被交换到 mscratch 中）
-    mv      t5, t6                  // t5 也指向当前任务上下文
-    csrr    t6, mscratch            // 把 t6 的原值（mscratch 中）读回来
-    STORE   t6, 30*SIZE_REG(t5)     // 把 t6 保存到上下文中的 t6 位置
-
-1:
-    // 切换 mscratch，使其指向下一个任务的上下文
-    csrw    mscratch, a0            // a0就是参数，表示一个 context 结构体的地址
     mv      t6, a0                  // 使用 t6 指向下一个任务的上下文
     reg_restore t6                  // 恢复下一个任务的所有通用寄存器
 
-
-    // 执行真正的上下文切换（ret = 返回到下一个任务）
-    ret
+    mret                            //mret 表示返回到 mepc 指示的地址
 
 // end of switch_to
 
@@ -163,20 +153,22 @@ trap_vector:
 
     // save context(registers).
     // 保存当前任务的寄存器上下文到 mscratch
-    csrrw       t6, mscratch, t6    // swap t6 and mscratch
+    csrrw       t6, mscratch, t6    // 交换 t6 和 mscratch 的值
     reg_save    t6                  // 保存当前任务的寄存器上下文到 t6 指向的地址
-    mv          t5, t6              // t5 points to the context of current task
-    csrr        t6, mscratch        // read t6 back from mscratch
-    STORE       t6, 30*SIZE_REG(t5) // save t6 with t5 as base
+    mv          t5, t6              // t5 指向当前任务上下文
+    csrr        t6, mscratch        // 从 mscratch 中读取 t6
+    STORE       t6, 30*SIZE_REG(t5) // 将 t6 保存到上下文中的 t6 位置
+	csrr	    a0, mepc            // 获取异常发生时的程序计数器（mepc）：保存异常/中断发生时要返回的指令地址
+	STORE	    a0, 31*SIZE_REG(t5) // 存到上下文结构体中
     csrw        mscratch, t5        // 将 mscratch 恢复为当前任务的上下文指针
 
 
     // call the C trap handler in trap.c
     // 在 trap.c 中调用 C 语言的异常处理函数
-    csrr        a0, mepc            // 获取异常发生时的程序计数器（PC）
+    csrr	a0, mepc
     csrr        a1, mcause          // 获取异常原因
     call        trap_handler        // 调用异常处理函数
-    csrw        mepc, a0            // trap_handler 会通过 a0 返回返回地址
+    csrw        mepc, a0            // trap_handler 会通过 a0 返回返回地址，地址保存在异常发生时的程序计数器 mepc
 
 
     // restore context(registers).
