@@ -9,9 +9,7 @@ extern void trap_vector(void);
 void
 trap_init()
 {
-    /*
-     * set the trap-vector base-address for machine-mode
-     */
+    // set the trap-vector base-address for machine-mode
     w_mtvec((reg_t)trap_vector);
 }
 

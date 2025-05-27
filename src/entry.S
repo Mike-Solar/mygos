@@ -27,37 +27,37 @@
 // 它们常用于特殊用途。例如在 RVOS 中，tp（线程指针）用于存储 hartid（硬件线程编号），
 // 这个值是全局固定的，在上下文切换过程中不会改变。
 .macro reg_save base
-	STORE ra,   0*SIZE_REG(\base)
-	STORE sp,   1*SIZE_REG(\base)
-	STORE t0,   4*SIZE_REG(\base)
-	STORE t1,   5*SIZE_REG(\base)
-	STORE t2,   6*SIZE_REG(\base)
-	STORE s0,   7*SIZE_REG(\base)
-	STORE s1,   8*SIZE_REG(\base)
-	STORE a0,   9*SIZE_REG(\base)
-	STORE a1,  10*SIZE_REG(\base)
-	STORE a2,  11*SIZE_REG(\base)
-	STORE a3,  12*SIZE_REG(\base)
-	STORE a4,  13*SIZE_REG(\base)
-	STORE a5,  14*SIZE_REG(\base)
-	STORE a6,  15*SIZE_REG(\base)
-	STORE a7,  16*SIZE_REG(\base)
-	STORE s2,  17*SIZE_REG(\base)
-	STORE s3,  18*SIZE_REG(\base)
-	STORE s4,  19*SIZE_REG(\base)
-	STORE s5,  20*SIZE_REG(\base)
-	STORE s6,  21*SIZE_REG(\base)
-	STORE s7,  22*SIZE_REG(\base)
-	STORE s8,  23*SIZE_REG(\base)
-	STORE s9,  24*SIZE_REG(\base)
-	STORE s10, 25*SIZE_REG(\base)
-	STORE s11, 26*SIZE_REG(\base)
-	STORE t3,  27*SIZE_REG(\base)
-	STORE t4,  28*SIZE_REG(\base)
-	STORE t5,  29*SIZE_REG(\base)
-	// we don't save t6 here, due to we have used
-	// it as base, we have to save t6 in an extra step
-	// outside of reg_save
+    STORE ra,   0*SIZE_REG(\base)
+    STORE sp,   1*SIZE_REG(\base)
+    STORE t0,   4*SIZE_REG(\base)
+    STORE t1,   5*SIZE_REG(\base)
+    STORE t2,   6*SIZE_REG(\base)
+    STORE s0,   7*SIZE_REG(\base)
+    STORE s1,   8*SIZE_REG(\base)
+    STORE a0,   9*SIZE_REG(\base)
+    STORE a1,  10*SIZE_REG(\base)
+    STORE a2,  11*SIZE_REG(\base)
+    STORE a3,  12*SIZE_REG(\base)
+    STORE a4,  13*SIZE_REG(\base)
+    STORE a5,  14*SIZE_REG(\base)
+    STORE a6,  15*SIZE_REG(\base)
+    STORE a7,  16*SIZE_REG(\base)
+    STORE s2,  17*SIZE_REG(\base)
+    STORE s3,  18*SIZE_REG(\base)
+    STORE s4,  19*SIZE_REG(\base)
+    STORE s5,  20*SIZE_REG(\base)
+    STORE s6,  21*SIZE_REG(\base)
+    STORE s7,  22*SIZE_REG(\base)
+    STORE s8,  23*SIZE_REG(\base)
+    STORE s9,  24*SIZE_REG(\base)
+    STORE s10, 25*SIZE_REG(\base)
+    STORE s11, 26*SIZE_REG(\base)
+    STORE t3,  27*SIZE_REG(\base)
+    STORE t4,  28*SIZE_REG(\base)
+    STORE t5,  29*SIZE_REG(\base)
+    // we don't save t6 here, due to we have used
+    // it as base, we have to save t6 in an extra step
+    // outside of reg_save
     // 不在这里保存 t6，因为 t6 已被用作 base 参数，
     // 所以必须在 reg_save 之外单独保存 t6
 .endm
@@ -69,35 +69,35 @@
 // ra = base->ra;
 // ......
 .macro reg_restore base
-	LOAD ra,   0*SIZE_REG(\base)
-	LOAD sp,   1*SIZE_REG(\base)
-	LOAD t0,   4*SIZE_REG(\base)
-	LOAD t1,   5*SIZE_REG(\base)
-	LOAD t2,   6*SIZE_REG(\base)
-	LOAD s0,   7*SIZE_REG(\base)
-	LOAD s1,   8*SIZE_REG(\base)
-	LOAD a0,   9*SIZE_REG(\base)
-	LOAD a1,  10*SIZE_REG(\base)
-	LOAD a2,  11*SIZE_REG(\base)
-	LOAD a3,  12*SIZE_REG(\base)
-	LOAD a4,  13*SIZE_REG(\base)
-	LOAD a5,  14*SIZE_REG(\base)
-	LOAD a6,  15*SIZE_REG(\base)
-	LOAD a7,  16*SIZE_REG(\base)
-	LOAD s2,  17*SIZE_REG(\base)
-	LOAD s3,  18*SIZE_REG(\base)
-	LOAD s4,  19*SIZE_REG(\base)
-	LOAD s5,  20*SIZE_REG(\base)
-	LOAD s6,  21*SIZE_REG(\base)
-	LOAD s7,  22*SIZE_REG(\base)
-	LOAD s8,  23*SIZE_REG(\base)
-	LOAD s9,  24*SIZE_REG(\base)
-	LOAD s10, 25*SIZE_REG(\base)
-	LOAD s11, 26*SIZE_REG(\base)
-	LOAD t3,  27*SIZE_REG(\base)
-	LOAD t4,  28*SIZE_REG(\base)
-	LOAD t5,  29*SIZE_REG(\base)
-	LOAD t6,  30*SIZE_REG(\base)
+    LOAD ra,   0*SIZE_REG(\base)
+    LOAD sp,   1*SIZE_REG(\base)
+    LOAD t0,   4*SIZE_REG(\base)
+    LOAD t1,   5*SIZE_REG(\base)
+    LOAD t2,   6*SIZE_REG(\base)
+    LOAD s0,   7*SIZE_REG(\base)
+    LOAD s1,   8*SIZE_REG(\base)
+    LOAD a0,   9*SIZE_REG(\base)
+    LOAD a1,  10*SIZE_REG(\base)
+    LOAD a2,  11*SIZE_REG(\base)
+    LOAD a3,  12*SIZE_REG(\base)
+    LOAD a4,  13*SIZE_REG(\base)
+    LOAD a5,  14*SIZE_REG(\base)
+    LOAD a6,  15*SIZE_REG(\base)
+    LOAD a7,  16*SIZE_REG(\base)
+    LOAD s2,  17*SIZE_REG(\base)
+    LOAD s3,  18*SIZE_REG(\base)
+    LOAD s4,  19*SIZE_REG(\base)
+    LOAD s5,  20*SIZE_REG(\base)
+    LOAD s6,  21*SIZE_REG(\base)
+    LOAD s7,  22*SIZE_REG(\base)
+    LOAD s8,  23*SIZE_REG(\base)
+    LOAD s9,  24*SIZE_REG(\base)
+    LOAD s10, 25*SIZE_REG(\base)
+    LOAD s11, 26*SIZE_REG(\base)
+    LOAD t3,  27*SIZE_REG(\base)
+    LOAD t4,  28*SIZE_REG(\base)
+    LOAD t5,  29*SIZE_REG(\base)
+    LOAD t6,  30*SIZE_REG(\base)
 .endm
 
 // Something to note about save/restore:
@@ -141,38 +141,44 @@ switch_to:
     // 执行真正的上下文切换（ret = 返回到下一个任务）
     ret
 
-# interrupts and exceptions while in machine mode come here.
+/*/
+ * interrupts and exceptions while in machine mode come here.
+ * the trap vector base address must always be aligned on a 4-byte boundary
+ *
+ * 中断和异常处理函数，位于机器模式下
+ * trap 向量基地址必须始终对齐到 4 字节边界
+/*/
 .globl trap_vector
-# the trap vector base address must always be aligned on a 4-byte boundary
 .balign 4
 trap_vector:
-	# save context(registers).
-	csrrw	t6, mscratch, t6	# swap t6 and mscratch
-	reg_save t6
 
-	# Save the actual t6 register, which we swapped into
-	# mscratch
-	mv	t5, t6			# t5 points to the context of current task
-	csrr	t6, mscratch		# read t6 back from mscratch
-	STORE	t6, 30*SIZE_REG(t5)	# save t6 with t5 as base
+    // save context(registers).
+    // 保存当前任务的寄存器上下文到 mscratch
+    csrrw       t6, mscratch, t6    // swap t6 and mscratch
+    reg_save    t6                  // 保存当前任务的寄存器上下文到 t6 指向的地址
+    mv          t5, t6              // t5 points to the context of current task
+    csrr        t6, mscratch        // read t6 back from mscratch
+    STORE       t6, 30*SIZE_REG(t5) // save t6 with t5 as base
+    csrw        mscratch, t5        // 将 mscratch 恢复为当前任务的上下文指针
 
-	# Restore the context pointer into mscratch
-	csrw	mscratch, t5
 
-	# call the C trap handler in trap.c
-	csrr	a0, mepc
-	csrr	a1, mcause
-	call	trap_handler // 调用异常处理函数
+    // call the C trap handler in trap.c
+    // 在 trap.c 中调用 C 语言的异常处理函数
+    csrr        a0, mepc            // 获取异常发生时的程序计数器（PC）
+    csrr        a1, mcause          // 获取异常原因
+    call        trap_handler        // 调用异常处理函数
+    csrw        mepc, a0            // trap_handler 会通过 a0 返回返回地址
 
-	# trap_handler will return the return address via a0.
-	csrw	mepc, a0
 
-	# restore context(registers).
-	csrr	t6, mscratch
-	reg_restore t6
+    // restore context(registers).
+    // 恢复寄存器上下文
+    csrr        t6, mscratch        // 重新加载 mscratch 中的上下文指针
+    reg_restore t6                  // 恢复上下文
 
-	# return to whatever we were doing before trap.
-	mret
+
+    // return to whatever we were doing before trap.
+    // 返回到发生异常之前的代码执行位置
+    mret
 
 
 .end

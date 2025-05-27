@@ -12,7 +12,7 @@
 | ---------- | ---- | --------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
 | `mhartid`  | CSR  | Machine Hardware Thread ID        | 机器模式硬件线程编号（CPU 核 ID） | 当前硬件线程 ID（即 CPU 核心编号）。每个 hart 在启动时都会从这个寄存器中读取自己的编号。     |
 | `mepc`     | CSR  | Machine Exception Program Counter | 机器模式异常程序计数器            | **机器模式异常程序计数器**，保存异常/中断发生时要返回的指令地址。                            |
-| `mscratch` | CSR  | Machine Scratch Register          | 机器模式临时寄存器                | 提供一个供操作系统使用的临时寄存器，常在中断/上下文切换时用作保存当前任务的上下文指针。      |
+| `mscratch` | CSR  | Machine Scratch Register          | 机器模式临时寄存器                | 提供一个供操作系统使用的临时寄存器，常在异常/中断上下文切换时用作保存当前任务的上下文指针。  |
 | `mtvec`    | CSR  | Machine Trap-Vector Base Address  | 机器模式陷阱向量表基地址          | 机器模式中断向量表的地址。系统初始化时设置，指定中断处理函数的入口地址。                     |
 | ---------- | ---- | --------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
 | `mstatus`  | CSR  | Machine Status Register           | 机器模式状态寄存器                | **机器模式状态寄存器**，包含当前特权级、全局中断使能等重要状态标志。                         |
@@ -103,6 +103,98 @@ static inline void  w_mie(reg_t x);     // 写入 机器模式中断使能寄存
 
 static inline reg_t r_mepc();           // 读取 机器模式异常程序计数器
 static inline void  w_mepc(reg_t x);    // 写入 机器模式异常程序计数器
+
+
+/*/ 函数实现 /*/
+
+// 读取线程指针寄存器
+static inline reg_t
+r_tp()
+{
+    reg_t x;
+    asm volatile("mv %0, tp" : "=r"(x));
+    return x;
+}
+
+// 读取 硬件线程 ID 寄存器
+static inline reg_t
+r_mhartid()
+{
+    reg_t x;
+    asm volatile("csrr %0, mhartid" : "=r"(x));
+    return x;
+}
+
+// 读取 机器模式异常/中断原因寄存器
+static inline reg_t
+r_mcause()
+{
+    reg_t x;
+    asm volatile("csrr %0, mcause" : "=r"(x));
+    return x;
+}
+
+// 写入 机器模式临时寄存器
+static inline void
+w_mscratch(reg_t x)
+{
+    asm volatile("csrw mscratch, %0" : : "r"(x));
+}
+
+// 写入 机器模式中断向量表基地址
+static inline void
+w_mtvec(reg_t x)
+{
+    asm volatile("csrw mtvec, %0" : : "r"(x));
+}
+
+// 读取 机器模式状态寄存器
+static inline reg_t
+r_mstatus()
+{
+    reg_t x;
+    asm volatile("csrr %0, mstatus" : "=r"(x));
+    return x;
+}
+
+// 写入 机器模式状态寄存器
+static inline void
+w_mstatus(reg_t x)
+{
+    asm volatile("csrw mstatus, %0" : : "r"(x));
+}
+
+// 读取 机器模式中断使能寄存器
+static inline reg_t
+r_mie()
+{
+    reg_t x;
+    asm volatile("csrr %0, mie" : "=r"(x));
+    return x;
+}
+
+// 写入 机器模式中断使能寄存器
+static inline void
+w_mie(reg_t x)
+{
+    asm volatile("csrw mie, %0" : : "r"(x));
+}
+
+// 读取 机器模式异常程序计数器
+static inline reg_t
+r_mepc()
+{
+    reg_t x;
+    asm volatile("csrr %0, mepc" : "=r"(x));
+    return x;
+}
+
+// 写入 机器模式异常程序计数器
+static inline void
+w_mepc(reg_t x)
+{
+    asm volatile("csrw mepc, %0" : : "r"(x));
+}
 
 
 #endif /* __RISCV_H__ */
