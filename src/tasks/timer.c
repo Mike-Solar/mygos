@@ -22,7 +22,7 @@ task_timer(int id)
 {
     print_create_task(id, (reg_t)task_timer, "Task Timer");
 
-    struct timer* timer = timer_create(on_shot, 0, 10); // 10 ticks 后触发一次
+    timer_create(on_shot, 0, 10); // 10 ticks 后触发一次
 
     print_delete_task(id, "Task Timer");
     task_delete(id); // 删除任务 Timer
