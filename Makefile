@@ -13,6 +13,7 @@ SRCS_C = \
 	src/user.c \
 	src/trap.c \
 	src/timer.c \
+	src/lock.c \
 	# src/riscv.c \
 
 GDBINIT = ./gdbinit
