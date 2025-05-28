@@ -138,8 +138,7 @@ timer_check()
 void
 timer_handler()
 {
-    _tick++;
-    printf("tick: %d\n", _tick);
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Tick: %d\n", ++_tick);
 
     timer_check();
 

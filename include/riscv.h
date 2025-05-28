@@ -31,6 +31,25 @@
 #define MCAUSE_MASK_INTERRUPT (reg_t)0x80000000 // 高位掩码（第 31 位）表示是否为中断
 #define MCAUSE_MASK_ECODE (reg_t)0x7FFFFFFF     // 低 31 位掩码，表示异常或中断原因码
 
+// 中断原因码
+#define MCAUSE_INSTRUCTION_ADDRESS_MISALIGNED 0             // 指令地址未对齐
+#define MCAUSE_INSTRUCTION_ACCESS_FAULT 1                   // 指令访问故障
+#define MCAUSE_ILLEGAL_INSTRUCTION 2                        // 非法指令
+#define MCAUSE_BREAKPOINT 3                                 // 断点
+#define MCAUSE_LOAD_ADDRESS_MISALIGNED 4                    // 读地址未对齐
+#define MCAUSE_LOAD_ACCESS_FAULT 5                          // 加载访问故障
+#define MCAUSE_STORE_ADDRESS_MISALIGNED 6                   // 写地址未对齐
+#define MCAUSE_STORE_ACCESS_FAULT 7                         // 写访问故障
+#define MCAUSE_ENVIRONMENT_CALL_FROM_UMODE 8                // U 模式发出的系统调用（ecall）
+#define MCAUSE_ENVIRONMENT_CALL_FROM_SMODE 9                // S 模式发出的系统调用（ecall）
+#define MCAUSE_ENVIRONMENT_CALL_FROM_MMODE 11               // M 模式发出的系统调用（ecall）
+#define MCAUSE_INSTRUCTION_PAGE_FAULT 12                    // 指令页错误（Sv32）
+#define MCAUSE_LOAD_PAGE_FAULT 13                           // 加载页错误
+#define MCAUSE_STORE_PAGE_FAULT 15                          // 存储页错误
+#define MCAUSE_MACHINE_SOFTWARE_INTERRUPT (0x80000000 + 3)  // 软件中断（由 MSIP 触发）
+#define MCAUSE_MACHINE_TIMER_INTERRUPT (0x80000000 + 7)     // 定时器中断（mtimecmp）
+#define MCAUSE_MACHINE_EXTERNAL_INTERRUPT (0x80000000 + 11) // 外部中断（PLIC）
+
 
 /*/ 读取和写入寄存器的内联函数 /*/
 
