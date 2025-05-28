@@ -11,6 +11,7 @@ SRCS_C = \
 	\
 	src/tasks/count.c \
 	src/tasks/tasks.c \
+	src/tasks/timer.c \
 	\
 	src/page.c \
 	src/sched.c \
