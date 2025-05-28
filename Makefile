@@ -8,6 +8,11 @@ SRCS_C = \
 	src/io/uart.c \
 	src/io/printf.c \
 	src/io/plic.c \
+	\
+	src/tasks/count.c \
+	src/tasks/tasks.c \
+	src/tasks/timer.c \
+	\
 	src/page.c \
 	src/sched.c \
 	src/user.c \
