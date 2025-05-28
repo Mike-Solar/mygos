@@ -31,6 +31,10 @@ extern void task_yield();
 extern int  plic_claim(void);
 extern void plic_complete(int irq);
 
+/* lock */
+extern int spin_lock(void);
+extern int spin_unlock(void);
+
 // 任务上下文
 struct context
 {
