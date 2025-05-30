@@ -11,10 +11,12 @@ struct heap_block *heap_head;
 struct heap_block *heap_used;
 struct heap_block *heap_free;
 struct heap_block *heap_used_last;
+extern uint64_t __heap_end;
+extern uint64_t __heap_start;
 //初始化堆内存
 void init_heap() {
-	heap_start=memory.base;
-	heap_size=memory.size;
+	heap_start=__heap_start;
+	heap_size=1024*1024*1024;
 	heap_head=(struct heap_block *)memory.base;
 	heap_head->size=heap_size;
 	heap_head->next=NULL;
