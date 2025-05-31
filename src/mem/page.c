@@ -21,50 +21,29 @@ struct page *phys_page_array_virt_addr;
 struct zone memory_zone __attribute__((section(".buddy_meta")));
 #define ALIGN_UP(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
 
-
-static void* early_alloc(int64_t size) {
-	static void* next_addr = memory.base; // 从引导程序获取的可用内存区域
-	void* ret = (void *)ALIGN_UP((uint64_t)next_addr, 12);
-	next_addr = ret + size;
-	return ret;
-}
 void buddy_init_stage1(void) {
-	// 计算每种块需要多少个
-	int num=0;
-	for (int i=0; i<=MAX_ORDER; i++) {
-		num+=kpow(2,i);
-	}
-	num=page_count/num;
 	// 使用物理地址初始化链表
-	uint32_t num_of_page_inited=0;
 	for (int i = 0; i <= MAX_ORDER; i++) {
 		init_list_head(&memory_zone.free_area[i].free_list);
-		memory_zone.free_area->nr_free=num;
-		uint32_t num_of_each=kpow(2,i);
-		for (int j=0;j<num;j++) {
-			list_add(&phys_page_array[num_of_page_inited].list,
-				&memory_zone.free_area[i].free_list);
-			num_of_page_inited+=num_of_each;
-		}
+		memory_zone.free_area[i].nr_free=0;
 	}
+	memory_zone.free_area[MAX_ORDER].nr_free=page_count/EXP_OF_2(MAX_ORDER);
 	phys_page_array_phys_addr=phys_page_array;
 }
-
 /* 第二阶段初始化（启用分页后） */
 void buddy_init_stage2(void) {
 	phys_page_array_virt_addr=phys_page_array;
-	void *delta=(void *)((void *)phys_page_array_virt_addr-(void *)phys_page_array_phys_addr);
-#define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + delta))
+	uintptr_t delta=(uintptr_t)phys_page_array_virt_addr-(uintptr_t)phys_page_array_phys_addr;
 	// 将物理地址转换为虚拟地址
 	for (int i = 0; i <= MAX_ORDER; i++) {
 		struct list_head *curr = memory_zone.free_area[i].free_list.next;
 		while (curr != &memory_zone.free_area[i].free_list) {
 			// Step 1: 将链表节点物理地址转为虚拟地址
-			struct list_head *virt_node = PHYS_TO_VIRT(curr);
+			struct list_head *virt_node = PHYS_TO_VIRT(curr, delta);
             
 			// Step 2: 修正前后指针的地址
-			virt_node->prev = PHYS_TO_VIRT(virt_node->prev);
-			virt_node->next = PHYS_TO_VIRT(virt_node->next);
+			virt_node->prev = PHYS_TO_VIRT(virt_node->prev,delta);
+			virt_node->next = PHYS_TO_VIRT(virt_node->next,delta);
             
 			curr = virt_node->next;
 		}
@@ -91,7 +70,7 @@ void map_kernel_identity(uint64_t* pagetable) {
 
 
 // 物理内存起始地址（由设备树或硬编码确定）
-void* phys_mem_start = 0x80000000uL;
+uintptr_t phys_mem_start = 0x80000000uL;
 void phys_mem_init() {
 	// 清零空闲列表
 	phys_page_array[0].pfn = 0;
@@ -103,11 +82,12 @@ void phys_mem_init() {
 		list_add(&phys_page_array[i].list,cur);
 		cur=&phys_page_array[i].list;
 		phys_page_array[i].is_used = false;
+		phys_page_array[i].order = 0;
 	}
 	// 标记已使用的页（如内核代码、保留区域）
-	void *kernel_start = 0x80000000uL;    // 内核起始物理地址
-	void *kernel_end   = 0x80200000uL;    // 内核结束物理地址
-	for (void *pa = kernel_start; pa < kernel_end; pa += PAGE_SIZE) {
+	uintptr_t kernel_start = 0x80000000uL;    // 内核起始物理地址
+	uintptr_t kernel_end   = 0x80200000uL;    // 内核结束物理地址
+	for (uintptr_t pa = kernel_start; pa < kernel_end; pa += PAGE_SIZE) {
 		uint64_t index = (pa - phys_mem_start) / PAGE_SIZE;
 		phys_page_array[index].is_used = true;
 	}
@@ -136,11 +116,11 @@ uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc) {
 	return &pagetable[PX(0, va)];                // 返回叶级 PTE
 }
 // 分配多页内存
-void *alloc_pages(uint32_t n) {
+void *alloc_pages(uint8_t n) {
 	if (n>MAX_ORDER) {
 		return NULL;
 	}
-	uint32_t pages_num=kpow(2,n);
+	uint16_t pages_num=EXP_OF_2(n);
 	if (list_empty(&memory_zone.free_area[n].free_list)) {
 		if (n==MAX_ORDER) {
 			return NULL;
@@ -151,11 +131,16 @@ void *alloc_pages(uint32_t n) {
 			list_entry(cur,struct page,list)->is_used=true;
 			cur=cur->next;
 		}
+		struct list_head *last=cur;
 		for (int i=0;i<pages_num;i++) {
 			struct list_head *temp=cur->next;
 			list_move(cur,memory_zone.free_area[i].free_list.next);
 			cur->next=temp;
 		}
+		last->next=&p->list;
+		memory_zone.free_area[n+1].nr_free--;
+		memory_zone.free_area[n].nr_free++;
+		p->order=n;
 		return (void *)((p->pfn) << PAGE_SHIFT);
 	}
 	struct page *p = list_entry(memory_zone.free_area[n].free_list.next, struct page, list);
@@ -170,8 +155,13 @@ void *alloc_pages(uint32_t n) {
 }
 
 void free_pages(void* p) {
-
+	uint64_t pfn=PHYS_PFN(p);
+	struct page *page=&phys_page_array[pfn];
+	uint16_t block_num=EXP_OF_2(page->order);
+	list_add(&page->list,&memory_zone.free_area[page->order].free_list);
+	memory_zone.free_area[block_num].nr_free++;
 }
+
 
 
 
