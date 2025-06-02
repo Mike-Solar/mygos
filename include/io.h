@@ -93,18 +93,3 @@
 
 #define uart_read_reg(reg) (*(UART_REG(reg)))           // 读UART寄存器
 #define uart_write_reg(reg, v) (*(UART_REG(reg)) = (v)) // 写UART寄存器
-
-
-// 函数声明
-
-void     plic_init();                     // 初始化 PLIC（外部中断控制器），设置 UART0 的中断优先级和使能
-uint32_t plic_claim();                    // 查询 PLIC，获取当前需要处理的中断源 ID（如果有）
-void     plic_complete(uint32_t plic_id); // 完成中断处理，通知 PLIC 已经处理完指定的中断源 ID
-
-void uart_init();                         // 初始化 UART，配置波特率和数据格式
-void uart_putc(char ch);                  // 输出一个字符到串口（阻塞，等待发送缓冲区空）
-void uart_puts(char* s);                  // 输出字符串到串口（逐字符发送）
-char uart_getc();                         // 接收一个字符（阻塞，直到接收缓冲区有数据）
-
-uint32_t printf(const char* s, ...);      // 格式化输出到串口，类似于 printf
-void     panic(char* s);                  // 输出错误信息并进入死循环

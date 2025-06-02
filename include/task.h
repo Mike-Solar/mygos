@@ -46,10 +46,3 @@ struct task_context
 
     uint8_t flags;
 };
-
-void    sched_init();                        // 初始化调度器
-void    schedule();                          // 任务轮转调度
-void    task_yield();                        // 任务主动让出 CPU，允许其他任务运行
-int32_t task_create(void (*task)(uint32_t)); // 创建一个新任务，传入任务函数指针
-void    task_delete(uint32_t task_id);       // 删除指定任务
-void    task_delay(volatile int count);      // 延迟执行，消耗 CPU 时间

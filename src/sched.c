@@ -1,15 +1,12 @@
 
 // sched.c
 
-#include "task.h"
-
 #include "platform.h"
 #include "riscv.h"
+#include "task.h"
 
 
-/* defined in entry.S */
-extern void switch_to(struct task_context* next_task);
-
+extern void switch_to(struct task_context* next_task);                         // 切换到下一个任务的上下文
 
 static uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的
 struct task_context                         task_contexts[MAX_TASKS];          // 任务上下文结构体列表
