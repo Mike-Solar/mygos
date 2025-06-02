@@ -34,34 +34,34 @@
  * 所以必须在 reg_save 之外单独保存 t6
 /*/
 .macro reg_save base
-    sw ra,   0*SIZE_REG(\base)
-    sw sp,   1*SIZE_REG(\base)
-    sw t0,   4*SIZE_REG(\base)
-    sw t1,   5*SIZE_REG(\base)
-    sw t2,   6*SIZE_REG(\base)
-    sw s0,   7*SIZE_REG(\base)
-    sw s1,   8*SIZE_REG(\base)
-    sw a0,   9*SIZE_REG(\base)
-    sw a1,  10*SIZE_REG(\base)
-    sw a2,  11*SIZE_REG(\base)
-    sw a3,  12*SIZE_REG(\base)
-    sw a4,  13*SIZE_REG(\base)
-    sw a5,  14*SIZE_REG(\base)
-    sw a6,  15*SIZE_REG(\base)
-    sw a7,  16*SIZE_REG(\base)
-    sw s2,  17*SIZE_REG(\base)
-    sw s3,  18*SIZE_REG(\base)
-    sw s4,  19*SIZE_REG(\base)
-    sw s5,  20*SIZE_REG(\base)
-    sw s6,  21*SIZE_REG(\base)
-    sw s7,  22*SIZE_REG(\base)
-    sw s8,  23*SIZE_REG(\base)
-    sw s9,  24*SIZE_REG(\base)
-    sw s10, 25*SIZE_REG(\base)
-    sw s11, 26*SIZE_REG(\base)
-    sw t3,  27*SIZE_REG(\base)
-    sw t4,  28*SIZE_REG(\base)
-    sw t5,  29*SIZE_REG(\base)
+    sw ra,   TASK_CONTEXT_RA_OFFSET(\base)
+    sw sp,   TASK_CONTEXT_SP_OFFSET(\base)
+    sw t0,   TASK_CONTEXT_T0_OFFSET(\base)
+    sw t1,   TASK_CONTEXT_T1_OFFSET(\base)
+    sw t2,   TASK_CONTEXT_T2_OFFSET(\base)
+    sw s0,   TASK_CONTEXT_S0_OFFSET(\base)
+    sw s1,   TASK_CONTEXT_S1_OFFSET(\base)
+    sw a0,   TASK_CONTEXT_A0_OFFSET(\base)
+    sw a1,   TASK_CONTEXT_A1_OFFSET(\base)
+    sw a2,   TASK_CONTEXT_A2_OFFSET(\base)
+    sw a3,   TASK_CONTEXT_A3_OFFSET(\base)
+    sw a4,   TASK_CONTEXT_A4_OFFSET(\base)
+    sw a5,   TASK_CONTEXT_A5_OFFSET(\base)
+    sw a6,   TASK_CONTEXT_A6_OFFSET(\base)
+    sw a7,   TASK_CONTEXT_A7_OFFSET(\base)
+    sw s2,   TASK_CONTEXT_S2_OFFSET(\base)
+    sw s3,   TASK_CONTEXT_S3_OFFSET(\base)
+    sw s4,   TASK_CONTEXT_S4_OFFSET(\base)
+    sw s5,   TASK_CONTEXT_S5_OFFSET(\base)
+    sw s6,   TASK_CONTEXT_S6_OFFSET(\base)
+    sw s7,   TASK_CONTEXT_S7_OFFSET(\base)
+    sw s8,   TASK_CONTEXT_S8_OFFSET(\base)
+    sw s9,   TASK_CONTEXT_S9_OFFSET(\base)
+    sw s10,  TASK_CONTEXT_S10_OFFSET(\base)
+    sw s11,  TASK_CONTEXT_S11_OFFSET(\base)
+    sw t3,   TASK_CONTEXT_T3_OFFSET(\base)
+    sw t4,   TASK_CONTEXT_T4_OFFSET(\base)
+    sw t5,   TASK_CONTEXT_T5_OFFSET(\base)
 .endm
 
 /*/
@@ -72,43 +72,43 @@
  * ......
 /*/
 .macro reg_restore base
-    lw ra,   0*SIZE_REG(\base)
-    lw sp,   1*SIZE_REG(\base)
-    lw t0,   4*SIZE_REG(\base)
-    lw t1,   5*SIZE_REG(\base)
-    lw t2,   6*SIZE_REG(\base)
-    lw s0,   7*SIZE_REG(\base)
-    lw s1,   8*SIZE_REG(\base)
-    lw a0,   9*SIZE_REG(\base)
-    lw a1,  10*SIZE_REG(\base)
-    lw a2,  11*SIZE_REG(\base)
-    lw a3,  12*SIZE_REG(\base)
-    lw a4,  13*SIZE_REG(\base)
-    lw a5,  14*SIZE_REG(\base)
-    lw a6,  15*SIZE_REG(\base)
-    lw a7,  16*SIZE_REG(\base)
-    lw s2,  17*SIZE_REG(\base)
-    lw s3,  18*SIZE_REG(\base)
-    lw s4,  19*SIZE_REG(\base)
-    lw s5,  20*SIZE_REG(\base)
-    lw s6,  21*SIZE_REG(\base)
-    lw s7,  22*SIZE_REG(\base)
-    lw s8,  23*SIZE_REG(\base)
-    lw s9,  24*SIZE_REG(\base)
-    lw s10, 25*SIZE_REG(\base)
-    lw s11, 26*SIZE_REG(\base)
-    lw t3,  27*SIZE_REG(\base)
-    lw t4,  28*SIZE_REG(\base)
-    lw t5,  29*SIZE_REG(\base)
-    lw t6,  30*SIZE_REG(\base)
+    lw ra,   TASK_CONTEXT_RA_OFFSET(\base)
+    lw sp,   TASK_CONTEXT_SP_OFFSET(\base)
+    lw t0,   TASK_CONTEXT_T0_OFFSET(\base)
+    lw t1,   TASK_CONTEXT_T1_OFFSET(\base)
+    lw t2,   TASK_CONTEXT_T2_OFFSET(\base)
+    lw s0,   TASK_CONTEXT_S0_OFFSET(\base)
+    lw s1,   TASK_CONTEXT_S1_OFFSET(\base)
+    lw a0,   TASK_CONTEXT_A0_OFFSET(\base)
+    lw a1,   TASK_CONTEXT_A1_OFFSET(\base)
+    lw a2,   TASK_CONTEXT_A2_OFFSET(\base)
+    lw a3,   TASK_CONTEXT_A3_OFFSET(\base)
+    lw a4,   TASK_CONTEXT_A4_OFFSET(\base)
+    lw a5,   TASK_CONTEXT_A5_OFFSET(\base)
+    lw a6,   TASK_CONTEXT_A6_OFFSET(\base)
+    lw a7,   TASK_CONTEXT_A7_OFFSET(\base)
+    lw s2,   TASK_CONTEXT_S2_OFFSET(\base)
+    lw s3,   TASK_CONTEXT_S3_OFFSET(\base)
+    lw s4,   TASK_CONTEXT_S4_OFFSET(\base)
+    lw s5,   TASK_CONTEXT_S5_OFFSET(\base)
+    lw s6,   TASK_CONTEXT_S6_OFFSET(\base)
+    lw s7,   TASK_CONTEXT_S7_OFFSET(\base)
+    lw s8,   TASK_CONTEXT_S8_OFFSET(\base)
+    lw s9,   TASK_CONTEXT_S9_OFFSET(\base)
+    lw s10,  TASK_CONTEXT_S10_OFFSET(\base)
+    lw s11,  TASK_CONTEXT_S11_OFFSET(\base)
+    lw t3,   TASK_CONTEXT_T3_OFFSET(\base)
+    lw t4,   TASK_CONTEXT_T4_OFFSET(\base)
+    lw t5,   TASK_CONTEXT_T5_OFFSET(\base)
+    lw t6,   TASK_CONTEXT_T6_OFFSET(\base)
 .endm
 
 .macro STORE_T6 from
-    sw t6, 30*SIZE_REG(\from)     // 将 t6 保存到上下文结构体中的 t6 位置
+    sw t6,  TASK_CONTEXT_T6_OFFSET(\from)     // 将 t6 保存到上下文结构体中的 t6 位置
 .endm
 
 .macro LOAD_MEPC to from
-    lw \to, 31*SIZE_REG(\from)     // 从上下文结构体中加载 mepc 到指定寄存器
+    lw \to,  TASK_CONTEXT_PC_OFFSET(\from)     // 从上下文结构体中加载 mepc 到指定寄存器
 .endm
 
 
@@ -161,9 +161,9 @@ trap_vector:
     reg_save    t6                  // 保存当前任务的寄存器上下文到 t6 指向的地址
     mv          t5, t6              // t5 指向当前任务上下文
     csrr        t6, mscratch        // 从 mscratch 中读取 t6
-    sw          t6, 30*SIZE_REG(t5) // 将 t6 保存到上下文中的 t6 位置
+    sw          t6,  TASK_CONTEXT_T6_OFFSET(t5) // 将 t6 保存到上下文中的 t6 位置
 	csrr	    a0, mepc            // 获取异常发生时的程序计数器（mepc）：保存异常/中断发生时要返回的指令地址
-	sw	        a0, 31*SIZE_REG(t5) // 存到上下文结构体中
+	sw	        a0,  TASK_CONTEXT_PC_OFFSET(t5) // 存到上下文结构体中
     csrw        mscratch, t5        // 将 mscratch 恢复为当前任务的上下文指针
 
 
