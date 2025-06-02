@@ -2,6 +2,7 @@
 // page.c
 
 #include "os.h"
+#include "platform.h"
 
 
 // Following global vars are defined in mem.S

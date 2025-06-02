@@ -4,27 +4,14 @@
 #ifndef __OS_H__
 #define __OS_H__
 
-#include "platform.h"
-#include "riscv.h"
+#include "io.h"
 #include "task.h"
-#include "types.h"
 
-
-/* uart */
-extern int  uart_putc(char ch);
-extern void uart_puts(char* s);
-
-/* printf */
-extern int  printf(const char* s, ...);
-extern void panic(char* s);
 
 /* memory management */
 extern void* page_alloc(int npages);
 extern void  page_free(void* p);
 
-/* plic */
-extern int  plic_claim(void);
-extern void plic_complete(int irq);
 
 /* lock */
 extern int spin_lock(void);

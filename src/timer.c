@@ -2,6 +2,8 @@
 // timer.c
 
 #include "os.h"
+#include "platform.h"
+#include "riscv.h"
 
 
 extern void schedule(void);
