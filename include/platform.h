@@ -19,6 +19,10 @@
 /* used in os.ld */
 #define LENGTH_RAM 128 * 1024 * 1024 // = 128MB
 
+
+#define SIZE_REG 4 // 每个寄存器大小为 4 字节（32 位寄存器）
+
+
 /*/
 
 MemoryMap

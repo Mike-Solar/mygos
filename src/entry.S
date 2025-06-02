@@ -1,9 +1,8 @@
 
 // entry.S
 
-#define LOAD        lw      // 定义加载指令：LOAD 表示 lw（Load Word）
-#define STORE       sw      // 定义存储指令：STORE 表示 sw（Store Word）
-#define SIZE_REG    4       // 每个寄存器大小为 4 字节（32 位寄存器）
+#include "platform.h"
+
 
 /*/
  * Save all General-Purpose(GP) registers to context.
@@ -35,34 +34,34 @@
  * 所以必须在 reg_save 之外单独保存 t6
 /*/
 .macro reg_save base
-    STORE ra,   0*SIZE_REG(\base)
-    STORE sp,   1*SIZE_REG(\base)
-    STORE t0,   4*SIZE_REG(\base)
-    STORE t1,   5*SIZE_REG(\base)
-    STORE t2,   6*SIZE_REG(\base)
-    STORE s0,   7*SIZE_REG(\base)
-    STORE s1,   8*SIZE_REG(\base)
-    STORE a0,   9*SIZE_REG(\base)
-    STORE a1,  10*SIZE_REG(\base)
-    STORE a2,  11*SIZE_REG(\base)
-    STORE a3,  12*SIZE_REG(\base)
-    STORE a4,  13*SIZE_REG(\base)
-    STORE a5,  14*SIZE_REG(\base)
-    STORE a6,  15*SIZE_REG(\base)
-    STORE a7,  16*SIZE_REG(\base)
-    STORE s2,  17*SIZE_REG(\base)
-    STORE s3,  18*SIZE_REG(\base)
-    STORE s4,  19*SIZE_REG(\base)
-    STORE s5,  20*SIZE_REG(\base)
-    STORE s6,  21*SIZE_REG(\base)
-    STORE s7,  22*SIZE_REG(\base)
-    STORE s8,  23*SIZE_REG(\base)
-    STORE s9,  24*SIZE_REG(\base)
-    STORE s10, 25*SIZE_REG(\base)
-    STORE s11, 26*SIZE_REG(\base)
-    STORE t3,  27*SIZE_REG(\base)
-    STORE t4,  28*SIZE_REG(\base)
-    STORE t5,  29*SIZE_REG(\base)
+    sw ra,   0*SIZE_REG(\base)
+    sw sp,   1*SIZE_REG(\base)
+    sw t0,   4*SIZE_REG(\base)
+    sw t1,   5*SIZE_REG(\base)
+    sw t2,   6*SIZE_REG(\base)
+    sw s0,   7*SIZE_REG(\base)
+    sw s1,   8*SIZE_REG(\base)
+    sw a0,   9*SIZE_REG(\base)
+    sw a1,  10*SIZE_REG(\base)
+    sw a2,  11*SIZE_REG(\base)
+    sw a3,  12*SIZE_REG(\base)
+    sw a4,  13*SIZE_REG(\base)
+    sw a5,  14*SIZE_REG(\base)
+    sw a6,  15*SIZE_REG(\base)
+    sw a7,  16*SIZE_REG(\base)
+    sw s2,  17*SIZE_REG(\base)
+    sw s3,  18*SIZE_REG(\base)
+    sw s4,  19*SIZE_REG(\base)
+    sw s5,  20*SIZE_REG(\base)
+    sw s6,  21*SIZE_REG(\base)
+    sw s7,  22*SIZE_REG(\base)
+    sw s8,  23*SIZE_REG(\base)
+    sw s9,  24*SIZE_REG(\base)
+    sw s10, 25*SIZE_REG(\base)
+    sw s11, 26*SIZE_REG(\base)
+    sw t3,  27*SIZE_REG(\base)
+    sw t4,  28*SIZE_REG(\base)
+    sw t5,  29*SIZE_REG(\base)
 .endm
 
 /*/
@@ -73,35 +72,43 @@
  * ......
 /*/
 .macro reg_restore base
-    LOAD ra,   0*SIZE_REG(\base)
-    LOAD sp,   1*SIZE_REG(\base)
-    LOAD t0,   4*SIZE_REG(\base)
-    LOAD t1,   5*SIZE_REG(\base)
-    LOAD t2,   6*SIZE_REG(\base)
-    LOAD s0,   7*SIZE_REG(\base)
-    LOAD s1,   8*SIZE_REG(\base)
-    LOAD a0,   9*SIZE_REG(\base)
-    LOAD a1,  10*SIZE_REG(\base)
-    LOAD a2,  11*SIZE_REG(\base)
-    LOAD a3,  12*SIZE_REG(\base)
-    LOAD a4,  13*SIZE_REG(\base)
-    LOAD a5,  14*SIZE_REG(\base)
-    LOAD a6,  15*SIZE_REG(\base)
-    LOAD a7,  16*SIZE_REG(\base)
-    LOAD s2,  17*SIZE_REG(\base)
-    LOAD s3,  18*SIZE_REG(\base)
-    LOAD s4,  19*SIZE_REG(\base)
-    LOAD s5,  20*SIZE_REG(\base)
-    LOAD s6,  21*SIZE_REG(\base)
-    LOAD s7,  22*SIZE_REG(\base)
-    LOAD s8,  23*SIZE_REG(\base)
-    LOAD s9,  24*SIZE_REG(\base)
-    LOAD s10, 25*SIZE_REG(\base)
-    LOAD s11, 26*SIZE_REG(\base)
-    LOAD t3,  27*SIZE_REG(\base)
-    LOAD t4,  28*SIZE_REG(\base)
-    LOAD t5,  29*SIZE_REG(\base)
-    LOAD t6,  30*SIZE_REG(\base)
+    lw ra,   0*SIZE_REG(\base)
+    lw sp,   1*SIZE_REG(\base)
+    lw t0,   4*SIZE_REG(\base)
+    lw t1,   5*SIZE_REG(\base)
+    lw t2,   6*SIZE_REG(\base)
+    lw s0,   7*SIZE_REG(\base)
+    lw s1,   8*SIZE_REG(\base)
+    lw a0,   9*SIZE_REG(\base)
+    lw a1,  10*SIZE_REG(\base)
+    lw a2,  11*SIZE_REG(\base)
+    lw a3,  12*SIZE_REG(\base)
+    lw a4,  13*SIZE_REG(\base)
+    lw a5,  14*SIZE_REG(\base)
+    lw a6,  15*SIZE_REG(\base)
+    lw a7,  16*SIZE_REG(\base)
+    lw s2,  17*SIZE_REG(\base)
+    lw s3,  18*SIZE_REG(\base)
+    lw s4,  19*SIZE_REG(\base)
+    lw s5,  20*SIZE_REG(\base)
+    lw s6,  21*SIZE_REG(\base)
+    lw s7,  22*SIZE_REG(\base)
+    lw s8,  23*SIZE_REG(\base)
+    lw s9,  24*SIZE_REG(\base)
+    lw s10, 25*SIZE_REG(\base)
+    lw s11, 26*SIZE_REG(\base)
+    lw t3,  27*SIZE_REG(\base)
+    lw t4,  28*SIZE_REG(\base)
+    lw t5,  29*SIZE_REG(\base)
+    lw t6,  30*SIZE_REG(\base)
+.endm
+
+.macro STORE_T6 from
+    sw t6, 30*SIZE_REG(\from)     // 将 t6 保存到上下文结构体中的 t6 位置
+.endm
+
+.macro LOAD_MEPC to from
+    lw \to, 31*SIZE_REG(\from)     // 从上下文结构体中加载 mepc 到指定寄存器
 .endm
 
 
@@ -123,16 +130,17 @@
 /*/
 
 // void switch_to(struct context *next);
+// 这里默认上一个任务的上下文已经保存完毕
 // 参数：a0 = 下一个任务的上下文结构体指针
 .globl switch_to
 .balign 4
 switch_to:
-	csrw	mscratch, a0            // 把 mscratch 指向目标上下文结构体
+	csrw	    mscratch, a0        // 把 mscratch 指向目标上下文结构体
 
-    LOAD	a1, 31*SIZE_REG(a0)     // 加载目标上下文结构体的 mepc
-    csrw	mepc, a1                // 写入 mepc 准备跳转到这个地址
+    LOAD_MEPC   a1, a0              // 从下一个任务的上下文结构体中加载 mepc 到 a1
+    csrw	    mepc, a1            // 写入 mepc 准备跳转到这个地址
 
-    mv      t6, a0                  // 使用 t6 指向下一个任务的上下文
+    mv          t6, a0              // 使用 t6 指向下一个任务的上下文
     reg_restore t6                  // 恢复下一个任务的所有通用寄存器
 
     mret                            //mret 表示返回到 mepc 指示的地址
@@ -151,33 +159,29 @@ switch_to:
 .balign 4
 trap_vector:
 
-    // save context(registers).
     // 保存当前任务的寄存器上下文到 mscratch
     csrrw       t6, mscratch, t6    // 交换 t6 和 mscratch 的值
     reg_save    t6                  // 保存当前任务的寄存器上下文到 t6 指向的地址
     mv          t5, t6              // t5 指向当前任务上下文
     csrr        t6, mscratch        // 从 mscratch 中读取 t6
-    STORE       t6, 30*SIZE_REG(t5) // 将 t6 保存到上下文中的 t6 位置
+    sw          t6, 30*SIZE_REG(t5) // 将 t6 保存到上下文中的 t6 位置
 	csrr	    a0, mepc            // 获取异常发生时的程序计数器（mepc）：保存异常/中断发生时要返回的指令地址
-	STORE	    a0, 31*SIZE_REG(t5) // 存到上下文结构体中
+	sw	        a0, 31*SIZE_REG(t5) // 存到上下文结构体中
     csrw        mscratch, t5        // 将 mscratch 恢复为当前任务的上下文指针
 
 
-    // call the C trap handler in trap.c
     // 在 trap.c 中调用 C 语言的异常处理函数
-    csrr	a0, mepc
+    csrr	    a0, mepc
     csrr        a1, mcause          // 获取异常原因
     call        trap_handler        // 调用异常处理函数
     csrw        mepc, a0            // trap_handler 会通过 a0 返回返回地址，地址保存在异常发生时的程序计数器 mepc
 
 
-    // restore context(registers).
     // 恢复寄存器上下文
     csrr        t6, mscratch        // 重新加载 mscratch 中的上下文指针
     reg_restore t6                  // 恢复上下文
 
 
-    // return to whatever we were doing before trap.
     // 返回到发生异常之前的代码执行位置
     mret
 
