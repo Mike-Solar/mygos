@@ -149,10 +149,7 @@ switch_to:
 
 
 /*/
- * interrupts and exceptions while in machine mode come here.
- * the trap vector base address must always be aligned on a 4-byte boundary
- *
- * 中断和异常处理函数，位于机器模式下
+ * 中断和异常处理函数位于机器模式下
  * trap 向量基地址必须始终对齐到 4 字节边界
 /*/
 .globl trap_vector

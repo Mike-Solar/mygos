@@ -102,7 +102,6 @@ task_create(void (*start_routine)(int))
         }
     }
 
-
     return 0;
 }
 

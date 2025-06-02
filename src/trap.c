@@ -31,6 +31,8 @@ external_interrupt_handler()
     if(irq) plic_complete(irq);
 }
 
+
+__attribute__((naked)) // naked 函数不需要栈帧
 reg_t
 trap_handler(reg_t epc, reg_t cause)
 {
@@ -78,6 +80,7 @@ trap_handler(reg_t epc, reg_t cause)
         // return_pc += 4;
     }
 
+    printf("Trap handler finished! Returning to: %p\n", return_pc);
     return return_pc;
 }
 
