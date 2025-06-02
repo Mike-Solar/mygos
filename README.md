@@ -64,6 +64,7 @@ ram (从 0x80000000 开始)
 | MMIO  | Memory-Mapped I/O                           | 内存映射 I/O         | 将外设寄存器映射到内存地址空间，允许通过内存访问外设。              |
 | ABI   | Application Binary Interface                | 应用程序二进制接口   | 定义程序与操作系统之间的接口规范，包括系统调用约定等。              |
 | BIOS  | Basic Input/Output System                   | 基本输入输出系统     | 启动计算机时加载操作系统的固件，通常在虚拟机中不使用。              |
+| BSS   | Block Started by Symbol                     | 符号开始的块         | 用于存储未初始化的全局变量和静态变量，运行时会被清零。              |
 
 ---
 
@@ -102,11 +103,11 @@ ram (从 0x80000000 开始)
 | x9   | s1    | saved 1                   | 保存寄存器 1          | 函数调用中必须保留的值（callee-saved）。                      |
 | x10  | a0    | argument 0 / return value | 参数 0 / 返回值       | 用于函数参数或返回值（前 2 个参数/返回值寄存器）。            |
 | x11  | a1    | argument 1 / return value | 参数 1 / 返回值       | 同上。                                                        |
-| x12  | a2    | argument 2                | 参数 2                | 函数参数传递使用。                                            |
+| x12  | a2    | argument 2                | 参数 2                | 函数参数传递使用（总共最多支持 8 个参数）。                   |
 | x13  | a3    | argument 3                | 参数 3                | 同上。                                                        |
 | x14  | a4    | argument 4                | 参数 4                | 同上。                                                        |
 | x15  | a5    | argument 5                | 参数 5                | 同上。                                                        |
-| x16  | a6    | argument 6                | 参数 6                | 同上（总共最多支持 8 个参数）。                               |
+| x16  | a6    | argument 6                | 参数 6                | 同上。                                                        |
 | x17  | a7    | argument 7                | 参数 7                | 同上。                                                        |
 | x18  | s2    | saved 2                   | 保存寄存器 2          | Callee-saved 寄存器，函数调用必须保存和恢复。                 |
 | x19  | s3    | saved 3                   | 保存寄存器 3          | 同上。                                                        |

@@ -91,7 +91,7 @@ SECTIONS
     /*/
     .text : {
         PROVIDE(_text_start = .);
-        *(.text .text.*)
+        *(.text .text.*)            /* 匹配所有目标文件中的 .text 和 .text.* 节 */
         PROVIDE(_text_end = .);
     } >ram
 

@@ -14,6 +14,7 @@
 
 // #define VIRT_CPUS_MAX 8
 #define MAXNUM_CPU 8
+#define STACK_SIZE 1024 // 1KB stack size for each CPU
 
 /* used in os.ld */
 #define LENGTH_RAM 128 * 1024 * 1024 // = 128MB
