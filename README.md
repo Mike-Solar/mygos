@@ -4,6 +4,30 @@
 
 ---
 
+### 项目目录
+
+```plaintext
+.
+├── src/
+│   ├── start.S
+│   ├── mem.S
+│   ├── entry.S
+│   ├── kernel.c
+│   ├── io/
+│   ├── tasks/
+│   └── ...
+├── include/
+│   └── *.h
+├── build/
+│   └── (中间文件与输出文件)
+├── os.ld         # 链接脚本
+├── gdbinit       # 调试脚本
+└── Makefile
+
+```
+
+---
+
 ### 缩写速查
 
 | 缩写  | 英文全称                                    | 中文全称             | 功能描述                                                            |
@@ -17,7 +41,9 @@
 | HART  | Hardware Thread                             | 硬件线程（处理器核） | 表示一个逻辑 CPU 核心，在 RISC-V 中 hart 是并行执行单元的基本单位。 |
 | GPR   | General Purpose Register                    | 通用寄存器           | 用于存储临时数据和计算结果的寄存器。                                |
 | CSR   | Control and Status Register                 | 控制与状态寄存器     | 用于控制和监视 CPU 状态的特殊寄存器。                               |
-| MMIO  |
+| MMIO  | Memory-Mapped I/O                           | 内存映射 I/O         | 将外设寄存器映射到内存地址空间，允许通过内存访问外设。              |
+| ABI   | Application Binary Interface                | 应用程序二进制接口   | 定义程序与操作系统之间的接口规范，包括系统调用约定等。              |
+| BIOS  | Basic Input/Output System                   | 基本输入输出系统     | 启动计算机时加载操作系统的固件，通常在虚拟机中不使用。              |
 
 ---
 
