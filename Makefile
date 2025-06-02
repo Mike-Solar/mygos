@@ -4,7 +4,7 @@
 SRCS_ASM =               \
     ./src/start.S        \
     ./src/mem.S          \
-    ./src/entry.S        \
+    ./src/trap/entry.S   \
 
 SRCS_C =                 \
     ./src/kernel.c       \
@@ -19,7 +19,8 @@ SRCS_C =                 \
     ./src/page.c         \
     ./src/sched.c        \
     ./src/user.c         \
-    ./src/trap.c         \
+    ./src/trap/trap.c    \
+    ./src/trap/trap_handler.c    \
     ./src/timer.c        \
     ./src/lock.c         \
 # ./src/riscv.c
