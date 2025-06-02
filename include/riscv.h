@@ -5,7 +5,6 @@
 #ifndef __RISCV_H__
 #define __RISCV_H__
 
-
 #include "types.h"
 
 

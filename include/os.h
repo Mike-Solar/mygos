@@ -22,12 +22,6 @@ extern void panic(char* s);
 extern void* page_alloc(int npages);
 extern void  page_free(void* p);
 
-/* task management */
-extern int  task_create(void (*task)(int));
-extern void task_delete(int task_id);
-extern void task_delay(volatile int count);
-extern void task_yield();
-
 /* plic */
 extern int  plic_claim(void);
 extern void plic_complete(int irq);

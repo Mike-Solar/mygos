@@ -13,6 +13,7 @@
 /*/
 
 #define MAXNUM_CPU 8                 // 最大 CPU 数量，QEMU virt 机器支持最多 8 个 CPU 核心
+#define MAX_TASKS 10                 // 编号 0 - 9
 #define STACK_SIZE 1024              // 每个 CPU 的栈大小为 1024 字节（1KB）
 #define LENGTH_RAM 128 * 1024 * 1024 // = 128MB
 #define SIZE_REG 4                   // 每个寄存器大小为 4 字节（32 位寄存器）
