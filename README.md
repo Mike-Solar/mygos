@@ -26,7 +26,20 @@
 
 ```
 
-### 内存空间
+### platform.h
+
+## MemoryMap
+
+see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
+
+| 地址范围     | 设备        | 描述                                |
+| ------------ | ----------- | ----------------------------------- |
+| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
+| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
+| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
+| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
+| `0x10001000` | virtio disk | 虚拟磁盘                            |
+| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
 
 ```plaintext
 

@@ -25,14 +25,10 @@ trap_handler(reg_t epc, reg_t cause)
             *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 通过清除 mip 中的 MSIP 位来确认软中断。
             schedule();
 
-            break;
-
         case MCAUSE_MACHINE_TIMER_INTERRUPT:
             // 机器模式定时器中断
             uart_puts("timer interruption!\n");
             timer_handler();
-
-            break;
 
         case MCAUSE_MACHINE_EXTERNAL_INTERRUPT:
             // 机器模式外部中断

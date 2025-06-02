@@ -12,36 +12,11 @@
  * see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 /*/
 
-// #define VIRT_CPUS_MAX 8
-#define MAXNUM_CPU 8
-#define STACK_SIZE 1024 // 1KB stack size for each CPU
-
-/* used in os.ld */
+#define MAXNUM_CPU 8                 // 最大 CPU 数量，QEMU virt 机器支持最多 8 个 CPU 核心
+#define STACK_SIZE 1024              // 每个 CPU 的栈大小为 1024 字节（1KB）
 #define LENGTH_RAM 128 * 1024 * 1024 // = 128MB
-
-
-#define SIZE_REG 4 // 每个寄存器大小为 4 字节（32 位寄存器）
-
-
-/*/
-
-MemoryMap
-see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
-
-| 地址范围     | 设备        | 描述                                |
-| ------------ | ----------- | ----------------------------------- |
-| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
-| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
-| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
-| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
-| `0x10001000` | virtio disk | 虚拟磁盘                            |
-| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
-
-/*/
-
-/* This machine puts UART registers here in physical memory. */
-/* 指定 UART0 的物理地址，内核通过它进行字符收发。*/
-#define UART0 0x10000000L
+#define SIZE_REG 4                   // 每个寄存器大小为 4 字节（32 位寄存器）
+#define UART0 0x10000000L            // 指定 UART0 的物理地址，内核通过它进行字符收发。
 
 
 /*/
@@ -85,8 +60,8 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 
 
 /*/
- * The Core Local Interruptor (CLINT) block holds memory-mapped control and status registers associated with software and timer interrupts.
- * QEMU-virt reuses sifive configuration for CLINT.
+ * CLINT（核心本地中断控制器）模块包含与软件中断和定时器中断相关的内存映射控制寄存器和状态寄存器。
+ * QEMU 的 virt 虚拟机平台复用了 SiFive 的 CLINT 配置方式。
  * see https://gitee.com/qemu/qemu/blob/master/include/hw/riscv/sifive_clint.h
  *
  * enum {
@@ -99,18 +74,6 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  * 	SIFIVE_CLINT_TIMEBASE_FREQ = 10000000 // CLINT 的时间基准频率是 10MHz（1 秒 = 10⁷ 个计时周期）。
  * };
  *
- * Notice:
- * The machine-level MSIP bit of mip register are written by accesses to memory-mapped control registers, which are used by remote harts to provide machine-mode inter-processor interrupts.
- * For QEMU-virt machine, Each msip register is a 32-bit wide WARL register
- * where the upper 31 bits are tied to 0. The least significant bit is
- * reflected in the MSIP bit of the mip CSR. We can write msip to generate
- * machine-mode software interrupts. A pending machine-level software
- * interrupt can be cleared by writing 0 to the MSIP bit in mip.
- * On reset, each msip register is cleared to zero.
- *
- *
- * CLINT（核心本地中断控制器）模块包含与软件中断和定时器中断相关的内存映射控制寄存器和状态寄存器。
- * QEMU 的 virt 虚拟机平台复用了 SiFive 的 CLINT 配置方式。
  *
  * 注意：
  * mip 寄存器中的 machine-level 软件中断位（MSIP） 是通过访问内存映射的控制寄存器写入的。
