@@ -25,29 +25,9 @@ SRCS_C =                 \
 # ./src/riscv.c
 
 
-# Common part for the Makefile.
-# This file will be included by the Makefile of each project.
-
-# Custom Macro Definition (Common part)
-
-# Define macros for conditional compilation.
-# Support customization in the Makefile files for each project separately.
-# And also support customization in common.mk
-
-# Makefile 的通用部分。
-# 此文件将包含在每个项目的 Makefile 中。
-# 自定义宏定义 （公共部分）
-# 定义用于条件编译的宏。
-# 支持在每个项目的 Makefile 文件中单独进行自定义。
-# 并且还支持 common.mk 中的自定义
-
 # 支持“是否启用系统调用”这一功能的可配置编译
-ifeq (${SYSCALL}, y)
-    DEFS += -DCONFIG_SYSCALL
-endif
-
 # 之后可以继续追加宏定义
-DEFS +=
+# DEFS += -DCONFIG_SYSCALL
 
 
 # 分别定义交叉编译器、二进制拷贝工具、反汇编工具
@@ -88,11 +68,13 @@ QFLAGS += -machine virt
 QFLAGS += -bios none
 
 
-# 调试
 # 多架构 GDB，用于调试非本地架构（如 RISC-V）
 GDB = gdb-multiarch
 GDBINIT = ./gdbinit
 
+# 是否使用链接脚本（默认是 true）
+USE_LINKER_SCRIPT ?= true
+LDFILE = ./os.ld
 
 # 定义创建目录和删除文件的命令（用于兼容性和可维护性）
 MKDIR = mkdir -p
@@ -100,23 +82,18 @@ RM = rm -rf
 
 # 所有编译生成的文件都会放到 build/ 目录下
 OUTPUT_PATH = ./build/
+ELF = ${OUTPUT_PATH}/os.elf
+BIN = ${OUTPUT_PATH}/os.bin
 
-
-# 生成的目标文件
 # 最终目标文件（汇编 + C 文件）合并为一个变量 OBJS，稍后用于链接整个程序
 OBJS_ASM := $(addprefix ${OUTPUT_PATH}/, $(patsubst %.S, %.o, ${SRCS_ASM}))
 OBJS_C   := $(addprefix $(OUTPUT_PATH)/, $(patsubst %.c, %.o, ${SRCS_C}))
 OBJS = ${OBJS_ASM} ${OBJS_C}
 
-# 定义最终链接得到的 ELF 可执行文件
-# 使用 objcopy 把 ELF 文件转换为裸二进制文件
-ELF = ${OUTPUT_PATH}/os.elf
-BIN = ${OUTPUT_PATH}/os.bin
 
 # 链接脚本
 # ?= 是 Make 的条件赋值语法，表示如果 USE_LINKER_SCRIPT 没有被外部环境或命令行定义，则默认为 true
 # 默认使用链接脚本进行链接
-USE_LINKER_SCRIPT ?= true
 ifeq (${USE_LINKER_SCRIPT}, true)
     # 表示链接时使用这个生成的 linker script 来安排内存布局（非常关键，比如 .text, .data, .bss 等段放在哪些地址）
     LDFLAGS = -T ${OUTPUT_PATH}/os.ld.generated
@@ -128,6 +105,9 @@ endif
 
 # Makefile 的默认目标
 # 当只输入 make 时，等同于 make all
+# all 依赖于两个其他目标：${OUTPUT_PATH} 和 ${ELF}
+# 这意味着，在构建 all 目标之前，make 会先确保 ${OUTPUT_PATH} 和 ${ELF} 这两个目标已经被正确生成
+# 如果它们还没有生成，make 会自动查找并执行相应的规则来创建它们。
 .DEFAULT_GOAL := all
 all: ${OUTPUT_PATH} ${ELF}
 
@@ -135,38 +115,30 @@ all: ${OUTPUT_PATH} ${ELF}
 # 确保输出目录存在，如果不存在则创建
 # @ 表示不在终端打印命令本身，只执行
 ${OUTPUT_PATH}:
-	@${MKDIR} $@
+	@${MKDIR} ${OUTPUT_PATH}
 
-# start.o must be the first in dependency!
-#
-# For USE_LINKER_SCRIPT == true, before do link, run preprocessor manually for
-# linker script.
-# -E specifies GCC to only run preprocessor
-# -P prevents preprocessor from generating linemarkers (#line directives)
-# -x c tells GCC to treat your linker script as C source file
 
 # 构建最终可执行文件（ELF）
 # build/os.elf 依赖于所有 .o 目标文件（C 和汇编），变量 ${OBJS} 包含这些目标文件路径
 ${ELF}: ${OBJS}
-ifeq (${USE_LINKER_SCRIPT}, true)
-# 如果启用链接脚本（默认是 true）
-# 用 GCC 先预处理 ./os.ld，生成实际使用的 build/os.ld.generated
-# -E：只运行预处理器，不编译。
-# -P：不输出 #line 行号信息。
-# -x c：把 .ld 文件当作 C 源代码进行预处理，这样可以使用 #define 等预处理语法。
-# ${DEFS} 是一些宏定义（如 -DCONFIG_SYSCALL），会参与预处理。
-	${CC} -E -P -x c ${DEFS} ${CFLAGS} ./os.ld > ${OUTPUT_PATH}/os.ld.generated
 
+    # 如果启用链接脚本（默认是 true）
+    # 用 GCC 先预处理 ./os.ld，生成实际使用的 build/os.ld.generated
+    # -E：只运行预处理器，不编译。
+    # -P：不输出 #line 行号信息。
+    # -x c：把 .ld 文件当作 C 源代码进行预处理，这样可以使用 #define 等预处理语法。
+    # ${DEFS} 是一些宏定义（如 -DCONFIG_SYSCALL），会参与预处理。
+ifeq (${USE_LINKER_SCRIPT}, true)
+	${CC} -E -P -x c ${DEFS} ${CFLAGS} ${LDFILE} > ${OUTPUT_PATH}/os.ld.generated
 endif
 
-# 调用链接器（通过 GCC 调用）来生成 ELF 可执行文件
-# LDFLAGS 指定了链接脚本或链接地址
-# $^ 是所有依赖（即 ${OBJS}），$@ 是目标（即 ${ELF}）
-	${CC} ${CFLAGS} ${LDFLAGS} -o ${ELF} $^
-# 把 ELF 格式的可执行文件转为裸二进制 os.bin，用于加载到内存运行
+    # 调用链接器（通过 GCC 调用）来生成 ELF 可执行文件
+    # 把 ELF 格式的可执行文件转为裸二进制 os.bin，用于加载到内存运行
+	${CC} ${CFLAGS} ${LDFLAGS} -o ${ELF} ${OBJS}
 	${OBJCOPY} -O binary ${ELF} ${BIN}
 
 # 编译 C 文件的规则
+# 只要有一个 .o 文件依赖于同名 .c 文件，就用这条规则编译
 # 匹配规则：把每个 .c 文件编译为对应的 .o 文件。
 # mkdir -p $(dir $@)：确保 .o 文件输出的目录存在。
 # $<：表示第一个依赖（也就是 .c 文件）
