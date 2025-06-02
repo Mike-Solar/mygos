@@ -5,16 +5,16 @@
 
 
 // Following global vars are defined in mem.S
-extern ptr_t TEXT_START;
-extern ptr_t TEXT_END;
-extern ptr_t DATA_START;
-extern ptr_t DATA_END;
-extern ptr_t RODATA_START;
-extern ptr_t RODATA_END;
-extern ptr_t BSS_START;
-extern ptr_t BSS_END;
-extern ptr_t HEAP_START;
-extern ptr_t HEAP_SIZE;
+extern ptr_t TEXT_START;   // 程序代码段起始地址
+extern ptr_t TEXT_END;     // 程序代码段结束地址
+extern ptr_t DATA_START;   // 数据段起始地址
+extern ptr_t DATA_END;     // 数据段结束地址
+extern ptr_t RODATA_START; // 只读数据段起始地址
+extern ptr_t RODATA_END;   // 只读数据段结束地址
+extern ptr_t BSS_START;    // BSS 段起始地址
+extern ptr_t BSS_END;      // BSS 段结束地址
+extern ptr_t HEAP_START;   // 堆起始地址
+extern ptr_t HEAP_SIZE;    // 堆大小
 
 /*/
  * _alloc_start points to the actual(实际的) start address of heap pool
