@@ -29,11 +29,11 @@
  *
  * we don't save t6 here, due to we have used
  * it as base, we have to save t6 in an extra step
- * outside of reg_save
+ * outside of SAVE_REG
  * 不在这里保存 t6，因为 t6 已被用作 base 参数，
- * 所以必须在 reg_save 之外单独保存 t6
+ * 所以必须在 SAVE_REG 之外单独保存 t6
 /*/
-.macro reg_save base
+.macro SAVE_REG base
     sw ra,   TASK_CONTEXT_RA_OFFSET(\base)
     sw sp,   TASK_CONTEXT_SP_OFFSET(\base)
     sw t0,   TASK_CONTEXT_T0_OFFSET(\base)
@@ -118,7 +118,7 @@
 /*/
  * 保存/恢复过程需要注意的事项：
  * - 使用 CSR 寄存器 mscratch 存放 **当前任务上下文的指针**
- * - 使用 t6 作为 reg_save/LOAD_REG 的 base，因为 t6 是编号最高的寄存器（x31），在加载期间不会被覆盖
+ * - 使用 t6 作为 SAVE_REG/LOAD_REG 的 base，因为 t6 是编号最高的寄存器（x31），在加载期间不会被覆盖
  * - 注意：mscratch 不能被当作 base 来直接进行 load/store 操作，因为这些指令只能使用通用寄存器
 /*/
 
@@ -150,14 +150,14 @@ switch_to:
 trap_vector:
 
     // 保存当前任务的寄存器上下文到 mscratch
-    csrrw       t6, mscratch, t6    // 交换 t6 和 mscratch 的值
-    reg_save    t6                  // 保存当前任务的寄存器上下文到 t6 指向的地址
-    mv          t5, t6              // t5 指向当前任务上下文
-    csrr        t6, mscratch        // 从 mscratch 中读取 t6
+    csrrw       t6, mscratch, t6                // 交换 t6 和 mscratch 的值
+    SAVE_REG    t6                              // 保存当前任务的寄存器上下文到 t6 指向的地址
+    mv          t5, t6                          // t5 指向当前任务上下文
+    csrr        t6, mscratch                    // 从 mscratch 中读取 t6
     sw          t6,  TASK_CONTEXT_T6_OFFSET(t5) // 将 t6 保存到上下文中的 t6 位置
-	csrr	    a0, mepc            // 获取异常发生时的程序计数器（mepc）：保存异常/中断发生时要返回的指令地址
+	csrr	    a0, mepc                        // 获取异常发生时的程序计数器（mepc）：保存异常/中断发生时要返回的指令地址
 	sw	        a0,  TASK_CONTEXT_PC_OFFSET(t5) // 存到上下文结构体中
-    csrw        mscratch, t5        // 将 mscratch 恢复为当前任务的上下文指针
+    csrw        mscratch, t5                    // 将 mscratch 恢复为当前任务的上下文指针
 
 
     // 在 trap.c 中调用 C 语言的异常处理函数
