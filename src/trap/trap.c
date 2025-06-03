@@ -2,12 +2,9 @@
 // trap.c
 
 #include "os.h"
+
 #include "platform.h"
 #include "riscv.h"
-
-
-extern void trap_vector(void);
-extern void uart_isr(void);
 
 
 void

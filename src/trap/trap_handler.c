@@ -6,10 +6,6 @@
 #include "riscv.h"
 
 
-extern void schedule(void);
-extern void timer_handler(void);
-extern void external_interrupt_handler(void);
-
 // __attribute__((naked)) // naked 函数不需要栈帧
 reg_t
 trap_handler(reg_t epc, reg_t cause)

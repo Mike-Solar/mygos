@@ -2,11 +2,9 @@
 // timer.c
 
 #include "os.h"
+
 #include "platform.h"
 #include "riscv.h"
-
-
-extern void schedule(void);
 
 
 // interval ~= 1s
@@ -18,6 +16,7 @@ static uint32_t _tick = 0;
 // 定义计时器列表
 #define MAX_TIMER 10
 static struct timer timer_list[MAX_TIMER];
+
 
 // load timer interval(in ticks) for next timer interrupt.
 // 加载下一个定时器中断的时间间隔（以计时周期为单位）

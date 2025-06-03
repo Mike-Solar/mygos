@@ -39,6 +39,17 @@ uint32_t printf(const char* s, ...);      // 格式化输出到串口，类似�
 void     panic(char* s);                  // 输出错误信息并进入死循环
 
 
+// 异常/中断处理相关函数声明
+
+extern void trap_vector(void);              // 异常/中断向量表入口函数，处理各种异常和中断
+
+void  trap_init();                          // 初始化异常/中断处理
+reg_t trap_handler(reg_t epc, reg_t cause); // 异常/中断处理函数，处理同步和异步异常/中断
+
+void external_interrupt_handler();          // 外部中断处理函数，处理来自 PLIC 的中断请求
+void timer_handler();                       // 机器模式定时器中断处理函数，处理定时器中断
+
+
 /* memory management */
 extern void* page_alloc(int npages);
 extern void  page_free(void* p);
@@ -47,6 +58,7 @@ extern void  page_free(void* p);
 /* lock */
 extern int spin_lock(void);
 extern int spin_unlock(void);
+
 
 /* software timer */
 extern struct timer* timer_create(void (*handler)(void* arg), void* arg, uint32_t timeout);
