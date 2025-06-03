@@ -71,7 +71,7 @@
  * ra = base->ra;
  * ......
 /*/
-.macro reg_restore base
+.macro LOAD_REG base
     lw ra,   TASK_CONTEXT_RA_OFFSET(\base)
     lw sp,   TASK_CONTEXT_SP_OFFSET(\base)
     lw t0,   TASK_CONTEXT_T0_OFFSET(\base)
@@ -116,16 +116,9 @@
 
 
 /*/
- * Something to note about save/restore:
- * - We use mscratch to hold a pointer to context of current task
- * - We use t6 as the 'base' for reg_save/reg_restore, because it is the
- *   very bottom register (x31) and would not be overwritten during loading.
- *   Note: CSRs(mscratch) can not be used as 'base' due to load/restore
- *   instruction only accept general purpose registers.
- *
  * 保存/恢复过程需要注意的事项：
  * - 使用 CSR 寄存器 mscratch 存放 **当前任务上下文的指针**
- * - 使用 t6 作为 reg_save/reg_restore 的 base，因为 t6 是编号最高的寄存器（x31），在加载期间不会被覆盖
+ * - 使用 t6 作为 reg_save/LOAD_REG 的 base，因为 t6 是编号最高的寄存器（x31），在加载期间不会被覆盖
  * - 注意：mscratch 不能被当作 base 来直接进行 load/store 操作，因为这些指令只能使用通用寄存器
 /*/
 
@@ -141,7 +134,7 @@ switch_to:
     csrw	    mepc, a1            // 写入 mepc 准备跳转到这个地址
 
     mv          t6, a0              // 使用 t6 指向下一个任务的上下文
-    reg_restore t6                  // 恢复下一个任务的所有通用寄存器
+    LOAD_REG    t6                  // 恢复下一个任务的所有通用寄存器
 
     mret                            //mret 表示返回到 mepc 指示的地址
 
@@ -168,19 +161,15 @@ trap_vector:
 
 
     // 在 trap.c 中调用 C 语言的异常处理函数
-    csrr	    a0, mepc
-    csrr        a1, mcause          // 获取异常原因
-    call        trap_handler        // 调用异常处理函数
+    csrr	    a0, mepc            // 获取陷入发生时的程序计数器（mepc）
+    csrr        a1, mcause          // 获取陷入原因
+    call        trap_handler        // 调用陷入处理函数
+    
     csrw        mepc, a0            // trap_handler 会通过 a0 返回返回地址，地址保存在异常发生时的程序计数器 mepc
-
-
-    // 恢复寄存器上下文
     csrr        t6, mscratch        // 重新加载 mscratch 中的上下文指针
-    reg_restore t6                  // 恢复上下文
-
-
-    // 返回到发生异常之前的代码执行位置
-    mret
+    LOAD_REG    t6                  // 恢复上下文
+    
+    mret                            // 返回到发生异常之前的代码执行位置
 
 // end of trap_vector
 
