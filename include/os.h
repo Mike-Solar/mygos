@@ -54,8 +54,8 @@ extern void  page_free(void* p);
 
 
 /* lock */
-extern int spin_lock(void);
-extern int spin_unlock(void);
+void spin_lock(void);
+void spin_unlock(void);
 
 
 /* software timer */

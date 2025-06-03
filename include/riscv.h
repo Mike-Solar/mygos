@@ -10,14 +10,15 @@
 
 /*/ Machine Status Register, mstatus /*/
 // 机器模式状态寄存器，包含当前特权级、全局中断使能等重要状态标志。
-#define MSTATUS_MPP (3 << 11) // 0b 00000000 00000000 00011000 00000000
-#define MSTATUS_SPP (1 << 8)  // 0b 00000000 00000000 00000001 00000000
-#define MSTATUS_MPIE (1 << 7) // 0b 00000000 00000000 00000000 10000000
-#define MSTATUS_SPIE (1 << 5) // 0b 00000000 00000000 00000000 00100000
-#define MSTATUS_UPIE (1 << 4) // 0b 00000000 00000000 00000000 00010000
-#define MSTATUS_MIE (1 << 3)  // 0b 00000000 00000000 00000000 00001000
-#define MSTATUS_SIE (1 << 1)  // 0b 00000000 00000000 00000000 00000010
-#define MSTATUS_UIE (1 << 0)  // 0b 00000000 00000000 00000000 00000001
+#define MSTATUS_MPP (3 << 11) // | MPP  | Machine Previous Privilege           | 上次特权级（M 模式中） | 表示陷入中断前的特权级。                               |
+#define MSTATUS_SPP (1 << 8)  // | SPP  | Supervisor Previous Privilege        | 上次特权级（S 模式中） | 表示陷入中断前的特权级。                               |
+#define MSTATUS_FS (3 << 13)  // | FS   | Floating-point Status                | 浮点状态               | 表示当前浮点单元的状态（禁用、初始、已启用）。         |
+#define MSTATUS_MPIE (1 << 7) // | MPIE | Machine Previous Interrupt Enable    | 上次中断使能（M 模式） | 表示陷入中断前的全局中断使能状态。                     |
+#define MSTATUS_SPIE (1 << 5) // | SPIE | Supervisor Previous Interrupt Enable | 上次中断使能（S 模式） | 表示陷入中断前的全局中断使能状态。                     |
+#define MSTATUS_UPIE (1 << 4) // | UPIE | User Previous Interrupt Enable       | 上次中断使能（U 模式） | 表示陷入中断前的全局中断使能状态。                     |
+#define MSTATUS_MIE (1 << 3)  // | MIE  | Machine Interrupt Enable             | 机器模式中断使能       | 表示当前的全局中断使能状态。                           |
+#define MSTATUS_SIE (1 << 1)  // | SIE  | Supervisor Interrupt Enable          | 监督模式中断使能       | 表示当前的全局中断使能状态。                           |
+#define MSTATUS_UIE (1 << 0)  // | UIE  | User Interrupt Enable                | 用户模式中断使能       | 表示当前的全局中断使能状态。                           |
 
 /* Machine-mode Interrupt Enable */
 // 机器模式中断使能寄存器，控制各类中断的使能状态。
