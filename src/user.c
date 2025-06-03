@@ -6,17 +6,17 @@
 
 
 // tasks
-extern void task_count30(uint32_t id);
-extern void task_count50(uint32_t id);
-extern void task_count70(uint32_t id);
+extern void task_count30();
+extern void task_count50();
+extern void task_count70();
 
-extern void user_task0(uint32_t id);
-extern void user_task1(uint32_t id);
-extern void user_task_lock(uint32_t id);
+extern void user_task0();
+extern void user_task1();
+extern void user_task_lock();
 
-extern void task_timer(uint32_t id);
+extern void task_timer();
 
-extern void page_test(uint32_t id);
+extern void page_test();
 
 
 void
