@@ -92,6 +92,4 @@ page_test(uint32_t id)
     printf("\n");
 
     print_delete_task(id, "Page Test");
-
-    task_delete(id);
 }

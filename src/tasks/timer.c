@@ -25,5 +25,4 @@ task_timer(int id)
     timer_create(on_shot, 0, 10); // 10 ticks 后触发一次
 
     print_delete_task(id, "Task Timer");
-    task_delete(id); // 删除任务 Timer
 }

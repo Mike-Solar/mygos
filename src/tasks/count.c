@@ -2,15 +2,16 @@
 // tasks.c
 
 #include "os.h"
+#include "riscv.h"
 #include "utils.h"
 
 
 // #define USE_LOOP
 
 void
-task_count30(int id)
+task_count30()
 {
-    print_create_task(id, (reg_t)task_count30, "Task Count 30");
+    print_create_task(r_mscratch(), (reg_t)task_count30, "Task Count 30");
 
     int loop_count = 0;
 
@@ -22,8 +23,6 @@ task_count30(int id)
             uart_puts("Task Count 30: Resetting loop count to 0!\n");
             loop_count = 0;
 #else
-            print_delete_task(id, "Task Count 30");
-            task_delete(id); // 删除任务 Count 30
             break;
 #endif
         }
@@ -31,12 +30,14 @@ task_count30(int id)
 
         task_delay(DELAY);
     }
+
+    printf("Task Count 30: Finished!\n");
 }
 
 void
-task_count50(int id)
+task_count50()
 {
-    print_create_task(id, (reg_t)task_count50, "Task Count 50");
+    print_create_task(r_mscratch(), (reg_t)task_count50, "Task Count 50");
 
     int loop_count = 0;
 
@@ -48,8 +49,6 @@ task_count50(int id)
             uart_puts("Task Count 50: Resetting loop count to 0!\n");
             loop_count = 0;
 #else
-            print_delete_task(id, "Task Count 50");
-            task_delete(id); // 删除任务 Count 50
             break;
 #endif
         }
@@ -57,12 +56,14 @@ task_count50(int id)
 
         task_delay(DELAY);
     }
+
+    printf("Task Count 50: Finished!\n");
 }
 
 void
-task_count70(int id)
+task_count70()
 {
-    print_create_task(id, (reg_t)task_count70, "Task Count 70");
+    print_create_task(r_mscratch(), (reg_t)task_count70, "Task Count 70");
 
     int loop_count = 0;
 
@@ -74,8 +75,6 @@ task_count70(int id)
             uart_puts("Task Count 70: Resetting loop count to 0!\n");
             loop_count = 0;
 #else
-            print_delete_task(id, "Task Count 70");
-            task_delete(id); // 删除任务 Count 70
             break;
 #endif
         }
@@ -83,4 +82,6 @@ task_count70(int id)
 
         task_delay(DELAY);
     }
+
+    printf("Task Count 70: Finished!\n");
 }

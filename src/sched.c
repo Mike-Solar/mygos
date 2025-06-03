@@ -48,22 +48,21 @@ task_yield()
 
 // 创建一个新任务，传入任务函数指针
 int32_t
-task_create(void (*start_routine)(uint32_t))
+task_create(void (*start_routine)())
 {
     // 保证任务数量不超过最大值
     if(_task_count >= MAX_TASKS) return -1;
 
-    for(uint32_t i = 0; i < MAX_TASKS; i++)
+    for(uint32_t i = 0; i < MAX_TASKS; i++) // 找到一个未使用的任务上下文
     {
-        if(task_contexts[i].flags == 0) // 找到一个未使用的任务上下文
+        if(task_contexts[i].flags == 0)
         {
-
-            task_contexts[i].pc    = (reg_t)(start_routine);              // 设置返回地址为任务入口函数
+            task_contexts[i].ra    = (reg_t)(task_delete_current);        // 设置返回地址为任务删除函数
+            task_contexts[i].pc    = (reg_t)(start_routine);              // 设置任务入口函数地址到 pc 寄存器
             task_contexts[i].sp    = (reg_t)(&task_stack[i][STACK_SIZE]); // 设置栈指针为任务栈的顶部
-            task_contexts[i].a0    = i;                                   // 将任务 ID 传递给任务入口函数，作为第一个参数
             task_contexts[i].flags = 1;                                   // 设置任务标志位为 1，表示任务已创建
 
-            printf("Task[%d] Created: sp = 0x%08x, pc = 0x%08x\n", i, task_contexts[i].sp, task_contexts[i].pc);
+            printf("Task[%d] Created: ra = %p, sp = %p, pc = %p\n", i, task_contexts[i].ra, task_contexts[i].sp, task_contexts[i].pc);
 
             _task_count++; // 增加活动任务数
             break;
@@ -73,27 +72,35 @@ task_create(void (*start_routine)(uint32_t))
     return 0;
 }
 
+
 // 删除指定任务
 void
-task_delete(uint32_t task_id)
+task_delete(task_context_ptr task_context_ptr)
 {
-    if(task_id < 0 || task_id >= MAX_TASKS) // 检查任务 ID 是否有效
+    // 检查任务上下文指针是否有效，或者任务是否已被删除
+    if(!task_context_ptr || task_context_ptr->flags == 0)
     {
-        panic("Invalid task ID!");
-        return;
+        printf("Task not found!");
     }
-    else if(task_contexts[task_id].flags == 0) // 检查任务是否存在
+    else
     {
-        panic("Task not found!");
-        return;
+        printf("Deleting Task: %p\n", task_context_ptr);
+
+        task_context_ptr->flags = 0; // 将任务标志位设置为 0，表示任务已删除
+        _task_count--;               // 减少活动任务数
+
+        printf("Task[%d] Deleted\n", task_context_ptr - task_contexts);
     }
 
-    task_contexts[task_id].flags = 0; // 将任务标志位设置为 0，表示任务已删除
-    _task_count--;                    // 减少活动任务数
+    // 如果当前任务是被删除的任务，触发一次任务切换，调度到其他任务
+    if(r_mscratch() == (reg_t)task_context_ptr) task_yield();
+}
 
-    printf("Task[%d] Deleted\n", task_id);
-
-    task_yield(); // 触发一次任务切换，确保删除的任务不会被调度到
+// 删除当前任务
+void
+task_delete_current()
+{
+    task_delete(&task_contexts[_current]);
 }
 
 /*/

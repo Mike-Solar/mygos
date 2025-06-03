@@ -9,14 +9,15 @@
 
 // 任务调度器相关函数声明
 
-extern void switch_to(struct task_context* next_task); // 切换到下一个任务的上下文
+extern void switch_to(task_context_ptr next_task);      // 切换到下一个任务的上下文
 
-void    sched_init();                                  // 初始化调度器
-void    schedule();                                    // 任务轮转调度
-void    task_yield();                                  // 任务主动让出 CPU，允许其他任务运行
-int32_t task_create(void (*task)(uint32_t));           // 创建一个新任务，传入任务函数指针
-void    task_delete(uint32_t task_id);                 // 删除指定任务
-void    task_delay(volatile int count);                // 延迟执行，消耗 CPU 时间
+void    sched_init();                                   // 初始化调度器
+void    schedule();                                     // 任务轮转调度
+void    task_yield();                                   // 任务主动让出 CPU，允许其他任务运行
+int32_t task_create(void (*task)());                    // 创建一个新任务，传入任务函数指针
+void    task_delete(task_context_ptr task_context_ptr); // 删除指定任务
+void    task_delete_current();                          // 删除当前任务
+void    task_delay(volatile int count);                 // 延迟执行，消耗 CPU 时间
 
 
 // io 相关函数声明
