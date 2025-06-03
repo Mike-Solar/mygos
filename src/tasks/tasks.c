@@ -2,15 +2,16 @@
 // tasks.c
 
 #include "os.h"
+#include "riscv.h"
 #include "utils.h"
 
 
 void
-user_task0(int id)
+user_task0()
 {
     static int sum = 0;
 
-    print_create_task(id, (reg_t)user_task0, "Task 0");
+    print_create_task(r_mscratch(), (reg_t)user_task0, "Task 0");
     while(1)
     {
         printf("Task 0: sum = %d\n", sum);
@@ -27,11 +28,11 @@ user_task0(int id)
 }
 
 void
-user_task1(int id)
+user_task1()
 {
     static int product = 1;
 
-    print_create_task(id, (reg_t)user_task1, "Task 1");
+    print_create_task(r_mscratch(), (reg_t)user_task1, "Task 1");
     while(1)
     {
         printf("Task 1: product = %d\n", product);
@@ -49,9 +50,9 @@ user_task1(int id)
 
 #define USE_LOCK
 void
-user_task_lock(int id)
+user_task_lock()
 {
-    print_create_task(id, (reg_t)user_task_lock, "Task Lock");
+    print_create_task(r_mscratch(), (reg_t)user_task_lock, "Task Lock");
     while(1)
     {
 #ifdef USE_LOCK
@@ -68,4 +69,28 @@ user_task_lock(int id)
         spin_unlock();
 #endif
     }
+}
+
+
+void
+page_test()
+{
+    print_create_task(r_mscratch(), (reg_t)page_test, "Page Test");
+
+    void* p1 = page_alloc(2);
+    printf("p1 = %p\n", p1);
+    page_free(p1);
+
+    void* p2 = page_alloc(7);
+    printf("p2 = %p\n", p2);
+
+    void* p3 = page_alloc(4);
+    printf("p3 = %p\n", p3);
+    page_free(p3);
+
+    page_free(p2);
+
+    printf("\n");
+
+    print_delete_task(r_mscratch(), "Page Test");
 }

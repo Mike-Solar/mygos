@@ -2,6 +2,7 @@
 // timer.c
 
 #include "os.h"
+#include "riscv.h"
 #include "utils.h"
 
 
@@ -18,12 +19,11 @@ on_shot()
 
 // 测试计时器
 void
-task_timer(int id)
+task_timer()
 {
-    print_create_task(id, (reg_t)task_timer, "Task Timer");
+    print_create_task(r_mscratch(), (reg_t)task_timer, "Task Timer");
 
     timer_create(on_shot, 0, 10); // 10 ticks 后触发一次
 
-    print_delete_task(id, "Task Timer");
-    task_delete(id); // 删除任务 Timer
+    print_delete_task(r_mscratch(), "Task Timer");
 }

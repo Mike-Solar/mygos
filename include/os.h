@@ -1,21 +1,27 @@
 
 // os.h
 
-#ifndef __OS_H__
-#define __OS_H__
+#pragma once
 
-#include "io.h"
 #include "task.h"
+#include "timer.h"
 
 
 // 任务调度器相关函数声明
 
-void    sched_init();                        // 初始化调度器
-void    schedule();                          // 任务轮转调度
-void    task_yield();                        // 任务主动让出 CPU，允许其他任务运行
-int32_t task_create(void (*task)(uint32_t)); // 创建一个新任务，传入任务函数指针
-void    task_delete(uint32_t task_id);       // 删除指定任务
-void    task_delay(volatile int count);      // 延迟执行，消耗 CPU 时间
+extern void switch_to(task_context_ptr next_task);      // 切换到下一个任务的上下文
+
+void    sched_init();                                   // 初始化调度器
+void    schedule();                                     // 任务轮转调度
+void    task_yield();                                   // 任务主动让出 CPU，允许其他任务运行
+int32_t task_create(void (*task)());                    // 创建一个新任务，传入任务函数指针
+void    task_delete(task_context_ptr task_context_ptr); // 删除指定任务
+void    task_delete_current();                          // 删除当前任务
+void    task_delay(volatile int count);                 // 延迟执行，消耗 CPU 时间
+
+uint32_t         task_get_count();                      // 获取当前活动任务数
+uint32_t         task_get_current();                    // 获取当前任务编号
+task_context_ptr task_get_current_context();            // 获取当前任务的上下文指针
 
 
 // io 相关函数声明
@@ -33,6 +39,17 @@ uint32_t printf(const char* s, ...);      // 格式化输出到串口，类似�
 void     panic(char* s);                  // 输出错误信息并进入死循环
 
 
+// 异常/中断处理相关函数声明
+
+extern void trap_vector(void);              // 异常/中断向量表入口函数，处理各种异常和中断
+
+void  trap_init();                          // 初始化异常/中断处理
+reg_t trap_handler(reg_t epc, reg_t cause); // 异常/中断处理函数，处理同步和异步异常/中断
+
+void external_interrupt_handler();          // 外部中断处理函数，处理来自 PLIC 的中断请求
+void timer_handler();                       // 机器模式定时器中断处理函数，处理定时器中断
+
+
 /* memory management */
 extern void* page_alloc(int npages);
 extern void  page_free(void* p);
@@ -42,18 +59,9 @@ extern void  page_free(void* p);
 extern int spin_lock(void);
 extern int spin_unlock(void);
 
+
 /* software timer */
-extern struct timer* timer_create(void (*handler)(void* arg), void* arg, uint32_t timeout);
-extern void          timer_delete(struct timer* timer);
-
-
-// 计时器
-struct timer
-{
-    void (*func)(void*);   // 回调函数
-    void*    arg;          // 回调函数参数
-    uint32_t timeout_tick; // 超时时间（以 tick 为单位）
-};
-
-
-#endif /* __OS_H__ */
+struct timer* timer_create(void (*handler)(void* arg), void* arg, uint32_t timeout);
+void          timer_delete(struct timer* timer);
+void          timer_check();
+void          timer_load(int interval);

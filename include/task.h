@@ -46,3 +46,6 @@ struct task_context
 
     uint8_t flags;
 };
+
+
+typedef struct task_context* task_context_ptr;

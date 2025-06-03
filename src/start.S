@@ -46,6 +46,6 @@ park:
 // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的。
 .balign 16
 stacks:
-.skip STACK_SIZE * MAXNUM_CPU       // allocate space for all the harts stacks // 为所有 hart 分配堆栈空间
+.skip CPU_STACK_SIZE * MAXNUM_CPU       // allocate space for all the harts stacks // 为所有 hart 分配堆栈空间
 
 .end                                // End of file
