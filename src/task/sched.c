@@ -13,15 +13,8 @@ extern uint32_t            _current;
 extern uint32_t            _task_count;
 
 
-// 初始化调度器
-void
-sched_init()
-{
-    w_mscratch(0);             // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
-    w_mie(r_mie() | MIE_MSIE); // 启用机器模式软件中断
-}
-
 // 任务轮转调度
+extern void switch_to(task_context_ptr next_task); // 切换到下一个任务的上下文
 void
 schedule()
 {
@@ -43,4 +36,14 @@ task_yield()
 {
     /* trigger a machine-level software interrupt */
     *(uint32_t*)CLINT_MSIP(r_mhartid()) = 1; // 通过设置 msip 寄存器的 MSIP 位来触发机器模式软件中断
+}
+
+// 初始化调度器、开始任务调度
+void
+sched_init()
+{
+    w_mscratch(0);             // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
+    w_mie(r_mie() | MIE_MSIE); // 启用机器模式软件中断
+
+    schedule();                // 调用调度函数，开始任务调度
 }

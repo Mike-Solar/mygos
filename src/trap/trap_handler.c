@@ -6,8 +6,10 @@
 #include "platform.h"
 #include "riscv.h"
 
-
-extern void timer_interrupt_handler(); // 定时器中断处理函数
+extern void schedule();                   // 任务轮转调度函数
+extern void task_interrupt_handler();     // 任务切换处理函数，处理机器模式软件中断
+extern void external_interrupt_handler(); // 外部中断处理函数，处理来自 PLIC 的中断请求
+extern void timer_interrupt_handler();    // 定时器中断处理函数
 
 
 // __attribute__((naked)) // naked 函数不需要栈帧
@@ -27,6 +29,7 @@ trap_handler(reg_t epc, reg_t cause)
             // 机器模式软件中断
             uart_puts("software interruption!\n");
             task_interrupt_handler();
+            schedule();
 
             break;
 
@@ -34,6 +37,7 @@ trap_handler(reg_t epc, reg_t cause)
             // 机器模式定时器中断
             uart_puts("timer interruption!\n");
             timer_interrupt_handler();
+            schedule();
 
             break;
 

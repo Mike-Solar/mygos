@@ -12,5 +12,4 @@ void
 task_interrupt_handler()
 {
     *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 通过清除 mip 中的 MSIP 位来确认软中断。
-    schedule();
 }
