@@ -1,7 +1,11 @@
 
 // printf.c
 
+#include "os.h"
+
 #include "io.h"
+#include "types.h"
+
 
 #include <stdarg.h>
 #include <stddef.h>

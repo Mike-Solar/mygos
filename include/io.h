@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "types.h"
-
 
 // Reference:
 //[1]: TECHNICAL DATA ON 16550, http://byterunner.com/16550.html

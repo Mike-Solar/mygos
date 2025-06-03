@@ -50,9 +50,6 @@
 #define MCAUSE_MACHINE_EXTERNAL_INTERRUPT (0x80000000 + 11) // 外部中断（PLIC）
 
 
-// extern void switch_to(struct task_context* next_task); // 切换到下一个任务的上下文
-
-
 /*/ 读取和写入寄存器的内联函数 /*/
 
 static inline reg_t r_tp();             // 读取 线程指针寄存器

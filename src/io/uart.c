@@ -3,6 +3,7 @@
 
 #include "io.h"
 #include "platform.h"
+#include "types.h"
 
 
 // 初始化 UART，配置波特率和数据格式

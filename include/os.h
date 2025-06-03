@@ -1,21 +1,22 @@
 
 // os.h
 
-#ifndef __OS_H__
-#define __OS_H__
+#pragma once
 
-#include "io.h"
 #include "task.h"
+#include "types.h"
 
 
 // 任务调度器相关函数声明
 
-void    sched_init();                        // 初始化调度器
-void    schedule();                          // 任务轮转调度
-void    task_yield();                        // 任务主动让出 CPU，允许其他任务运行
-int32_t task_create(void (*task)(uint32_t)); // 创建一个新任务，传入任务函数指针
-void    task_delete(uint32_t task_id);       // 删除指定任务
-void    task_delay(volatile int count);      // 延迟执行，消耗 CPU 时间
+extern void switch_to(struct task_context* next_task); // 切换到下一个任务的上下文
+
+void    sched_init();                                  // 初始化调度器
+void    schedule();                                    // 任务轮转调度
+void    task_yield();                                  // 任务主动让出 CPU，允许其他任务运行
+int32_t task_create(void (*task)(uint32_t));           // 创建一个新任务，传入任务函数指针
+void    task_delete(uint32_t task_id);                 // 删除指定任务
+void    task_delay(volatile int count);                // 延迟执行，消耗 CPU 时间
 
 
 // io 相关函数声明
@@ -54,6 +55,3 @@ struct timer
     void*    arg;          // 回调函数参数
     uint32_t timeout_tick; // 超时时间（以 tick 为单位）
 };
-
-
-#endif /* __OS_H__ */
