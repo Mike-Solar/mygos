@@ -4,9 +4,37 @@
 //
 // Created by katherinesolar on 25-5-24.
 //
+uint32_t  __attribute__((section(".boot.text"))) be32toh(uint32_t val) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	// 小端主机：需要交换字节序
+	return ((val >> 24) & 0x000000FF) |
+		   ((val >> 8)  & 0x0000FF00) |
+		   ((val << 8)  & 0x00FF0000) |
+		   ((val << 24) & 0xFF000000);
+#else
+	// 大端主机：直接返回原值
+	return val;
+#endif
+}
+uint64_t __attribute__((section(".boot.text"))) be64toh(uint64_t val) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	// 小端主机：需要交换字节序
 
+	return  ((val >> 56) & 0x00000000000000FFLL) |
+			((val >> 40) & 0x000000000000FF00LL) |
+			((val >> 24) & 0x0000000000FF0000LL) |
+			((val >> 8)  & 0x00000000FF000000LL) |
+			((val << 8)  & 0x000000FF00000000LL) |
+			((val << 24) & 0x0000FF0000000000LL) |
+			((val << 40) & 0x00FF000000000000LL) |
+			((val >> 56) & 0xFF00000000000000LL);
+#else
+	// 大端主机：直接返回原值
+	return val;
+#endif
+}
 //解析设备树
-void parse_device_tree(struct fdt_header* header) {
+void __attribute__((section(".boot.text"))) parse_device_tree(struct fdt_header* header) {
 	if (be32toh(header->magic) != 0xd00dfeed) {
 	}
 	// 获取关键偏移量
@@ -57,7 +85,7 @@ void parse_device_tree(struct fdt_header* header) {
 }
 struct memory memory;
 // 假设父节点定义了 #address-cells=2 和 #size-cells=2
-void parse_memory_reg(void *data, uint32_t len) {
+void __attribute__((section(".boot.text"))) parse_memory_reg(void *data, uint32_t len) {
 	uint64_t *reg = (uint64_t*)data;
 	memory.base = be64toh(reg[0]); // 内存起始地址
 	memory.size = be64toh(reg[1]); // 内存大小

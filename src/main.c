@@ -1,13 +1,11 @@
 //
 // Created by katherinesolar on 25-5-23.
 //
-#include <sbi_console.h>
-#include <sbi_init.h>
 #include "kmemory.h"
 #include "page.h"
 #include "device_tree_parser.h"
-int kernel_main(void *dtd) {
-	sbi_init(dtd);
+
+int __attribute__((section(".boot.text"))) kernel_init(void *dtd) {
 	parse_device_tree(dtd);
 	page_count=memory.size / PAGE_SIZE;
 	// 初始化物理页帧分配器

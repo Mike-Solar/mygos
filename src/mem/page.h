@@ -33,7 +33,7 @@ struct page {
 	struct list_head list;         // 空闲链表节点（嵌入到free_area的链表中）
 	uint64_t pfn;                  // 页帧号（Page Frame Number）
 };
-extern uint64_t page_count=0;
+extern uint64_t page_count;
 struct free_area {
 	struct list_head free_list;
 	uint64_t nr_free;
@@ -41,7 +41,8 @@ struct free_area {
 struct zone {
 	struct free_area free_area[  MAX_ORDER+1];
 };
-extern struct zone memory_zone;
+extern struct zone memory_zone_phys;
+extern struct zone *memory_zone;
 void enable_paging(uint64_t* pagetable);
 void map_kernel_identity(uint64_t* pagetable);
 void phys_mem_init();

@@ -1,11 +1,26 @@
 cmake_minimum_required(VERSION 3.8)
 project(mygos)
 
-set(CMAKE_EXE_LINKER_FLAGS -T link_script_riscv.ld -nostdlib)
+set(CMAKE_EXE_LINKER_FLAGS "-T ${CMAKE_SOURCE_DIR}/link_script_riscv.ld -nostdlib -fPIC")
 set(SRC_LIST src/algs/kstring.c
         src/algs/kstring.h
         src/io/kput.S
         src/io/io.h
+        src/io/plic.c
+        src/io/printk.c
+        src/io/trap_handler.c
+        src/io/uart.c
+        src/task/sched.c
+        src/task/task.c
+        src/task/trap_handler.c
+        src/tasks/count.c
+        src/tasks/tasks.c
+        src/tasks/timer.c
+        src/timer/timer.c
+        src/timer/trap_handler.c
+        src/trap/trap_handler.c
+        src/trap/entry.S
+        src/trap/trap.c
         src/mem/kmemory.c
         src/mem/kmemory.h
         src/io/io.c
@@ -19,6 +34,7 @@ set(SRC_LIST src/algs/kstring.c
         include/list.h
         src/algs/math.c
         src/algs/kmath.h
+        src/io/plic.h
 )
 
 add_executable(mygos ${SRC_LIST})
@@ -30,4 +46,9 @@ target_include_directories(mygos PUBLIC
         src/mem
         src/device_tree
         include/
+        src/tasks
+        src/task
+        src/timer
+        src/trap
+        src/memanagement
 )

@@ -12,7 +12,7 @@ struct fmt_to_str {
 	char *str;
 	struct fmt_to_str *next;
 };
-int kprintf(int level, const char *fmt, ...){
+int kprintk(int level, const char *fmt, ...){
 	long long a2,a3,a4,a5,a6,a7;
 	asm volatile(
       "mv %[out3],a2\n"
