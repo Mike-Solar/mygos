@@ -14,6 +14,7 @@ __attribute__((naked)) // naked 函数不需要栈帧
 reg_t
 trap_handler(reg_t epc, reg_t cause)
 {
+    printf("Trap handler called! EPC = %p, Cause = %ld\n", epc, cause);
     reg_t return_pc = epc;
 
     if(cause & MCAUSE_MASK_INTERRUPT)

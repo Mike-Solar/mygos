@@ -6,8 +6,6 @@
 #include "task.h"
 
 
-extern void switch_to(struct task_context* next_task);                         // 切换到下一个任务的上下文
-
 static uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的
 struct task_context                         task_contexts[MAX_TASKS];          // 任务上下文结构体列表
 static uint32_t                             _current    = -1;                  // 当前任务索引
@@ -32,10 +30,8 @@ schedule()
         return;
     }
 
-    do
-    {
-        _current = (_current + 1) % MAX_TASKS; // 实现循环调度，如果超出最后一个就会回到第一个
-    } while(task_contexts[_current].flags == 0); // 如果当前任务的标志位为 0，表示任务未创建，则继续寻找下一个任务
+    do _current = (_current + 1) % MAX_TASKS; // 实现循环调度，如果超出最后一个就会回到第一个
+    while(task_contexts[_current].flags == 0); // 如果当前任务的标志位为 0，表示任务未创建，则继续寻找下一个任务
 
     switch_to(&(task_contexts[_current])); // 切换任务
 }
