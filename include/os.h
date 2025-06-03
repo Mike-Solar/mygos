@@ -5,7 +5,8 @@
 
 #include "memory.h"
 #include "task.h"
-#include "timer.h"
+
+#include "types.h"
 
 
 // 任务调度器相关函数声明
@@ -27,17 +28,10 @@ task_context_ptr task_get_current_context();            // 获取当前任务的
 
 // io 相关函数声明
 
-void     plic_init();                     // 初始化 PLIC（外部中断控制器），设置 UART0 的中断优先级和使能
-uint32_t plic_claim();                    // 查询 PLIC，获取当前需要处理的中断源 ID（如果有）
-void     plic_complete(uint32_t plic_id); // 完成中断处理，通知 PLIC 已经处理完指定的中断源 ID
-
-void uart_init();                         // 初始化 UART，配置波特率和数据格式
-void uart_putc(char ch);                  // 输出一个字符到串口（阻塞，等待发送缓冲区空）
-void uart_puts(char* s);                  // 输出字符串到串口（逐字符发送）
-char uart_getc();                         // 接收一个字符（阻塞，直到接收缓冲区有数据）
-
-uint32_t printf(const char* s, ...);      // 格式化输出到串口，类似于 printf
-void     panic(char* s);                  // 输出错误信息并进入死循环
+void     uart_putc(char ch);         // 输出一个字符到串口（阻塞，等待发送缓冲区空）
+void     uart_puts(char* s);         // 输出字符串到串口（逐字符发送）
+uint32_t printf(const char* s, ...); // 格式化输出到串口，类似于 printf
+void     panic(char* s);             // 输出错误信息并进入死循环
 
 
 // 异常/中断处理相关函数声明
@@ -46,7 +40,6 @@ void trap_init();                  // 初始化异常/中断处理
 
 void task_interrupt_handler();     // 任务切换处理函数，处理机器模式软件中断
 void external_interrupt_handler(); // 外部中断处理函数，处理来自 PLIC 的中断请求
-void timer_interrupt_handler();    // 机器模式定时器中断处理函数，处理定时器中断
 
 
 /* 内存管理 */
@@ -62,5 +55,3 @@ void spin_unlock(void);
 /* 软件定时器 */
 timer_ptr timer_create(void (*callback)(void*), void* arg, uint32_t timeout);
 void      timer_delete(timer_ptr timer);
-void      timer_check();
-void      timer_load(uint32_t interval);

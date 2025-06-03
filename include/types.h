@@ -30,4 +30,7 @@ typedef enum
 } bool;
 
 
+typedef struct timer* timer_ptr; // 计时器指针类型
+
+
 #endif /* __TYPES_H__ */

@@ -3,6 +3,8 @@
 
 #include "os.h"
 
+#include "io.h"
+
 #include "platform.h"
 #include "riscv.h"
 
@@ -12,7 +14,7 @@ void
 external_interrupt_handler()
 {
     // 返回中断源号
-    int irq = plic_claim();
+    uint32_t irq = plic_claim();
 
     // 处理中断
     if(irq == UART0_IRQ)

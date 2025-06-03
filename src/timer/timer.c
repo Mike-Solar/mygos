@@ -3,6 +3,8 @@
 
 #include "os.h"
 
+#include "timer.h"
+
 #include "platform.h"
 #include "riscv.h"
 
@@ -13,10 +15,28 @@ struct timer timer_list[MAX_TIMER]; // 定义计时器列表
 
 // 加载下一个定时器中断的时间间隔（以计时周期为单位）
 // 每个 CPU 都有一个独立的定时器中断源
-void
-timer_load(uint32_t interval)
+inline void
+_timer_load(uint32_t interval)
 {
     *(uint64_t*)CLINT_MTIMECMP(r_mhartid()) = *(uint64_t*)CLINT_MTIME + interval;
+}
+
+// 检查定时器列表，调用超时的计时器回调函数，并删除它们
+inline void
+_timer_checkout()
+{
+    timer_ptr t = &(timer_list[0]);
+    for(uint32_t i = 0; i < MAX_TIMER; i++, t++)
+    {
+        if(0 != t->func && _tick >= t->timeout_tick) // 保证该计时器项被使用，且当前 tick 大于等于超时时间
+        {
+            // 调用回调函数
+            // 删除该计时器
+            t->func(t->arg);
+            t->func = 0;
+            t->arg  = 0;
+        }
+    }
 }
 
 // 初始化定时器
@@ -32,10 +52,9 @@ timer_init()
         timer++;
     }
 
-
     // 在复位时，mtime 被清零，但 mtimecmp 寄存器不会被重置。
     // 因此我们需要手动初始化 mtimecmp。
-    timer_load(TIMER_INTERVAL);
+    _timer_load(TIMER_INTERVAL);
 
     // 启用机器模式下的定时器中断
     w_mie(r_mie() | MIE_MTIE);
@@ -51,8 +70,7 @@ timer_create(void (*callback)(void*), void* arg, uint32_t timeout)
     // 参数检查：处理函数和超时时间不能为空
     if(!callback || !timeout) return NULL;
 
-    // 使用锁来保护多个任务之间共享的 timer_list
-    spin_lock();
+    spin_lock(); // 使用锁来保护多个任务之间共享的 timer_list
 
     timer_ptr t = &(timer_list[0]);
     for(int i = 0; i < MAX_TIMER; i++)
@@ -92,29 +110,4 @@ timer_delete(timer_ptr timer)
     }
 
     spin_unlock();
-}
-
-/* this routine should be called in interrupt context (interrupt is disabled) */
-// 该函数应在中断上下文中调用（中断被禁用）
-void
-timer_check()
-{
-    timer_ptr t = &(timer_list[0]);
-    for(int i = 0; i < MAX_TIMER; i++)
-    {
-        if(0 != t->func)                 // 保证该计时器项被使用
-        {
-            if(_tick >= t->timeout_tick) // 如果当前 tick 大于等于超时时间
-            {
-                t->func(t->arg);         // 调用回调函数
-
-                /* once time, just delete it after timeout */
-                t->func = 0;
-                t->arg  = 0;
-
-                break;
-            }
-        }
-        t++;
-    }
 }

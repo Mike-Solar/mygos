@@ -36,8 +36,6 @@ SRCS_C += ./src/lock.c
 
 
 INCLUDE_DIRS += ./include/
-INCLUDE_DIRS += ./src/memory/
-
 
 
 # 支持“是否启用系统调用”这一功能的可配置编译
