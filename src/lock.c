@@ -2,6 +2,9 @@
 // lock.c
 
 #include "os.h"
+#include "platform.h"
+#include "riscv.h"
+
 
 int
 spin_lock()

@@ -12,31 +12,12 @@
  * see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 /*/
 
-// #define VIRT_CPUS_MAX 8
-#define MAXNUM_CPU 8
-
-/* used in os.ld */
+#define MAXNUM_CPU 8                 // 最大 CPU 数量，QEMU virt 机器支持最多 8 个 CPU 核心
+#define MAX_TASKS 10                 // 编号 0 - 9
+#define STACK_SIZE 1024              // 每个 CPU 的栈大小为 1024 字节（1KB）
 #define LENGTH_RAM 128 * 1024 * 1024 // = 128MB
-
-/*/
-
-MemoryMap
-see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
-
-| 地址范围     | 设备        | 描述                                |
-| ------------ | ----------- | ----------------------------------- |
-| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
-| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
-| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
-| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
-| `0x10001000` | virtio disk | 虚拟磁盘                            |
-| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
-
-/*/
-
-/* This machine puts UART registers here in physical memory. */
-/* 指定 UART0 的物理地址，内核通过它进行字符收发。*/
-#define UART0 0x10000000L
+#define SIZE_REG 4                   // 每个寄存器大小为 4 字节（32 位寄存器）
+#define UART0 0x10000000L            // 指定 UART0 的物理地址，内核通过它进行字符收发。
 
 
 /*/
@@ -80,8 +61,8 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 
 
 /*/
- * The Core Local Interruptor (CLINT) block holds memory-mapped control and status registers associated with software and timer interrupts.
- * QEMU-virt reuses sifive configuration for CLINT.
+ * CLINT（核心本地中断控制器）模块包含与软件中断和定时器中断相关的内存映射控制寄存器和状态寄存器。
+ * QEMU 的 virt 虚拟机平台复用了 SiFive 的 CLINT 配置方式。
  * see https://gitee.com/qemu/qemu/blob/master/include/hw/riscv/sifive_clint.h
  *
  * enum {
@@ -94,18 +75,6 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  * 	SIFIVE_CLINT_TIMEBASE_FREQ = 10000000 // CLINT 的时间基准频率是 10MHz（1 秒 = 10⁷ 个计时周期）。
  * };
  *
- * Notice:
- * The machine-level MSIP bit of mip register are written by accesses to memory-mapped control registers, which are used by remote harts to provide machine-mode inter-processor interrupts.
- * For QEMU-virt machine, Each msip register is a 32-bit wide WARL register
- * where the upper 31 bits are tied to 0. The least significant bit is
- * reflected in the MSIP bit of the mip CSR. We can write msip to generate
- * machine-mode software interrupts. A pending machine-level software
- * interrupt can be cleared by writing 0 to the MSIP bit in mip.
- * On reset, each msip register is cleared to zero.
- *
- *
- * CLINT（核心本地中断控制器）模块包含与软件中断和定时器中断相关的内存映射控制寄存器和状态寄存器。
- * QEMU 的 virt 虚拟机平台复用了 SiFive 的 CLINT 配置方式。
  *
  * 注意：
  * mip 寄存器中的 machine-level 软件中断位（MSIP） 是通过访问内存映射的控制寄存器写入的。
@@ -125,6 +94,42 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 #define CLINT_MTIMECMP(hartid) (CLINT_BASE + 0x4000 + 8 * (hartid)) // 定时器比较值寄存器 mtimecmp，控制何时触发定时器中断
 #define CLINT_MTIME (CLINT_BASE + 0xBFF8)                           // 当前时间寄存器 mtime（记录系统自启动以来的“周期数”）
 #define CLINT_TIMEBASE_FREQ 10000000                                // 时间基准频率为 10 MHz（每秒计 10,000,000 次）
+
+
+// 任务上下文结构体定义
+#define TASK_CONTEXT_RA_OFFSET 0 * SIZE_REG
+#define TASK_CONTEXT_SP_OFFSET 1 * SIZE_REG
+#define TASK_CONTEXT_GP_OFFSET 2 * SIZE_REG
+#define TASK_CONTEXT_TP_OFFSET 3 * SIZE_REG
+#define TASK_CONTEXT_T0_OFFSET 4 * SIZE_REG
+#define TASK_CONTEXT_T1_OFFSET 5 * SIZE_REG
+#define TASK_CONTEXT_T2_OFFSET 6 * SIZE_REG
+#define TASK_CONTEXT_S0_OFFSET 7 * SIZE_REG
+#define TASK_CONTEXT_S1_OFFSET 8 * SIZE_REG
+#define TASK_CONTEXT_A0_OFFSET 9 * SIZE_REG
+#define TASK_CONTEXT_A1_OFFSET 10 * SIZE_REG
+#define TASK_CONTEXT_A2_OFFSET 11 * SIZE_REG
+#define TASK_CONTEXT_A3_OFFSET 12 * SIZE_REG
+#define TASK_CONTEXT_A4_OFFSET 13 * SIZE_REG
+#define TASK_CONTEXT_A5_OFFSET 14 * SIZE_REG
+#define TASK_CONTEXT_A6_OFFSET 15 * SIZE_REG
+#define TASK_CONTEXT_A7_OFFSET 16 * SIZE_REG
+#define TASK_CONTEXT_S2_OFFSET 17 * SIZE_REG
+#define TASK_CONTEXT_S3_OFFSET 18 * SIZE_REG
+#define TASK_CONTEXT_S4_OFFSET 19 * SIZE_REG
+#define TASK_CONTEXT_S5_OFFSET 20 * SIZE_REG
+#define TASK_CONTEXT_S6_OFFSET 21 * SIZE_REG
+#define TASK_CONTEXT_S7_OFFSET 22 * SIZE_REG
+#define TASK_CONTEXT_S8_OFFSET 23 * SIZE_REG
+#define TASK_CONTEXT_S9_OFFSET 24 * SIZE_REG
+#define TASK_CONTEXT_S10_OFFSET 25 * SIZE_REG
+#define TASK_CONTEXT_S11_OFFSET 26 * SIZE_REG
+#define TASK_CONTEXT_T3_OFFSET 27 * SIZE_REG
+#define TASK_CONTEXT_T4_OFFSET 28 * SIZE_REG
+#define TASK_CONTEXT_T5_OFFSET 29 * SIZE_REG
+#define TASK_CONTEXT_T6_OFFSET 30 * SIZE_REG
+#define TASK_CONTEXT_PC_OFFSET 31 * SIZE_REG
+#define TASK_CONTEXT_FLAGS_OFFSET 32 * SIZE_REG
 
 
 #endif /* __PLATFORM_H__ */

@@ -1,14 +1,15 @@
 
 // printf.c
 
-#include "os.h"
+#include "io.h"
 
 #include <stdarg.h>
 #include <stddef.h>
 
-/*/
- * ref: https://github.com/cccriscv/mini-riscv-os/blob/master/05-Preemptive/lib.c
-/*/
+// ref: https://github.com/cccriscv/mini-riscv-os/blob/master/05-Preemptive/lib.c
+
+
+static char out_buf[1024]; // buffer for _vprintf()
 
 static int
 _vsnprintf(char* out, size_t n, const char* s, va_list vl)
@@ -135,8 +136,6 @@ _vsnprintf(char* out, size_t n, const char* s, va_list vl)
     return pos;
 }
 
-static char out_buf[1000]; // buffer for _vprintf()
-
 static int
 _vprintf(const char* s, va_list vl)
 {
@@ -151,11 +150,11 @@ _vprintf(const char* s, va_list vl)
     return res;
 }
 
-int
+uint32_t
 printf(const char* s, ...)
 {
-    int     res = 0;
-    va_list vl;
+    uint32_t res = 0;
+    va_list  vl;
     va_start(vl, s);
     res = _vprintf(s, vl);
     va_end(vl);

@@ -4,6 +4,63 @@
 
 ---
 
+### 项目目录
+
+```plaintext
+.
+├── src/
+│   ├── start.S
+│   ├── mem.S
+│   ├── entry.S
+│   ├── kernel.c
+│   ├── io/
+│   ├── tasks/
+│   └── ...
+├── include/
+│   └── *.h
+├── build/
+│   └── (中间文件与输出文件)
+├── os.ld         # 链接脚本
+├── gdbinit       # 调试脚本
+└── Makefile
+
+```
+
+### platform.h
+
+## MemoryMap
+
+see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
+
+| 地址范围     | 设备        | 描述                                |
+| ------------ | ----------- | ----------------------------------- |
+| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
+| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
+| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
+| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
+| `0x10001000` | virtio disk | 虚拟磁盘                            |
+| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
+
+```plaintext
+
+ram (从 0x80000000 开始)
+│
+├─ .text       → 存放程序代码
+│
+├─ .rodata     → 只读数据，如字符串常量等
+│
+├─ .data       → 已初始化的全局/静态变量
+│
+├─ .bss        → 未初始化的全局/静态变量（在运行时清零）
+│
+├─ heap        → 堆，从 _bss_end 到内存结尾 (_memory_end)
+│
+└──────────────► 内存结束地址：0x80000000 + 128MB = 0x88000000
+
+```
+
+---
+
 ### 缩写速查
 
 | 缩写  | 英文全称                                    | 中文全称             | 功能描述                                                            |
@@ -17,7 +74,10 @@
 | HART  | Hardware Thread                             | 硬件线程（处理器核） | 表示一个逻辑 CPU 核心，在 RISC-V 中 hart 是并行执行单元的基本单位。 |
 | GPR   | General Purpose Register                    | 通用寄存器           | 用于存储临时数据和计算结果的寄存器。                                |
 | CSR   | Control and Status Register                 | 控制与状态寄存器     | 用于控制和监视 CPU 状态的特殊寄存器。                               |
-| MMIO  |
+| MMIO  | Memory-Mapped I/O                           | 内存映射 I/O         | 将外设寄存器映射到内存地址空间，允许通过内存访问外设。              |
+| ABI   | Application Binary Interface                | 应用程序二进制接口   | 定义程序与操作系统之间的接口规范，包括系统调用约定等。              |
+| BIOS  | Basic Input/Output System                   | 基本输入输出系统     | 启动计算机时加载操作系统的固件，通常在虚拟机中不使用。              |
+| BSS   | Block Started by Symbol                     | 符号开始的块         | 用于存储未初始化的全局变量和静态变量，运行时会被清零。              |
 
 ---
 
@@ -56,11 +116,11 @@
 | x9   | s1    | saved 1                   | 保存寄存器 1          | 函数调用中必须保留的值（callee-saved）。                      |
 | x10  | a0    | argument 0 / return value | 参数 0 / 返回值       | 用于函数参数或返回值（前 2 个参数/返回值寄存器）。            |
 | x11  | a1    | argument 1 / return value | 参数 1 / 返回值       | 同上。                                                        |
-| x12  | a2    | argument 2                | 参数 2                | 函数参数传递使用。                                            |
+| x12  | a2    | argument 2                | 参数 2                | 函数参数传递使用（总共最多支持 8 个参数）。                   |
 | x13  | a3    | argument 3                | 参数 3                | 同上。                                                        |
 | x14  | a4    | argument 4                | 参数 4                | 同上。                                                        |
 | x15  | a5    | argument 5                | 参数 5                | 同上。                                                        |
-| x16  | a6    | argument 6                | 参数 6                | 同上（总共最多支持 8 个参数）。                               |
+| x16  | a6    | argument 6                | 参数 6                | 同上。                                                        |
 | x17  | a7    | argument 7                | 参数 7                | 同上。                                                        |
 | x18  | s2    | saved 2                   | 保存寄存器 2          | Callee-saved 寄存器，函数调用必须保存和恢复。                 |
 | x19  | s3    | saved 3                   | 保存寄存器 3          | 同上。                                                        |

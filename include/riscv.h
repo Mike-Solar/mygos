@@ -5,7 +5,6 @@
 #ifndef __RISCV_H__
 #define __RISCV_H__
 
-
 #include "types.h"
 
 
@@ -49,6 +48,9 @@
 #define MCAUSE_MACHINE_SOFTWARE_INTERRUPT (0x80000000 + 3)  // 软件中断（由 MSIP 触发）
 #define MCAUSE_MACHINE_TIMER_INTERRUPT (0x80000000 + 7)     // 定时器中断（mtimecmp）
 #define MCAUSE_MACHINE_EXTERNAL_INTERRUPT (0x80000000 + 11) // 外部中断（PLIC）
+
+
+// extern void switch_to(struct task_context* next_task); // 切换到下一个任务的上下文
 
 
 /*/ 读取和写入寄存器的内联函数 /*/

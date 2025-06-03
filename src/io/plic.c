@@ -1,7 +1,10 @@
 
 // plic.c
 
-#include "os.h"
+#include "io.h"
+
+#include "platform.h"
+#include "riscv.h"
 
 
 void
@@ -62,12 +65,12 @@ plic_init()
  *	the ID of the highest-priority pending interrupt or zero if there
  *	is no pending interrupt.
 /*/
-int
+uint32_t
 plic_claim()
 {
-    int hart = r_tp();
-    int irq  = *(uint32_t*)PLIC_MCLAIM(hart);
-    return irq;
+    uint32_t hart = r_tp();
+
+    return *(uint32_t*)PLIC_MCLAIM(hart);
 }
 
 /*/
@@ -81,8 +84,9 @@ plic_claim()
  * RETURN VALUE: none
 /*/
 void
-plic_complete(int irq)
+plic_complete(uint32_t plic_id)
 {
-    int hart                         = r_tp();
-    *(uint32_t*)PLIC_MCOMPLETE(hart) = irq;
+    uint32_t hart = r_tp();
+
+    *(uint32_t*)PLIC_MCOMPLETE(hart) = plic_id;
 }
