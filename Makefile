@@ -1,29 +1,32 @@
 
 # 源文件定义
 
-SRCS_ASM =               \
-    ./src/start.S        \
-    ./src/mem.S          \
-    ./src/trap/entry.S   \
 
-SRCS_C =                 \
-    ./src/kernel.c       \
-    ./src/io/uart.c      \
-    ./src/io/printf.c    \
-    ./src/io/plic.c      \
-\
-    ./src/tasks/count.c  \
-    ./src/tasks/tasks.c  \
-    ./src/tasks/timer.c  \
-\
-    ./src/page.c         \
-    ./src/sched.c        \
-    ./src/user.c         \
-    ./src/trap/trap.c    \
-    ./src/trap/trap_handler.c    \
-    ./src/timer.c        \
-    ./src/lock.c         \
-# ./src/riscv.c
+SRCS_ASM += ./src/start.S
+SRCS_ASM += ./src/mem.S
+SRCS_ASM += ./src/trap/entry.S
+
+SRCS_C += ./src/kernel.c
+SRCS_C += ./src/io/uart.c
+SRCS_C += ./src/io/printf.c
+SRCS_C += ./src/io/plic.c
+
+SRCS_C += ./src/tasks/count.c
+SRCS_C += ./src/tasks/tasks.c
+SRCS_C += ./src/tasks/timer.c
+
+SRCS_C += ./src/page.c
+SRCS_C += ./src/user.c
+
+SRCS_C += ./src/task/sched.c
+SRCS_C += ./src/task/task.c
+
+
+SRCS_C += ./src/trap/trap.c
+SRCS_C += ./src/trap/trap_handler.c
+
+SRCS_C += ./src/timer.c
+SRCS_C += ./src/lock.c
 
 
 # 支持“是否启用系统调用”这一功能的可配置编译

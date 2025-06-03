@@ -1,49 +1,45 @@
 
-// sched.c
+// task.c
 
 #include "os.h"
 
 #include "platform.h"
 #include "riscv.h"
-#include "task.h"
 
 
-static uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的
-struct task_context                         task_contexts[MAX_TASKS];          // 任务上下文结构体列表
-static uint32_t                             _current    = -1;                  // 当前任务索引
-static uint32_t                             _task_count = 0;                   // 当前活动任务数
+uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的
+struct task_context                  task_contexts[MAX_TASKS];          // 任务上下文结构体列表
+uint32_t                             _current    = -1;                  // 当前任务索引
+uint32_t                             _task_count = 0;                   // 当前活动任务数
 
 
-// 初始化调度器
-void
-sched_init()
+// 获取当前活动任务数
+uint32_t
+task_get_count()
 {
-    w_mscratch(0);             // 将 0 写入 mscratch 寄存器，说明任务上下文还没有被初始化
-    w_mie(r_mie() | MIE_MSIE); // 启用机器模式软件中断
+    return _task_count;
 }
 
-// 任务轮转调度
-void
-schedule()
+// 获取当前任务编号
+uint32_t
+task_get_current()
 {
-    if(_task_count <= 0)
-    {
-        panic("No active task to run!");
-        return;
-    }
-
-    do _current = (_current + 1) % MAX_TASKS; // 实现循环调度，如果超出最后一个就会回到第一个
-    while(task_contexts[_current].flags == 0); // 如果当前任务的标志位为 0，表示任务未创建，则继续寻找下一个任务
-
-    switch_to(&(task_contexts[_current])); // 切换任务
+    return _current;
 }
 
-// 任务主动让出 CPU，允许其他任务运行
-void
-task_yield()
+// 获取当前任务的上下文指针
+task_context_ptr
+task_get_current_context()
 {
-    /* trigger a machine-level software interrupt */
-    *(uint32_t*)CLINT_MSIP(r_mhartid()) = 1; // 通过设置 msip 寄存器的 MSIP 位来触发机器模式软件中断
+    return &task_contexts[_current];
+}
+
+// 任务延迟
+void
+task_delay(volatile int count)
+{
+    count *= 50000;
+    while(count-- > 0);
 }
 
 // 创建一个新任务，传入任务函数指针
@@ -71,7 +67,6 @@ task_create(void (*start_routine)())
 
     return 0;
 }
-
 
 // 删除指定任务
 void
@@ -101,15 +96,4 @@ void
 task_delete_current()
 {
     task_delete(&task_contexts[_current]);
-}
-
-/*/
- * a very rough implementation, just to consume the cpu
- * 一个非常粗糙的实现，只是为了消耗 CPU
-/*/
-void
-task_delay(volatile int count)
-{
-    count *= 50000;
-    while(count-- > 0);
 }
