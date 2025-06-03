@@ -25,7 +25,9 @@ SRCS_C += ./src/task/task.c
 SRCS_C += ./src/trap/trap.c
 SRCS_C += ./src/trap/trap_handler.c
 
-SRCS_C += ./src/timer.c
+SRCS_C += ./src/timer/timer.c
+SRCS_C += ./src/timer/interrupt_handler.c
+
 SRCS_C += ./src/lock.c
 
 

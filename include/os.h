@@ -4,7 +4,7 @@
 #pragma once
 
 #include "task.h"
-#include "types.h"
+#include "timer.h"
 
 
 // 任务调度器相关函数声明
@@ -61,14 +61,7 @@ extern int spin_unlock(void);
 
 
 /* software timer */
-extern struct timer* timer_create(void (*handler)(void* arg), void* arg, uint32_t timeout);
-extern void          timer_delete(struct timer* timer);
-
-
-// 计时器
-struct timer
-{
-    void (*func)(void*);   // 回调函数
-    void*    arg;          // 回调函数参数
-    uint32_t timeout_tick; // 超时时间（以 tick 为单位）
-};
+struct timer* timer_create(void (*handler)(void* arg), void* arg, uint32_t timeout);
+void          timer_delete(struct timer* timer);
+void          timer_check();
+void          timer_load(int interval);
