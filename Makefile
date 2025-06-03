@@ -1,15 +1,18 @@
 
 # 源文件定义
-
+# 汇编文件（.S）和 C 文件（.c）分别存储在不同的变量中
 
 SRCS_ASM += ./src/start.S
 SRCS_ASM += ./src/mem.S
 SRCS_ASM += ./src/trap/entry.S
 
+
 SRCS_C += ./src/kernel.c
+
 SRCS_C += ./src/io/uart.c
 SRCS_C += ./src/io/printf.c
 SRCS_C += ./src/io/plic.c
+SRCS_C += ./src/io/trap_handler.c
 
 SRCS_C += ./src/tasks/count.c
 SRCS_C += ./src/tasks/tasks.c
@@ -20,13 +23,13 @@ SRCS_C += ./src/user.c
 
 SRCS_C += ./src/task/sched.c
 SRCS_C += ./src/task/task.c
-
+SRCS_C += ./src/task/trap_handler.c
 
 SRCS_C += ./src/trap/trap.c
 SRCS_C += ./src/trap/trap_handler.c
 
 SRCS_C += ./src/timer/timer.c
-SRCS_C += ./src/timer/interrupt_handler.c
+SRCS_C += ./src/timer/trap_handler.c
 
 SRCS_C += ./src/lock.c
 

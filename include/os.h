@@ -46,8 +46,9 @@ extern void trap_vector(void);              // 异常/中断向量表入口函�
 void  trap_init();                          // 初始化异常/中断处理
 reg_t trap_handler(reg_t epc, reg_t cause); // 异常/中断处理函数，处理同步和异步异常/中断
 
+void task_interrupt_handler();              // 任务切换处理函数，处理机器模式软件中断
 void external_interrupt_handler();          // 外部中断处理函数，处理来自 PLIC 的中断请求
-void timer_handler();                       // 机器模式定时器中断处理函数，处理定时器中断
+void timer_interrupt_handler();             // 机器模式定时器中断处理函数，处理定时器中断
 
 
 /* memory management */
