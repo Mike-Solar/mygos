@@ -1,12 +1,19 @@
 
-// trap_handler.c
+// trap/trap_handler.c
 
 #include "os.h"
+
 #include "platform.h"
 #include "riscv.h"
 
+extern void schedule();                   // 任务轮转调度函数
+extern void task_interrupt_handler();     // 任务切换处理函数，处理机器模式软件中断
+extern void external_interrupt_handler(); // 外部中断处理函数，处理来自 PLIC 的中断请求
+extern void timer_interrupt_handler();    // 定时器中断处理函数
+
 
 // __attribute__((naked)) // naked 函数不需要栈帧
+// 异常/中断处理函数，处理同步和异步异常/中断
 reg_t
 trap_handler(reg_t epc, reg_t cause)
 {
@@ -21,13 +28,18 @@ trap_handler(reg_t epc, reg_t cause)
         case MCAUSE_MACHINE_SOFTWARE_INTERRUPT:
             // 机器模式软件中断
             uart_puts("software interruption!\n");
-            *(uint32_t*)CLINT_MSIP(r_mhartid()) = 0; // 通过清除 mip 中的 MSIP 位来确认软中断。
+            task_interrupt_handler();
             schedule();
+
+            break;
 
         case MCAUSE_MACHINE_TIMER_INTERRUPT:
             // 机器模式定时器中断
             uart_puts("timer interruption!\n");
-            timer_handler();
+            timer_interrupt_handler();
+            schedule();
+
+            break;
 
         case MCAUSE_MACHINE_EXTERNAL_INTERRUPT:
             // 机器模式外部中断

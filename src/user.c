@@ -28,7 +28,7 @@ os_main(void)
 
 
     // task_create(task_timer);
-    // task_create(user_task_lock);
+    task_create(user_task_lock);
     // task_create(task_count30);
     // task_create(task_count50);
     // task_create(task_count70);

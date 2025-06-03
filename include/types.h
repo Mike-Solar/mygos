@@ -23,5 +23,14 @@ typedef uint32_t ptr_t;
 
 #define NULL ((void*)0)
 
+typedef enum
+{
+    false = 0,
+    true  = 1
+} bool;
+
+
+typedef struct timer* timer_ptr; // 计时器指针类型
+
 
 #endif /* __TYPES_H__ */

@@ -7,27 +7,10 @@
 #include "riscv.h"
 
 
+extern void trap_vector(void); // 异常/中断向量表入口函数，处理各种异常和中断
 void
 trap_init()
 {
-    // set the trap-vector base-address for machine-mode
+    // 设置机器模式的异常/中断向量表基地址
     w_mtvec((reg_t)trap_vector);
-}
-
-void
-external_interrupt_handler()
-{
-    // 返回中断源号
-    int irq = plic_claim();
-
-    // 处理中断
-    if(irq == UART0_IRQ)
-    {
-        uart_putc((char)uart_getc());
-        uart_putc('\n');
-    }
-    else if(irq) printf("unexpected interrupt irq = %d\n", irq);
-
-    // 将中断标记为已响应
-    if(irq) plic_complete(irq);
 }
