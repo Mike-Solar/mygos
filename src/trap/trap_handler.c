@@ -8,6 +8,7 @@
 
 
 // __attribute__((naked)) // naked 函数不需要栈帧
+// 异常/中断处理函数，处理同步和异步异常/中断
 reg_t
 trap_handler(reg_t epc, reg_t cause)
 {

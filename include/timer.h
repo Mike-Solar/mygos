@@ -14,7 +14,10 @@ struct timer
     uint32_t timeout_tick; // 超时时间（以 tick 为单位）
 };
 
-// interval ~= 1s
+
+typedef struct timer* timer_ptr; // 计时器指针类型
+
+
 // 时间间隔约等于 1 秒
 #define TIMER_INTERVAL CLINT_TIMEBASE_FREQ
 
