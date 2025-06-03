@@ -231,24 +231,3 @@ page_free(void* p)
     while(!_is_last(page)) _clear(page++);
     _clear(page); // 清除最后一个
 }
-
-void
-page_test()
-{
-    printf("\npage_test:\n");
-
-    void* p1 = page_alloc(2);
-    printf("p1 = %p\n", p1);
-    page_free(p1);
-
-    void* p2 = page_alloc(7);
-    printf("p2 = %p\n", p2);
-
-    void* p3 = page_alloc(4);
-    printf("p3 = %p\n", p3);
-    page_free(p3);
-
-    page_free(p2);
-
-    printf("\n");
-}

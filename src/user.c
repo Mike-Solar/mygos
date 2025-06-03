@@ -16,6 +16,8 @@ extern void user_task_lock(uint32_t id);
 
 extern void task_timer(uint32_t id);
 
+extern void page_test(uint32_t id);
+
 
 void
 os_main(void)
@@ -25,4 +27,6 @@ os_main(void)
     task_create(task_count30);
     task_create(task_count50);
     task_create(task_count70);
+
+    task_create(page_test);
 }
