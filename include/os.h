@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "memory.h"
 #include "task.h"
 #include "timer.h"
 
@@ -48,17 +49,17 @@ void external_interrupt_handler(); // 外部中断处理函数，处理来自 PL
 void timer_interrupt_handler();    // 机器模式定时器中断处理函数，处理定时器中断
 
 
-/* memory management */
-extern void* page_alloc(int npages);
-extern void  page_free(void* p);
+/* 内存管理 */
+void* page_alloc(int npages);
+void  page_free(void* p);
 
 
-/* lock */
+/* 锁 */
 void spin_lock(void);
 void spin_unlock(void);
 
 
-/* software timer */
+/* 软件定时器 */
 timer_ptr timer_create(void (*callback)(void*), void* arg, uint32_t timeout);
 void      timer_delete(timer_ptr timer);
 void      timer_check();

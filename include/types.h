@@ -23,5 +23,11 @@ typedef uint32_t ptr_t;
 
 #define NULL ((void*)0)
 
+typedef enum
+{
+    false = 0,
+    true  = 1
+} bool;
+
 
 #endif /* __TYPES_H__ */

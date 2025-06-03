@@ -3,7 +3,7 @@
 # 汇编文件（.S）和 C 文件（.c）分别存储在不同的变量中
 
 SRCS_ASM += ./src/start.S
-SRCS_ASM += ./src/mem.S
+SRCS_ASM += ./src/memory/memory.S
 SRCS_ASM += ./src/trap/entry.S
 
 
@@ -18,7 +18,8 @@ SRCS_C += ./src/tasks/count.c
 SRCS_C += ./src/tasks/tasks.c
 SRCS_C += ./src/tasks/timer.c
 
-SRCS_C += ./src/page.c
+SRCS_C += ./src/memory/page.c
+
 SRCS_C += ./src/user.c
 
 SRCS_C += ./src/task/sched.c
@@ -32,6 +33,11 @@ SRCS_C += ./src/timer/timer.c
 SRCS_C += ./src/timer/trap_handler.c
 
 SRCS_C += ./src/lock.c
+
+
+INCLUDE_DIRS += ./include/
+INCLUDE_DIRS += ./src/memory/
+
 
 
 # 支持“是否启用系统调用”这一功能的可配置编译
@@ -60,7 +66,7 @@ CFLAGS += -g
 CFLAGS += -Wall
 CFLAGS += -march=rv32g
 CFLAGS += -mabi=ilp32e
-CFLAGS += -I./include/
+CFLAGS += $(addprefix -I, ${INCLUDE_DIRS})
 
 
 # QEMU 运行参数

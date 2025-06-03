@@ -1,5 +1,5 @@
 
-# mem.S
+// memory.S
 
 #define SIZE_PTR .word
 
