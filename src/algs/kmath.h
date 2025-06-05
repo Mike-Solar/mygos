@@ -20,4 +20,6 @@ inline uint32_t kpow(uint32_t base, uint32_t exp) {
 	}
 	return result;
 }
+
+#define EXP_OF_2(order) ((0x1 << order))
 #endif //KMATH_H

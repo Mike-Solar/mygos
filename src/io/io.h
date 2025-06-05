@@ -7,6 +7,6 @@
 enum{
   DEBUG,INFO,WARN,ERROR
 };
-int kprintf(int level, const char *fmt, ...);
+int kprintk(int level, const char *fmt, ...);
 void kputs(const char *s);
 #endif //IO_H

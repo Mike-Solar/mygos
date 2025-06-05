@@ -21,20 +21,28 @@
 #define PHYS_MEM_SIZE   (8192L * 1024L * 1024L * 1024L)  // 物理内存总大小（如 128MB）
 #define PAGE_COUNT      (PHYS_MEM_SIZE / PAGE_SIZE)
 #define MAX_ORDER       6
+#define PAGE_SHIFT      12      // 4KB页（2^12 = 4096）
+#define PAGE_SIZE       (1 << PAGE_SHIFT)
+#define PFN_PHYS(pfn)   ((uintptr_t)(pfn) << PAGE_SHIFT)
+#define PHYS_PFN(phys)  ((uintptr_t)(phys) >> PAGE_SHIFT)
+#define PHYS_TO_VIRT(phys, delta) ((void*)((uint64_t)(phys) + delta))
+
 struct page {
 	bool is_used;
-	struct list_head list;      // 空闲链表节点（嵌入到free_area的链表中）
+	uint8_t order;                     // 内存块大小是2的几次方
+	struct list_head list;         // 空闲链表节点（嵌入到free_area的链表中）
 	uint64_t pfn;                  // 页帧号（Page Frame Number）
 };
-extern uint64_t page_count=0;
+extern uint64_t page_count;
 struct free_area {
 	struct list_head free_list;
 	uint64_t nr_free;
 };
 struct zone {
-	struct free_area free_area[MAX_ORDER+1];
+	struct free_area free_area[  MAX_ORDER+1];
 };
-extern struct zone memory_zone;
+extern struct zone memory_zone_phys;
+extern struct zone *memory_zone;
 void enable_paging(uint64_t* pagetable);
 void map_kernel_identity(uint64_t* pagetable);
 void phys_mem_init();
