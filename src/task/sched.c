@@ -15,6 +15,7 @@ extern uint32_t            _task_count;
 
 // 任务轮转调度
 extern void switch_to(task_context_ptr next_task); // 切换到下一个任务的上下文
+__attribute__((naked))                             // naked 函数不需要栈帧
 void
 schedule()
 {
