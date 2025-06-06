@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 
-#include "device_tree_parser.h"
 #include "typedefs.h"
 #include "kmath.h"
 #include "list.h"

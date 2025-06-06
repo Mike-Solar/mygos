@@ -11,7 +11,6 @@
 
 /* 任务调度器相关函数声明 */
 
-
 void    task_yield();                                   // 任务主动让出 CPU，允许其他任务运行
 int32_t task_create(void (*task)());                    // 创建一个新任务，传入任务函数指针
 void    task_delete(task_context_ptr task_context_ptr); // 删除指定任务
@@ -36,9 +35,12 @@ void  page_free(void* p);
 
 
 /* 锁 */
+struct spin_lock_t {
+    volatile int is_locked;
+};
 void spin_lock(void);
 void spin_unlock(void);
-
+void spin_init(struct spin_lock_t *lock);
 
 /* 软件定时器 */
 timer_ptr timer_create(void (*callback)(void), void* arg, uint32_t timeout);

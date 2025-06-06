@@ -35,6 +35,7 @@ set(SRC_LIST src/algs/kstring.c
         src/algs/math.c
         src/algs/kmath.h
         src/io/plic.h
+        src/lock/lock.S
 )
 
 add_executable(mygos ${SRC_LIST})
