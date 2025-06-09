@@ -1,10 +1,7 @@
 
 // start.S
 
-#include "platform.h"
-
-
-.global _start              // 系统入口
+.globl _start              // 系统入口
 .text
 _start:
     // park harts with id != 0

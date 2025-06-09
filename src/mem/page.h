@@ -18,14 +18,14 @@
 #define PA2PTE(pa) ((((uint64_t)(pa)) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
 #define PAGE_SIZE       4096       // 页大小（4KB）
-#define PHYS_MEM_SIZE   (8192L * 1024L * 1024L * 1024L)  // 物理内存总大小（如 128MB）
+#define PHYS_MEM_SIZE   (8192L * 1024L * 1024L)  // 物理内存总大小（如 128MB）
 #define PAGE_COUNT      (PHYS_MEM_SIZE / PAGE_SIZE)
 #define MAX_ORDER       6
 #define PAGE_SHIFT      12      // 4KB页（2^12 = 4096）
 #define PAGE_SIZE       (1 << PAGE_SHIFT)
 #define PFN_PHYS(pfn)   ((uintptr_t)(pfn) << PAGE_SHIFT)
 #define PHYS_PFN(phys)  ((uintptr_t)(phys) >> PAGE_SHIFT)
-#define PHYS_TO_VIRT(phys, delta) ((void*)((uint64_t)(phys) + delta))
+#define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + 0xFFFFFFFC00000000))
 
 struct page {
 	bool is_used;
@@ -48,7 +48,7 @@ void map_kernel_identity(uint64_t* pagetable);
 void phys_mem_init();
 void map_pages(uint64_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm);
 uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc);
-void* page_alloc();
-void page_free(void* pa);
+void *alloc_pages(uint8_t n);
+void free_pages(void* pa);
 
 #endif //PAGE_H

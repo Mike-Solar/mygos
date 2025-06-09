@@ -3,7 +3,7 @@
 //
 
 #include "page.h"
-
+#include "list_b.h"
 #include <stddef.h>
 
 
@@ -24,7 +24,9 @@ struct zone *memory_zone;
 void __attribute__((section(".boot.text"))) buddy_init_stage1(void) {
 	// 使用物理地址初始化链表
 	for (int i = 0; i <= MAX_ORDER; i++) {
-		init_list_head(&memory_zone_phys.free_area[i].free_list);
+
+		init_list_head_b(&memory_zone_phys.free_area[i].free_list);
+
 		memory_zone_phys.free_area[i].nr_free=0;
 	}
 	memory_zone_phys.free_area[MAX_ORDER].nr_free=page_count/EXP_OF_2(MAX_ORDER);
@@ -32,24 +34,24 @@ void __attribute__((section(".boot.text"))) buddy_init_stage1(void) {
 }
 /* 第二阶段初始化（启用分页后） */
 void buddy_init_stage2(void) {
-	phys_page_array_virt_addr=phys_page_array;
-	uintptr_t delta=(uintptr_t)phys_page_array_virt_addr-(uintptr_t)phys_page_array_phys_addr;
+
+	phys_page_array_virt_addr=PHYS_TO_VIRT(phys_page_array_phys_addr);
 	// 将物理地址转换为虚拟地址
 	for (int i = 0; i <= MAX_ORDER; i++) {
 		struct list_head *curr = memory_zone->free_area[i].free_list.next;
 		while (curr != &memory_zone->free_area[i].free_list) {
 			// Step 1: 将链表节点物理地址转为虚拟地址
-			struct list_head *virt_node = PHYS_TO_VIRT(curr, delta);
+			struct list_head *virt_node = PHYS_TO_VIRT(curr);
             
 			// Step 2: 修正前后指针的地址
-			virt_node->prev = PHYS_TO_VIRT(virt_node->prev,delta);
-			virt_node->next = PHYS_TO_VIRT(virt_node->next,delta);
+			virt_node->prev = PHYS_TO_VIRT(virt_node->prev);
+			virt_node->next = PHYS_TO_VIRT(virt_node->next);
             
 			curr = virt_node->next;
 		}
 		// 修正链表头指针
-		memory_zone->free_area[i].free_list.next = PHYS_TO_VIRT(memory_zone->free_area[i].free_list.next, delta);
-		memory_zone->free_area[i].free_list.prev = PHYS_TO_VIRT(memory_zone->free_area[i].free_list.prev, delta);
+		memory_zone->free_area[i].free_list.next = PHYS_TO_VIRT(memory_zone->free_area[i].free_list.next);
+		memory_zone->free_area[i].free_list.prev = PHYS_TO_VIRT(memory_zone->free_area[i].free_list.prev);
 	}
 }
 
@@ -60,26 +62,26 @@ void __attribute__((section(".boot.text"))) enable_paging(uint64_t* pagetable) {
 	asm volatile("sfence.vma"); // 刷新 TLB
 }
 // 建立内核恒等映射（虚拟地址 = 物理地址）
-void __attribute__((section(".boot.text"))) map_kernel_identity(uint64_t* pagetable) {
+/*void __attribute__((section(".boot.text"))) map_kernel_identity(uint64_t* pagetable) {
 	// 映射内核代码和数据（假设物理地址从 0x80000000 开始）
 	map_pages(pagetable, 0x80000000, 0x80000000, 0x200000, PTE_R | PTE_W | PTE_X);
 
 	// 映射设备寄存器（如 UART 地址 0x10000000）
 	map_pages(pagetable, 0x10000000, 0x10000000, PAGE_SIZE, PTE_R | PTE_W);
 }
-
+*/
 
 // 物理内存起始地址（由设备树或硬编码确定）
 __attribute__((section(".boot.data"))) uintptr_t phys_mem_start = 0x80000000uL;
 void __attribute__((section(".boot.text"))) phys_mem_init() {
 	// 清零空闲列表
 	phys_page_array[0].pfn = 0;
-	init_list_head(&phys_page_array[0].list);
+	init_list_head_b(&phys_page_array[0].list);
 	phys_page_array[0].is_used = false;
 	struct list_head *cur=&phys_page_array[0].list;
 	for(int i=1;i<page_count;i++) {
 		phys_page_array[i].pfn = i;
-		list_add(&phys_page_array[i].list,cur);
+		list_add_b(&phys_page_array[i].list,cur);
 		cur=&phys_page_array[i].list;
 		phys_page_array[i].is_used = false;
 		phys_page_array[i].order = 0;
@@ -107,7 +109,7 @@ uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc) {
 	for (int level = 2; level > 0; level--) {
 		uint64_t *pte = &pagetable[PX(level, va)];  // PX 宏提取当前层索引
 		if (!(*pte & PTE_V)) {                   // PTE 无效
-			if (!alloc || !(pagetable = page_alloc()))
+			if (!alloc || !(pagetable = alloc_pages(1)))
 				return 0;
 			*pte = PA2PTE(pagetable) | PTE_V;    // 设置新页表的 PTE
 		}

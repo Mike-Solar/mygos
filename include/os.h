@@ -29,17 +29,14 @@ uint32_t printk(const char* s, ...); // 格式化输出到串口，类似于 pri
 void     panic(char* s);             // 输出错误信息并进入死循环
 
 
-/* 内存管理 */
-void* page_alloc(int npages);
-void  page_free(void* p);
 
 
 /* 锁 */
 struct spin_lock_t {
     volatile int is_locked;
 };
-void spin_lock(void);
-void spin_unlock(void);
+void spin_lock(struct spin_lock_t *lock);
+void spin_unlock(struct spin_lock_t *lock);
 void spin_init(struct spin_lock_t *lock);
 
 /* 软件定时器 */

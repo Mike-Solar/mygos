@@ -1,4 +1,4 @@
-.section .text.start
+.section .boot.text
 .globl _start
 _start:
     // park harts with id != 0

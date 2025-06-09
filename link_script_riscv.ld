@@ -2,21 +2,21 @@ ENTRY(_start)
 
 /* 定义物理和虚拟基址 */
 PHYS_BASE = 0x80200000;
-VIRT_BASE = 0xFFFFFFC000000000;
+VIRT_BASE = 0xFFFFFFFF80000000;
 
 MEMORY {
     /* 物理内存区域：内核加载到此 */
-    LOAD_MEM (rwx) : ORIGIN = PHYS_BASE, LENGTH = 512M
+    LOAD_MEM (rwx) : ORIGIN = PHYS_BASE, LENGTH = 128M
     /* 虚拟内存区域：内核运行时的虚拟地址空间 */
-    RAM (rwx) : ORIGIN = VIRT_BASE, LENGTH = 512M
+    RAM (rwx) : ORIGIN = VIRT_BASE, LENGTH = 8192M
 }
 
 SECTIONS {
     /* 启动代码必须位于物理地址 */
     . = PHYS_BASE;
     .boot : {
-        *(.boot.text)      /* 启动代码段 */
         *(.boot.data)      /* 启动全局变量段 */
+        *(.boot.text)      /* 启动代码段 */
         . = ALIGN(4K);     /* 按页对齐 */
     } >LOAD_MEM
     .buddy_meta : {

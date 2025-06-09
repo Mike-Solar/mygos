@@ -5,7 +5,7 @@
 #include "riscv.h"
 #include "utils.h"
 #include "typedefs.h"
-
+#include "page.h"
 
 void
 user_task0()
@@ -56,8 +56,10 @@ user_task_lock()
     print_create_task(r_mscratch(), (reg_t)user_task_lock, "Task Lock");
     while(1)
     {
+        struct spin_lock_t lock;
+        spin_init(&lock);
 #ifdef USE_LOCK
-        spin_lock();
+        spin_lock(&lock);
 #endif
         uart_puts("Task Lock: Begin ... \n");
         for(int i = 0; i < 5; i++)
@@ -67,7 +69,7 @@ user_task_lock()
         }
         uart_puts("Task Lock: End ... \n");
 #ifdef USE_LOCK
-        spin_unlock();
+        spin_unlock(&lock);
 #endif
     }
 }
@@ -78,18 +80,18 @@ page_test()
 {
     print_create_task(r_mscratch(), (reg_t)page_test, "Page Test");
 
-    void* p1 = page_alloc(2);
+    void* p1 = alloc_pages(2);
     printk("p1 = %p\n", p1);
-    page_free(p1);
+    free_pages(p1);
 
-    void* p2 = page_alloc(7);
+    void* p2 = alloc_pages(7);
     printk("p2 = %p\n", p2);
 
-    void* p3 = page_alloc(4);
+    void* p3 = alloc_pages(4);
     printk("p3 = %p\n", p3);
-    page_free(p3);
+    free_pages(p3);
 
-    page_free(p2);
+    free_pages(p2);
 
     printk("\n");
 
