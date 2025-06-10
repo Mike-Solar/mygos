@@ -23,7 +23,7 @@ void kernel_init(int hart_id, void *dtd) {
 	uart_puts("kernel page table inited...\n");
 
 	// 建立恒等映射
-	map_kernel_identity(kernel_pagetable);
+	//map_kernel_identity(kernel_pagetable);
 
 	// 启用分页
 	enable_paging(kernel_pagetable);

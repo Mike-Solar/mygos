@@ -3,6 +3,11 @@ ENTRY(_start)
 /* 定义物理和虚拟基址 */
 PHYS_BASE = 0x80200000;
 VIRT_BASE = 0xFFFFFFFF80000000;
+PAGE_SIZE = 4096;
+MEMORY  {
+    RAM(rwx): ORIGIN=VIRT_BASE, LENGTH=1024M
+    LOAD_RAM(rwx): ORIGIN=VIRT_BASE, LENGTH=1024M
+}
 
 SECTIONS {
     . = PHYS_BASE;
@@ -10,31 +15,31 @@ SECTIONS {
     .text.entry : {
         *(.text.entry)  /* 确保 _start 在此处 */
     }
+    .early_page (NOLOAD): {
+        . = ALIGN(PAGE_SIZE);
+        early_pg_dir = .;
+        . += PAGE_SIZE;  /* 分配一页（4KB）作为早期页目录 */
+    }
+    . = VIRT_BASE;
     .text : {
     		PROVIDE(_text_start = .);   /* 将 _text_start 定义为当前地址 */
     		*(.text .text.*)            /* 将所有 .text 和 .text.* 节添加到当前地址 */
     		PROVIDE(_text_end = .);     /* 将 _text_end 定义为当前地址 */
-    }
+    } > RAM AT > LOAD_RAM
 
     .buddy_meta : {
         __buddy_meta_start = .;
         *(.buddy_meta)
         __buddy_meta_end = .;
-    }
+    } > RAM AT > LOAD_RAM
 
     .rodata : {
     	PROVIDE(_rodata_start = .);
     	*(.rodata .rodata.*)
     	PROVIDE(_rodata_end = .);
-    }
+    } > RAM AT > LOAD_RAM
 
-    .early_page (NOLOAD): {
-        . = ALIGN(4096);
-        __early_page_start = .;
-        *(.early_page)
-        .  = ALIGN(4096);
-        __early_page_end = .;
-    }
+
     .data : {
     	/*
     	 * . = ALIGN(4096) tells the linker to align the current memory
@@ -52,7 +57,7 @@ SECTIONS {
     	*(.sdata .sdata.*)
     	*(.data .data.*)
     	PROVIDE(_data_end = .);
-    }
+    } > RAM AT > LOAD_RAM
     .bss :{
     	/*
     	 * https://sourceware.org/binutils/docs/ld/Input-Section-Common.html
@@ -65,14 +70,14 @@ SECTIONS {
     	*(.bss .bss.*)
     	*(COMMON)
     	PROVIDE(_bss_end = .);
-    }
+    } > RAM AT > LOAD_RAM
 
     /* 堆区域：从 0xFFFFFFC020000000 开始 */
     .heap : {
         __heap_start = .;
         . += 1024M;  /* 预留 1024MB 堆空间 */
         __heap_end = .;
-    }
+    } > RAM AT > LOAD_RAM
 
 }
 
