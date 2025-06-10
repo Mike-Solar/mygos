@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(mygos C ASM)
 set(CMAKE_C_FLAGS "-mcmodel=medany")
-set(CMAKE_EXE_LINKER_FLAGS "-T ${CMAKE_SOURCE_DIR}/link_script_riscv.ld -nostdlib  -mcmodel=medany")
+set(CMAKE_EXE_LINKER_FLAGS "-T ${CMAKE_SOURCE_DIR}/link_script_riscv.ld -nostdlib -fPIC -mcmodel=medany")
 set(SRC_LIST src/algs/kstring.c
         src/algs/kstring.h
         src/io/kput.S

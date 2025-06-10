@@ -4,7 +4,7 @@
 //
 // Created by katherinesolar on 25-5-24.
 //
-uint32_t  __attribute__((section(".boot.text"))) be32toh(uint32_t val) {
+uint32_t  be32toh(uint32_t val) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	// 小端主机：需要交换字节序
 	return ((val >> 24) & 0x000000FF) |
@@ -16,7 +16,7 @@ uint32_t  __attribute__((section(".boot.text"))) be32toh(uint32_t val) {
 	return val;
 #endif
 }
-uint64_t __attribute__((section(".boot.text"))) be64toh(uint64_t val) {
+uint64_t be64toh(uint64_t val) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	// 小端主机：需要交换字节序
 
@@ -33,13 +33,13 @@ uint64_t __attribute__((section(".boot.text"))) be64toh(uint64_t val) {
 	return val;
 #endif
 }
-static __inline__ int __attribute__((section(".boot.text"))) kstrlen_b(char *str) {
+static __inline__ int kstrlen_b(char *str) {
 	int len = 0;
 	// 循环计算字符串长度
 	while(*str++) len++;
 	return len;
 }
-static __inline__ int __attribute__((section(".boot.text"))) kstrcmp_b(const char* str1, const char* str2)
+static __inline__ int kstrcmp_b(const char* str1, const char* str2)
 {
 	// 循环比较字符，直到遇到字符串结束符'\0'
 	while(*str1 && (*str1 == *str2))
@@ -52,9 +52,8 @@ static __inline__ int __attribute__((section(".boot.text"))) kstrcmp_b(const cha
 	return *(unsigned char*)str1 - *(unsigned char*)str2;
 }
 //解析设备树
-void __attribute__((section(".boot.text"))) parse_device_tree(struct fdt_header* header) {
-	if (be32toh(header->magic) != 0xd00dfeed) {
-	}
+void parse_device_tree(struct fdt_header* header) {
+
 	// 获取关键偏移量
 	uint32_t struct_block = be32toh(header->off_dt_struct);
 	uint32_t strings_block = be32toh(header->off_dt_strings);
@@ -101,10 +100,10 @@ void __attribute__((section(".boot.text"))) parse_device_tree(struct fdt_header*
 		}
 	}
 }
-__attribute__((section(".boot.data"))) struct memory memory;
+struct memory memory;
 struct memory * memory_ptr;
 // 假设父节点定义了 #address-cells=2 和 #size-cells=2
-void __attribute__((section(".boot.text"))) parse_memory_reg(void *data, uint32_t len) {
+void parse_memory_reg(void *data, uint32_t len) {
 	uint64_t *reg = (uint64_t*)data;
 	memory.base = be64toh(reg[0]); // 内存起始地址
 	memory.size = be64toh(reg[1]); // 内存大小

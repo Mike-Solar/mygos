@@ -47,6 +47,7 @@ void enable_paging(uint64_t* pagetable);
 void map_kernel_identity(uint64_t* pagetable);
 void phys_mem_init();
 void map_pages(uint64_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm);
+
 uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc);
 void *alloc_pages(uint8_t n);
 void free_pages(void* pa);

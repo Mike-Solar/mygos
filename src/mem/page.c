@@ -3,29 +3,28 @@
 //
 
 #include "page.h"
-#include "list_b.h"
+#include "list.h"
 #include <stddef.h>
 
 
 #include "typedefs.h"
 #include "kmath.h"
-#include "list.h"
 #define PAGE_SHIFT	12
-__attribute__((section(".boot.data"))) uint64_t page_count=0;
+uint64_t page_count=0;
 // 物理页帧状态位图（每个位表示一页：0-空闲，1-已分配）
-__attribute__((section(".boot.data")))  struct page phys_page_array[PAGE_COUNT];
-__attribute__((section(".boot.data"))) struct page *phys_page_array_phys_addr;
+ struct page phys_page_array[PAGE_COUNT];
+struct page *phys_page_array_phys_addr;
 struct page *phys_page_array_virt_addr;
 
 struct zone memory_zone_phys __attribute__((section(".buddy_meta")));
 struct zone *memory_zone;
 #define ALIGN_UP(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
 
-void __attribute__((section(".boot.text"))) buddy_init_stage1(void) {
+void buddy_init_stage1(void) {
 	// 使用物理地址初始化链表
 	for (int i = 0; i <= MAX_ORDER; i++) {
 
-		init_list_head_b(&memory_zone_phys.free_area[i].free_list);
+		init_list_head(&memory_zone_phys.free_area[i].free_list);
 
 		memory_zone_phys.free_area[i].nr_free=0;
 	}
@@ -55,33 +54,32 @@ void buddy_init_stage2(void) {
 	}
 }
 
-void __attribute__((section(".boot.text"))) enable_paging(uint64_t* pagetable) {
+void enable_paging(uint64_t* pagetable) {
 	// 设置 satp 寄存器（Sv39 模式）
 	uint64_t satp_value = ((uint64_t)pagetable >> 12) | (8ULL << 60); // MODE=8 (Sv39)
 	asm volatile("csrw satp, %0" : : "r"(satp_value));
 	asm volatile("sfence.vma"); // 刷新 TLB
 }
 // 建立内核恒等映射（虚拟地址 = 物理地址）
-/*void __attribute__((section(".boot.text"))) map_kernel_identity(uint64_t* pagetable) {
+void map_kernel_identity(uint64_t* pagetable) {
 	// 映射内核代码和数据（假设物理地址从 0x80000000 开始）
-	map_pages(pagetable, 0x80000000, 0x80000000, 0x200000, PTE_R | PTE_W | PTE_X);
+	map_pages(pagetable, 0x80000000, 0x80000000, 0x8200000, PTE_R | PTE_W | PTE_X);
 
 	// 映射设备寄存器（如 UART 地址 0x10000000）
 	map_pages(pagetable, 0x10000000, 0x10000000, PAGE_SIZE, PTE_R | PTE_W);
 }
-*/
 
 // 物理内存起始地址（由设备树或硬编码确定）
-__attribute__((section(".boot.data"))) uintptr_t phys_mem_start = 0x80000000uL;
-void __attribute__((section(".boot.text"))) phys_mem_init() {
+uintptr_t phys_mem_start = 0x80000000uL;
+void phys_mem_init() {
 	// 清零空闲列表
 	phys_page_array[0].pfn = 0;
-	init_list_head_b(&phys_page_array[0].list);
+	init_list_head(&phys_page_array[0].list);
 	phys_page_array[0].is_used = false;
 	struct list_head *cur=&phys_page_array[0].list;
 	for(int i=1;i<page_count;i++) {
 		phys_page_array[i].pfn = i;
-		list_add_b(&phys_page_array[i].list,cur);
+		list_add(&phys_page_array[i].list,cur);
 		cur=&phys_page_array[i].list;
 		phys_page_array[i].is_used = false;
 		phys_page_array[i].order = 0;
@@ -94,6 +92,7 @@ void __attribute__((section(".boot.text"))) phys_mem_init() {
 		phys_page_array[index].is_used = true;
 	}
 }
+
 
 // 将虚拟地址 [va, va+size) 映射到物理地址 [pa, pa+size)
 void map_pages(uint64_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm) {

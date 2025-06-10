@@ -4,38 +4,29 @@ ENTRY(_start)
 PHYS_BASE = 0x80200000;
 VIRT_BASE = 0xFFFFFFFF80000000;
 
-MEMORY {
-    /* 物理内存区域：内核加载到此 */
-    LOAD_MEM (rwx) : ORIGIN = PHYS_BASE, LENGTH = 128M
-    /* 虚拟内存区域：内核运行时的虚拟地址空间 */
-    RAM (rwx) : ORIGIN = VIRT_BASE, LENGTH = 8192M
-}
-
 SECTIONS {
-    /* 启动代码必须位于物理地址 */
     . = PHYS_BASE;
-    .boot : {
-        *(.boot.data)      /* 启动全局变量段 */
-        *(.boot.text)      /* 启动代码段 */
-        . = ALIGN(4K);     /* 按页对齐 */
-    } >LOAD_MEM
-    .buddy_meta : {
-        __buddy_meta_start = .;
-        *(.buddy_meta)
-        __buddy_meta_end = .;
-    } >RAM AT>LOAD_MEM
-    /* 后续段链接到虚拟地址，但加载到物理地址 */
-    . = VIRT_BASE;
+    /* 首先放置入口段 */
+    .text.entry : {
+        *(.text.entry)  /* 确保 _start 在此处 */
+    }
     .text : {
     		PROVIDE(_text_start = .);   /* 将 _text_start 定义为当前地址 */
     		*(.text .text.*)            /* 将所有 .text 和 .text.* 节添加到当前地址 */
     		PROVIDE(_text_end = .);     /* 将 _text_end 定义为当前地址 */
-    } > RAM AT>LOAD_MEM
+    }
+
+    .buddy_meta : {
+        __buddy_meta_start = .;
+        *(.buddy_meta)
+        __buddy_meta_end = .;
+    }
+
     .rodata : {
     	PROVIDE(_rodata_start = .);
     	*(.rodata .rodata.*)
     	PROVIDE(_rodata_end = .);
-    } > RAM AT>LOAD_MEM
+    }
     .data : {
     	/*
     	 * . = ALIGN(4096) tells the linker to align the current memory
@@ -53,7 +44,7 @@ SECTIONS {
     	*(.sdata .sdata.*)
     	*(.data .data.*)
     	PROVIDE(_data_end = .);
-    } >RAM AT>LOAD_MEM
+    }
     .bss :{
     	/*
     	 * https://sourceware.org/binutils/docs/ld/Input-Section-Common.html
@@ -66,14 +57,14 @@ SECTIONS {
     	*(.bss .bss.*)
     	*(COMMON)
     	PROVIDE(_bss_end = .);
-    } >RAM AT>LOAD_MEM
+    }
 
     /* 堆区域：从 0xFFFFFFC020000000 开始 */
     .heap : {
         __heap_start = .;
         . += 1024M;  /* 预留 1024MB 堆空间 */
         __heap_end = .;
-    } >RAM AT>LOAD_MEM
+    }
 
 }
 
