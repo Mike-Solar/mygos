@@ -7,7 +7,7 @@
 #include "uart.h"
 uint64_t kernel_pagetable[PAGE_SIZE / 8];
 
-void kernel_init(void *none,void *dtd) {
+void kernel_init(int hart_id, void *dtd) {
 	parse_device_tree(dtd);
 	uart_init();
 	uart_puts("loading kernel...\n");

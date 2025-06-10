@@ -15,9 +15,10 @@ uint64_t page_count=0;
  struct page phys_page_array[PAGE_COUNT];
 struct page *phys_page_array_phys_addr;
 struct page *phys_page_array_virt_addr;
-
+uint32_t early_page[10000] __attribute__((section(".early_page")));
+uint8_t early_page_cur;
 struct zone memory_zone_phys __attribute__((section(".buddy_meta")));
-struct zone *memory_zone;
+struct zone *memory_zone=&memory_zone_phys;
 #define ALIGN_UP(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
 
 void buddy_init_stage1(void) {
@@ -63,7 +64,7 @@ void enable_paging(uint64_t* pagetable) {
 // 建立内核恒等映射（虚拟地址 = 物理地址）
 void map_kernel_identity(uint64_t* pagetable) {
 	// 映射内核代码和数据（假设物理地址从 0x80000000 开始）
-	map_pages(pagetable, 0x80000000, 0x80000000, 0x8200000, PTE_R | PTE_W | PTE_X);
+	map_pages(pagetable, 0x80000000, 0x80000000, 0x200000, PTE_R | PTE_W | PTE_X);
 
 	// 映射设备寄存器（如 UART 地址 0x10000000）
 	map_pages(pagetable, 0x10000000, 0x10000000, PAGE_SIZE, PTE_R | PTE_W);
@@ -102,7 +103,14 @@ void map_pages(uint64_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm) 
 	}
 	asm volatile("sfence.vma"); // 刷新 TLB
 }
-
+static void *early_page_alloc() {
+	void *ret=NULL;
+	if (early_page_cur!=9900) {
+		ret = &early_page[early_page_cur];
+		early_page_cur+=100;
+	}
+	return ret;
+}
 // 从虚拟地址 va 遍历页表，返回对应 PTE 的指针（alloc=1 时自动创建缺失的页表）
 uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc) {
 	for (int level = 2; level > 0; level--) {

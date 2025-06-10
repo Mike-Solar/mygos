@@ -1,17 +1,12 @@
 #define SIZE_PTR .word
 
-.section .rodata
-.global HEAP_START
-HEAP_START: SIZE_PTR _heap_start
-
-.global HEAP_SIZE
-HEAP_SIZE: SIZE_PTR _heap_size
-
 .global TEXT_START
 TEXT_START: SIZE_PTR _text_start
 
 .global TEXT_END
 TEXT_END: SIZE_PTR _text_end
+
+.section .rodata
 
 .global DATA_START
 DATA_START: SIZE_PTR _data_start
@@ -30,3 +25,8 @@ BSS_START: SIZE_PTR _bss_start
 
 .global BSS_END
 BSS_END: SIZE_PTR _bss_end
+.global HEAP_START
+HEAP_START: SIZE_PTR _heap_start
+
+.global HEAP_SIZE
+HEAP_SIZE: SIZE_PTR _heap_size

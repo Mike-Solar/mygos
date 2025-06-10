@@ -27,6 +27,14 @@ SECTIONS {
     	*(.rodata .rodata.*)
     	PROVIDE(_rodata_end = .);
     }
+
+    .early_page (NOLOAD): {
+        . = ALIGN(4096);
+        __early_page_start = .;
+        *(.early_page)
+        .  = ALIGN(4096);
+        __early_page_end = .;
+    }
     .data : {
     	/*
     	 * . = ALIGN(4096) tells the linker to align the current memory
