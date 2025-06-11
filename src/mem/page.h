@@ -25,8 +25,53 @@
 #define PAGE_SIZE       (1 << PAGE_SHIFT)
 #define PFN_PHYS(pfn)   ((uintptr_t)(pfn) << PAGE_SHIFT)
 #define PHYS_PFN(phys)  ((uintptr_t)(phys) >> PAGE_SHIFT)
-#define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + 0xFFFFFFFC00000000))
+#define  KERNEL_SPACE ((uint64_t)__heap_end - KERNEL_PHYS_ADDR);
 
+extern const uintptr_t KERNEL_PHYS_ADDR;
+extern const uintptr_t KERNEL_VIRT_ADDR;
+#define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + KERNEL_VIRT_ADDR))
+
+extern const uintptr_t OPEN_SBI_PHYS_ADDR;
+extern void *_kernel_end;
+extern uintptr_t KERNEL_PHYS_END;
+extern void _start(void);
+
+typedef struct pte {
+	uint64_t V:1;
+	uint64_t R:1;
+	uint64_t W:1;
+	uint64_t X:1;
+	uint64_t U:1;
+	uint64_t G:1;
+	uint64_t A:1;
+	uint64_t D:1;
+	uint64_t RSW:2;
+	uint64_t PPN_0:9;
+	uint64_t PPN_1:9;
+	uint64_t PPN_2:26;
+	uint64_t reserved: 10;
+} pte_t;
+typedef struct stap {
+	uint64_t PPN_0:9;
+	uint64_t PPN_1:9;
+	uint64_t PPN_2:26;
+	uint64_t ASID: 12;
+	uint64_t MODE:4;
+}stap_t;
+typedef struct phys_addr {
+	uint64_t offset:12;
+	uint64_t PPN_0:9;
+	uint64_t PPN_1:9;
+	uint64_t PPN_2:26;
+	uint64_t reserved:8;
+} phys_addr_t;
+typedef struct virt_addr {
+	uint64_t offset:12;
+	uint64_t VPN_0:9;
+	uint64_t VPN_1:9;
+	uint64_t VPN_2:9;
+	uint64_t reserved:25;
+} virt_addr_t;
 struct page {
 	bool is_used;
 	uint8_t order;                     // 内存块大小是2的几次方
@@ -41,15 +86,28 @@ struct free_area {
 struct zone {
 	struct free_area free_area[  MAX_ORDER+1];
 };
-extern struct zone memory_zone_phys;
-extern struct zone *memory_zone;
-void enable_paging(uint64_t* pagetable);
-void map_kernel_identity(uint64_t* pagetable);
-void phys_mem_init();
-void map_pages(uint64_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm);
+extern struct zone memory_zone;
+stap_t early_paging_init(void); //设置早期分页
+void early_enable_paging(stap_t stap); //启用分页
 
-uint64_t* walk(uint64_t* pagetable, uint64_t va, int alloc);
+void enable_paging(pte_t* pagetable); //启用分页
+void map_kernel_identity(pte_t* pagetable);
+void phys_mem_init();
+void map_pages(pte_t* pt, uint64_t va, uint64_t pa, uint64_t size, int perm);
+
+pte_t* walk(pte_t* pagetable, uint64_t va, int alloc);
 void *alloc_pages(uint8_t n);
 void free_pages(void* pa);
 
+static inline void zero(void *dst, int len) {\
+	uint8_t *dst8 = (uint8_t*)dst;
+	for (int i = 0; i < len; i++) {
+		dst8[i] = 0;
+	}
+}
+extern pte_t early_pt_2[PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
+extern pte_t early_pt_1[PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
+extern pte_t early_pt_0[PAGE_SIZE / sizeof(pte_t)][PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
+extern void * __heap_end;
+#define  KERNEL_SPACE ((uint64_t)__heap_end - KERNEL_PHYS_ADDR)
 #endif //PAGE_H

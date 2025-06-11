@@ -5,7 +5,10 @@
 #include "page.h"
 #include "device_tree_parser.h"
 #include "uart.h"
-uint64_t kernel_pagetable[PAGE_SIZE / 8];
+pte_t kernel_pagetable[PAGE_SIZE / sizeof(pte_t)];
+pte_t early_pt_2[PAGE_SIZE / sizeof(pte_t)]__attribute__((section(".early_page")));
+pte_t early_pt_1[PAGE_SIZE / sizeof(pte_t)]__attribute__((section(".early_page")));
+pte_t early_pt_0[PAGE_SIZE / sizeof(pte_t)][PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
 
 void kernel_init(int hart_id, void *dtd) {
 	parse_device_tree(dtd);
@@ -18,15 +21,15 @@ void kernel_init(int hart_id, void *dtd) {
 
 	// 创建内核页表
 	for (int i=0;i<PAGE_SIZE/8;i++) {
-		kernel_pagetable[i]=0;
+		zero(&kernel_pagetable[i],sizeof(pte_t));
 	}
 	uart_puts("kernel page table inited...\n");
 
-	// 建立恒等映射
-	//map_kernel_identity(kernel_pagetable);
+	//stap_t stap= early_paging_init();
 
 	// 启用分页
-	enable_paging(kernel_pagetable);
+	//early_enable_paging(stap);
+	map_kernel_identity(kernel_pagetable);
 
 	// 测试页分配
 	int *page=alloc_pages(1);
