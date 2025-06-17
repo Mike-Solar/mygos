@@ -25,15 +25,14 @@
 #define PAGE_SIZE       (1 << PAGE_SHIFT)
 #define PFN_PHYS(pfn)   ((uintptr_t)(pfn) << PAGE_SHIFT)
 #define PHYS_PFN(phys)  ((uintptr_t)(phys) >> PAGE_SHIFT)
-#define  KERNEL_SPACE ((uint64_t)__heap_end - KERNEL_PHYS_ADDR);
-
+#define  KERNEL_SPACE ((uint64_t)__heap_end - KERNEL_VIRT_ADDR)
+# define  KERNEL_PHYS_END (128*1024*1024+KERNEL_PHYS_ADDR)
 extern const uintptr_t KERNEL_PHYS_ADDR;
 extern const uintptr_t KERNEL_VIRT_ADDR;
 #define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + KERNEL_VIRT_ADDR))
 
 extern const uintptr_t OPEN_SBI_PHYS_ADDR;
-extern void *_kernel_end;
-extern uintptr_t KERNEL_PHYS_END;
+extern uintptr_t __kernel_end;
 extern void _start(void);
 
 typedef struct pte {
@@ -109,5 +108,4 @@ extern pte_t early_pt_2[PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".earl
 extern pte_t early_pt_1[PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
 extern pte_t early_pt_0[PAGE_SIZE / sizeof(pte_t)][PAGE_SIZE / sizeof(pte_t)] __attribute__((section(".early_page")));
 extern void * __heap_end;
-#define  KERNEL_SPACE ((uint64_t)__heap_end - KERNEL_PHYS_ADDR)
 #endif //PAGE_H

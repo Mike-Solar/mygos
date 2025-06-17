@@ -4,11 +4,9 @@
 
 #include "page.h"
 #include "list.h"
-#include <stddef.h>
 
 
 #include "device_tree_parser.h"
-#include "typedefs.h"
 #include "kmath.h"
 #define PAGE_SHIFT	12
 uint64_t page_count=0;
@@ -19,11 +17,10 @@ struct page *phys_page_array_virt_addr;
 extern void *early_page_dir;
 struct zone memory_zone __attribute__((section(".buddy_meta")));
 const uintptr_t KERNEL_PHYS_ADDR=0x80200000uL;
-const uintptr_t KERNEL_VIRT_ADDR=0xFFFFFFFF80000000;
+const uintptr_t KERNEL_VIRT_ADDR=0xFFFFFFFF80000000uL;
 #define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + KERNEL_VIRT_ADDR))
 
 const uintptr_t OPEN_SBI_PHYS_ADDR=0x80000000uL;
-# define  KERNEL_PHYS_END (uintptr_t)_kernel_end
 #define ALIGN_UP(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
 
 void buddy_init_stage1(void) {
@@ -133,7 +130,7 @@ stap_t early_paging_init(void) {
 void* early_alloc() {
 	uintptr_t cur=KERNEL_PHYS_END;
 	for (int j=0;j<PAGE_SIZE/sizeof(pte_t) && cur <= OPEN_SBI_PHYS_ADDR+memory.size;j++) {
-		for (int i=0;i<PAGE_SIZE/sizeof(pte_t);i++) {
+		for (int i=0;i<PAGE_SIZE/sizeof(pte_t);i++, cur+=PAGE_SIZE) {
 			if (early_pt_0[j][i].RSW & 1 == 1) {
 				continue;
 			}
@@ -203,7 +200,7 @@ void map_pages(pte_t* pt, uint64_t virt_addr, uint64_t phys_addr, uint64_t size,
 }
 // 从虚拟地址 va 遍历页表，返回对应 PTE 的指针（alloc=1 时自动创建缺失的页表）
 pte_t* walk(pte_t* pagetable, uint64_t virt_addr, int alloc) {
-	for (int level = 2; level > 0; level--) {
+	for (int level = 2; level >= 0; level--) {
 		pte_t *pte = &pagetable[PX(level, virt_addr)];  // PX 宏提取当前层索引
 		if (!pte->V) {                   // PTE 无效
 			if (!alloc || !((pagetable = early_alloc())))

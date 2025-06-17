@@ -16,7 +16,7 @@
 #define NULL ((void *)0)
 #define LIST_POISON1  NULL
 #define LIST_POISON2  NULL
-
+typedef typeof(sizeof(0)) size_t;
 //计算member在type中的位置
 #define offsetof(type, member)  (size_t)(&((type*)0)->member)
 //根据member的地址获取type的起始地址

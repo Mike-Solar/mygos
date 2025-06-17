@@ -25,12 +25,15 @@ void kernel_init(int hart_id, void *dtd) {
 	}
 	uart_puts("kernel page table inited...\n");
 
-	//stap_t stap= early_paging_init();
+	stap_t stap= early_paging_init();
+	early_enable_paging(stap);
+	uart_puts("enable paging...\n");
 
 	// 启用分页
 	//early_enable_paging(stap);
 	map_kernel_identity(kernel_pagetable);
 
+	enable_paging(kernel_pagetable);
 	// 测试页分配
 	int *page=alloc_pages(1);
 	free_pages(page);
