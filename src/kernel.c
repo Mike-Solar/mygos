@@ -17,7 +17,7 @@ void
 start_kernel()
 {
     uart_init();
-    uart_puts("Hello, RVOS!\n");
+    uart_puts("Hello, It's MyGOS!!!!!\n");
 
     plic_init();
     page_init();

@@ -4,7 +4,7 @@
 
 ---
 
-### 项目目录
+## 项目目录
 
 ```plaintext
 .
@@ -26,9 +26,160 @@
 
 ```
 
-### platform.h
+## 关于 `os.ld` 链接脚本
 
-## MemoryMap
+### 一、`OUTPUT_ARCH` 命令指定输出文件的目标架构
+
+https://sourceware.org/binutils/docs/ld/Miscellaneous-Commands.html
+
+```plaintext
+OUTPUT_ARCH( "riscv" )
+```
+
+`riscv` 是 64 位和 32 位 RISC-V 目标的架构名称。
+
+具体的 -march 和 -mabi 会在调用 gcc 时进一步指定。
+
+### 二、`ENTRY` 命令指定程序的入口点
+
+https://sourceware.org/binutils/docs/ld/Entry-Point.html
+
+```plaintext
+ENTRY( _start )
+```
+
+设置程序的入口点，即程序执行的第一条指令
+
+这里入口点为 `_start`，它在 `start.S` 中定义
+
+---
+
+### 三、`MEMORY` 命令
+
+**`MEMORY` 命令描述目标设备的内存布局**
+
+https://sourceware.org/binutils/docs/ld/MEMORY.html
+
+```plaintext
+MEMORY
+{
+    ram (wxa!ri) : ORIGIN = 0x80000000, LENGTH = LENGTH_RAM /* 128M */
+}
+```
+
+每行定义一个内存区域，每个内存区域在 MEMORY 命令中必须具有不同的名称，这里只定义了一个名为 `ram` 的区域
+
+`attr` 字符串是一个可选的属性列表，用于指定是否将特定内存区域用于未在链接器脚本中显式映射的 input 部分
+
+这里我们分配：
+
+- `w` （可写）
+- `x` （可执行）
+- `a` （可分配）
+- `!r`（不可读）
+- `i` （初始化）
+
+ORIGIN 用于设置内存区域的起始地址，将其放在 0x8000_0000 的开头，因为这是 QEMU-virt 机器开始执行的地方
+
+`LENGTH = 128M` 告诉链接器我们有 128 MB 的 RAM
+
+---
+
+### 四、`SECTIONS` 命令
+
+**`SECTIONS` 命令告诉链接器如何将输入节映射到输出节，以及如何将输出节放置在内存中**
+
+https://sourceware.org/binutils/docs/ld/SECTIONS.html
+
+```plaintext
+SECTIONS
+{
+sections-command-1
+sections-command-2
+......
+}
+```
+
+**每一个 sections-command 可以是以下之一**
+
+|                                   |           |                |
+| --------------------------------- | --------- | -------------- |
+| (1) an ENTRY command              |           | 一个入口命令   |
+| (2) a symbol assignment           | `PROVIDE` | 一个符号赋值   |
+| (3) an output section description |           | 一个输出节描述 |
+| (4) an overlay description        |           | 一个覆盖描述   |
+
+仅使用（2）符号赋值和（3）输出节描述。
+
+https://sourceware.org/binutils/docs/ld/PROVIDE.html
+
+#### 使用 `PROVIDE` 命令来定义符号
+
+PROVIDE 命令的语法是 `PROVIDE(symbol = expression)`
+
+PROVIDE 命令用于定义符号，如果符号未在输入文件中定义，则使用指定的表达式。注意，点号 `.` 告诉链接器将符号（例如 `_text_start`）
+设置为当前内存位置（`. = 当前内存位置`）这个当前内存位置会随着我们添加内容而移动
+
+#### `SECTIONS` 的各个部分如下
+
+|           |                              |
+| --------- | ---------------------------- |
+| `.text`   | 存放程序代码                 |
+| `.rodata` | 存放只读数据                 |
+| `.data`   | 存放已初始化的全局和静态变量 |
+| `.bss`    | 存放未初始化的全局和静态变量 |
+
+```plaintext
+.text : {
+    *(.text .text.*)
+} >ram
+
+.rodata : {
+    *(.rodata .rodata.*)
+} >ram
+
+.data : {
+    . = ALIGN(4096);
+    *(.sdata .sdata.*)
+    *(.data .data.*)
+} >ram
+
+.bss :{
+    *(.sbss .sbss.*)
+    *(.bss .bss.*)
+    *(COMMON)
+} >ram
+```
+
+- `.text`、`.rodata`、`.data` 和 `.bss` 是输出节的名称
+- `*` 是通配符，表示匹配所有输入节
+- `(.text .text.*)` 表示匹配所有以 `.text` 开头的输入节
+- `. = ALIGN(4096)` 确保 `.data` 节的起始地址是 4096(4K) 字节对齐的，这将插入填充字节，直到当前内存位置对齐到 4096 字节边界
+- `*(COMMON)` 用于处理未初始化的全局变量和静态变量，在大多数情况下，输入文件中的 common 符号将被放置在输出文件的 `.bss` 节中
+- common 符号就是未初始化的全局变量或静态变量，它们在链接时会被分配一个默认大小（通常是 0），并且在运行时会被清零
+- https://sourceware.org/binutils/docs/ld/Input-Section-Common.html
+- `>ram` 表示将这些节放置在之前定义的 `ram` 内存区域中
+
+#### `PROVIDE` 命令定义的符号如下
+
+| 符号名称        | 描述                                     |
+| --------------- | ---------------------------------------- |
+| `_text_start`   | 程序代码段的起始地址                     |
+| `_text_end`     | 程序代码段的结束地址                     |
+| `_rodata_start` | 只读数据段的起始地址                     |
+| `_rodata_end`   | 只读数据段的结束地址                     |
+| `_data_start`   | 已初始化数据段的起始地址                 |
+| `_data_end`     | 已初始化数据段的结束地址                 |
+| `_bss_start`    | 未初始化数据段的起始地址                 |
+| `_bss_end`      | 未初始化数据段的结束地址                 |
+| `_memory_start` | 内存的起始地址（为 0x80000000）          |
+| `_memory_end`   | 内存的结束地址（为 0x88000000）          |
+| `_heap_start`   | 堆的起始地址（为 `_bss_end`）            |
+| `_heap_size`    | `_heap_size = _memory_end - _heap_start` |
+
+---
+
+### MemoryMap
 
 see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
 
