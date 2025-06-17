@@ -25,14 +25,16 @@ void kernel_init(int hart_id, void *dtd) {
 	}
 	uart_puts("kernel page table inited...\n");
 
-	stap_t stap= early_paging_init();
+	// 启用早期分页， 恒等映射需要
+	stap_t stap= early_paging_init(); //出问题的地方
 	early_enable_paging(stap);
 	uart_puts("enable paging...\n");
 
-	// 启用分页
+	// 创建恒等映射
 	//early_enable_paging(stap);
 	map_kernel_identity(kernel_pagetable);
 
+	// 启用分页
 	enable_paging(kernel_pagetable);
 	// 测试页分配
 	int *page=alloc_pages(1);

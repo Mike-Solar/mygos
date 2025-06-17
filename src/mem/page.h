@@ -32,7 +32,7 @@ extern const uintptr_t KERNEL_VIRT_ADDR;
 #define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + KERNEL_VIRT_ADDR))
 
 extern const uintptr_t OPEN_SBI_PHYS_ADDR;
-extern uintptr_t __kernel_end;
+extern uintptr_t __kernel_end; //这个是NULL,不知道为啥
 extern void _start(void);
 
 typedef struct pte {
