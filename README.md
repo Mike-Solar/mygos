@@ -21,7 +21,7 @@
 ├── build/
 │   └── (中间文件与输出文件)
 ├── os.ld         # 链接脚本
-├── gdbinit       # 调试脚本
+├── gdb_init      # 调试脚本
 └── Makefile
 
 ```
@@ -32,14 +32,14 @@
 
 see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
 
-| 地址范围     | 设备        | 描述                                |
-| ------------ | ----------- | ----------------------------------- |
-| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
-| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
-| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
-| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
-| `0x10001000` | virtio disk | 虚拟磁盘                            |
-| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
+| 地址范围     | 设备        | 英文全称                                    | 描述                      |
+| ------------ | ----------- | ------------------------------------------- | ------------------------- |
+| `0x00001000` | boot ROM    | Boot Read-Only Memory                       | QEMU 提供的启动 ROM       |
+| `0x02000000` | CLINT       | Core Local Interrupt Controller             | 核心本地中断控制器        |
+| `0x0C000000` | PLIC        | Platform Level Interrupt Controller         | 平台级中断控制器          |
+| `0x10000000` | UART0       | Universal Asynchronous Receiver-Transmitter | 串口 UART（输出调试信息） |
+| `0x10001000` | virtio disk | Virtual Disk                                | 虚拟磁盘                  |
+| `0x80000000` | DRAM base   | Dynamic Random Access Memory                | 内核加载的起始地址        |
 
 ```plaintext
 
@@ -65,7 +65,7 @@ ram (从 0x80000000 开始)
 
 | 缩写  | 英文全称                                    | 中文全称             | 功能描述                                                            |
 | ----- | ------------------------------------------- | -------------------- | ------------------------------------------------------------------- |
-| CLINT | Core Local Interruptor                      | 核心本地中断控制器   | 管理每个 hart（核心）本地的软件和定时器中断。                       |
+| CLINT | Core Local Interrupter                      | 核心本地中断控制器   | 管理每个 hart（核心）本地的软件和定时器中断。                       |
 | PLIC  | Platform-Level Interrupt Controller         | 平台级中断控制器     | 接收外部设备的中断并分发给各个 hart。                               |
 | UART  | Universal Asynchronous Receiver-Transmitter | 通用异步收发器       | 用于串口通信，提供终端输入输出接口。                                |
 | IRQ   | Interrupt Request                           | 中断请求             | 外设向处理器请求服务的信号。                                        |
@@ -78,25 +78,6 @@ ram (从 0x80000000 开始)
 | ABI   | Application Binary Interface                | 应用程序二进制接口   | 定义程序与操作系统之间的接口规范，包括系统调用约定等。              |
 | BIOS  | Basic Input/Output System                   | 基本输入输出系统     | 启动计算机时加载操作系统的固件，通常在虚拟机中不使用。              |
 | BSS   | Block Started by Symbol                     | 符号开始的块         | 用于存储未初始化的全局变量和静态变量，运行时会被清零。              |
-
----
-
-### 中断相关 CSR 位缩写
-
-| 缩写 | 英文全称                             | 中文全称               | 功能描述                                               | 位置 |
-| ---- | ------------------------------------ | ---------------------- | ------------------------------------------------------ | ---- |
-| MSIP | Machine Software Interrupt Pending   | 机器软件中断挂起位     | 指示软件中断是否挂起，由 CLINT 控制并映射至 `mip` 中。 |
-| MSIE | Machine Software Interrupt Enable    | 软件中断使能           | `mie` 中的一位，控制是否响应软件中断。                 |
-| MTIE | Machine Timer Interrupt Enable       | 定时器中断使能         | `mie` 中的一位，控制是否响应定时器中断。               |
-| MEIE | Machine External Interrupt Enable    | 外部中断使能           | `mie` 中的一位，控制是否响应外部中断（如 UART 中断）。 |
-| MIE  | Machine Interrupt Enable             | 机器中断总使能         | `mstatus` 中的一位，启用机器模式下的全局中断响应能力。 |
-| SIE  | Supervisor Interrupt Enable          | 监督模式中断总使能     | `mstatus` 中的一位，启用 S 模式中断。                  |
-| UIE  | User Interrupt Enable                | 用户模式中断总使能     | `mstatus` 中的一位，启用 U 模式中断。                  |
-| MPIE | Machine Previous Interrupt Enable    | 上次中断使能状态（M）  | 中断时自动保存先前的中断使能状态。                     |
-| SPIE | Supervisor Previous Interrupt Enable | 上次中断使能状态（S）  | 同上，适用于 S 模式。                                  |
-| UPIE | User Previous Interrupt Enable       | 上次中断使能状态（U）  | 同上，适用于 U 模式。                                  |
-| MPP  | Machine Previous Privilege           | 上次特权级（M 模式中） | 表示陷入中断前的特权级。                               |
-| SPP  | Supervisor Previous Privilege        | 上次特权级（S 模式中） | 表示陷入中断前的特权级（仅两级特权时使用）。           |
 
 ---
 
@@ -156,6 +137,25 @@ ram (从 0x80000000 开始)
 
 ---
 
+### 中断相关 CSR 位缩写
+
+| 缩写 | 英文全称                             | 中文全称               | 功能描述                                               | CSR       |
+| ---- | ------------------------------------ | ---------------------- | ------------------------------------------------------ | --------- |
+| MSIP | Machine Software Interrupt Pending   | 机器软件中断挂起位     | 指示软件中断是否挂起，由 CLINT 控制并映射至 `mip` 中。 | `mip`     |
+| MSIE | Machine Software Interrupt Enable    | 软件中断使能           | 控制是否响应软件中断。                                 | `mie`     |
+| MTIE | Machine Timer Interrupt Enable       | 定时器中断使能         | 控制是否响应定时器中断。                               | `mie`     |
+| MEIE | Machine External Interrupt Enable    | 外部中断使能           | 控制是否响应外部中断（如 UART 中断）。                 | `mie`     |
+| MIE  | Machine Interrupt Enable             | 机器中断总使能         | 启用机器模式下的全局中断响应能力。                     | `mstatus` |
+| SIE  | Supervisor Interrupt Enable          | 监督模式中断总使能     | 启用 S 模式中断。                                      | `mstatus` |
+| UIE  | User Interrupt Enable                | 用户模式中断总使能     | 启用 U 模式中断。                                      | `mstatus` |
+| MPIE | Machine Previous Interrupt Enable    | 上次中断使能状态（M）  | 中断时自动保存先前的中断使能状态。                     | `mstatus` |
+| SPIE | Supervisor Previous Interrupt Enable | 上次中断使能状态（S）  | 同上，适用于 S 模式。                                  | `mstatus` |
+| UPIE | User Previous Interrupt Enable       | 上次中断使能状态（U）  | 同上，适用于 U 模式。                                  | `mstatus` |
+| MPP  | Machine Previous Privilege           | 上次特权级（M 模式中） | 表示陷入中断前的特权级。                               | `mstatus` |
+| SPP  | Supervisor Previous Privilege        | 上次特权级（S 模式中） | 表示陷入中断前的特权级（仅两级特权时使用）。           | `mstatus` |
+
+---
+
 ### RISC-V 架构手册中定义的标准编码（常见的 M 模式 Machine Mode 原因）：
 
 | `mcause` 值（十进制） | 中断/异常 | 宏定义（常见写法）             | 原因说明                         |
@@ -177,21 +177,6 @@ ram (从 0x80000000 开始)
 | 0x80000000 + 3        | 中断      | `MachineSoftwareInterrupt`     | 软件中断（由 MSIP 触发）         |
 | 0x80000000 + 7        | 中断      | `MachineTimerInterrupt`        | 定时器中断（mtimecmp）           |
 | 0x80000000 + 11       | 中断      | `MachineExternalInterrupt`     | 外部中断（PLIC）                 |
-
----
-
-## 内存空间 MemoryMap
-
-| 地址范围     | 设备        | 描述                                |
-| ------------ | ----------- | ----------------------------------- |
-| `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
-| `0x02000000` | CLINT       | Core Local Interrupt Controller     |
-| `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
-| `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
-| `0x10001000` | virtio disk | 虚拟磁盘                            |
-| `0x80000000` | DRAM base   | 内核加载的起始地址                  |
-
-see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
 
 ---
 

@@ -6,6 +6,6 @@
 /ignore
 /helps
 
-/gdbinit
+/gdb_init
 
 .idea
