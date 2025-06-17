@@ -17,6 +17,7 @@ SRCS_C += ./src/io/trap_handler.c
 SRCS_C += ./src/tasks/count.c
 SRCS_C += ./src/tasks/tasks.c
 SRCS_C += ./src/tasks/timer.c
+SRCS_C += ./src/tasks/input.c
 
 SRCS_C += ./src/memory/page.c
 

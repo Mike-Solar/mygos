@@ -18,11 +18,15 @@ extern void task_timer();
 
 extern void page_test();
 
+// input
+extern void test_input();
+
 
 void
 os_main(void)
 {
     task_create(task_count30);
+    task_create(test_input);
     task_create(task_count70);
     task_create(task_count50);
 

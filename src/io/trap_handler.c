@@ -19,8 +19,9 @@ external_interrupt_handler()
     // 处理中断
     if(irq == UART0_IRQ)
     {
-        uart_putc((char)uart_getc());
-        uart_putc('\n');
+        char ch = (char)uart_getc();
+
+        printf("Received character: (0x%02x)\n", ch);
     }
     else if(irq) printf("unexpected interrupt irq = %d\n", irq);
 
