@@ -1,7 +1,7 @@
 //
 // Created by katherinesolar on 25-5-22.
 //
-
+/*
 #include "io.h"
 
 #include <string.h>
@@ -52,3 +52,4 @@ int kprintk(int level, const char *fmt, ...){
 	}
 
 }
+*/

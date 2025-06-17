@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
-project(mygos)
-
-set(CMAKE_EXE_LINKER_FLAGS "-T ${CMAKE_SOURCE_DIR}/link_script_riscv.ld -nostdlib -fPIC")
+project(mygos C ASM)
+set(CMAKE_C_FLAGS "-mcmodel=medany")
+set(CMAKE_EXE_LINKER_FLAGS "-T ${CMAKE_SOURCE_DIR}/link_script_riscv.ld -nostdlib -fPIC -mcmodel=medany")
 set(SRC_LIST src/algs/kstring.c
         src/algs/kstring.h
         src/io/kput.S
@@ -21,8 +21,6 @@ set(SRC_LIST src/algs/kstring.c
         src/trap/trap_handler.c
         src/trap/entry.S
         src/trap/trap.c
-        src/mem/kmemory.c
-        src/mem/kmemory.h
         src/io/io.c
         src/main.c
         include/endian.h
@@ -35,6 +33,10 @@ set(SRC_LIST src/algs/kstring.c
         src/algs/math.c
         src/algs/kmath.h
         src/io/plic.h
+        src/lock/spin_lock.c
+        src/lock/lock.S
+        src/main.S
+        src/mem.S
 )
 
 add_executable(mygos ${SRC_LIST})

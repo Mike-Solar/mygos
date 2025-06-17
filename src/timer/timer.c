@@ -70,8 +70,9 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
 {
     // 参数检查：处理函数和超时时间不能为空
     if(!callback || !timeout) return NULL;
-
-    spin_lock(); // 使用锁来保护多个任务之间共享的 timer_list
+    struct spin_lock_t lock;
+    spin_init(&lock);
+    spin_lock(&lock); // 使用锁来保护多个任务之间共享的 timer_list
 
     timer_ptr t = &(timer_list[0]);
     for(int i = 0; i < MAX_TIMER; i++)
@@ -88,7 +89,7 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
         t->timeout_tick = _tick + timeout; // 设置超时时间（当前 tick + 超时值）
     }
 
-    spin_unlock();
+    spin_unlock(&lock);
 
     return t;
 }
@@ -96,7 +97,9 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
 void
 timer_delete(timer_ptr timer)
 {
-    spin_lock(); // 使用锁来保护 timer_list
+    struct spin_lock_t lock;
+    spin_init(&lock);
+    spin_lock(&lock); // 使用锁来保护 timer_list
 
     timer_ptr t = &(timer_list[0]);
     for(int i = 0; i < MAX_TIMER; i++)
@@ -110,5 +113,5 @@ timer_delete(timer_ptr timer)
         t++;
     }
 
-    spin_unlock();
+    spin_unlock(&lock);
 }

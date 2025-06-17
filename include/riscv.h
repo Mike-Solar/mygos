@@ -137,7 +137,7 @@ r_mstatus()
 static inline void
 w_mstatus(reg_t x)
 {
-    asm volatile("csrw mstatus, %0" : : "r"(x));
+    asm volatile("csrw mstatus, %0": : "r"(x));
 }
 
 // 读取 机器模式中断使能寄存器
