@@ -5,31 +5,13 @@
 
 
 /*/
- * Save all General-Purpose(GP) registers to context.
- * struct context *base = &ctx_task;
- * base->ra = ra;
- * ......
- * These GP registers to be saved don't include gp
- * and tp, because they are not caller-saved or
- * callee-saved. These two registers are often used
- * for special purpose. For example, in RVOS, 'tp'
- * (aka "thread pointer") is used to store hartid,
- * which is a global value and would not be changed
- * during context-switch.
- *
  * 保存所有通用寄存器（General-Purpose, GP）到上下文结构中
- * 相当于 C 伪代码：
- * struct context *base = &ctx_task;
- * base->ra = ra;
- * ......
+ * 
  * 注意：这里保存的 GP 寄存器不包括 gp 和 tp，
  * 因为它们既不是 caller-saved（调用者负责保存），也不是 callee-saved（被调用者负责保存）
- * 它们常用于特殊用途。例如在 RVOS 中，tp（线程指针）用于存储 hartid（硬件线程编号），
+ * 它们常用于特殊用途。例如在 RVOS 中，tp（线程指针）用于存储 hart_id（硬件线程编号），
  * 这个值是全局固定的，在上下文切换过程中不会改变。
  *
- * we don't save t6 here, due to we have used
- * it as base, we have to save t6 in an extra step
- * outside of SAVE_REG
  * 不在这里保存 t6，因为 t6 已被用作 base 参数，
  * 所以必须在 SAVE_REG 之外单独保存 t6
 /*/
@@ -66,10 +48,6 @@
 
 /*/
  * 从上下文中恢复所有通用寄存器（除了 gp 和 tp）
- * 类似于 C 伪代码：
- * struct context *base = &ctx_task;
- * ra = base->ra;
- * ......
 /*/
 .macro LOAD_REG base
     lw ra,   TASK_CONTEXT_RA_OFFSET(\base)
@@ -104,11 +82,11 @@
 .endm
 
 .macro STORE_T6 from
-    sw t6,  TASK_CONTEXT_T6_OFFSET(\from)     // 将 t6 保存到上下文结构体中的 t6 位置
+    sw t6,  TASK_CONTEXT_T6_OFFSET(\from)  // 将 t6 保存到上下文结构体中的 t6 位置
 .endm
 
 .macro LOAD_MEPC to from
-    lw \to,  TASK_CONTEXT_PC_OFFSET(\from)     // 从上下文结构体中加载 mepc 到指定寄存器
+    lw \to,  TASK_CONTEXT_PC_OFFSET(\from) // 从上下文结构体中加载 mepc 到指定寄存器
 .endm
 
 

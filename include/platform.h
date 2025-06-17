@@ -90,11 +90,11 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  * 在复位时，每个 msip 寄存器都被清零（不触发中断）。
 /*/
 
-#define CLINT_BASE 0x2000000L                                       // CLINT 模块基地址（从这里开始访问各种中断相关寄存器）
-#define CLINT_MSIP(hartid) (CLINT_BASE + 4 * (hartid))              // 每个 hart 的 msip 软件中断控制寄存器（每个 hart 占 4 字节）
-#define CLINT_MTIMECMP(hartid) (CLINT_BASE + 0x4000 + 8 * (hartid)) // 定时器比较值寄存器 mtimecmp，控制何时触发定时器中断
-#define CLINT_MTIME (CLINT_BASE + 0xBFF8)                           // 当前时间寄存器 mtime（记录系统自启动以来的“周期数”）
-#define CLINT_TIMEBASE_FREQ 10000000                                // 时间基准频率为 10 MHz（每秒计 10,000,000 次）
+#define CLINT_BASE 0x2000000L                                         // CLINT 模块基地址（从这里开始访问各种中断相关寄存器）
+#define CLINT_MSIP(hart_id) (CLINT_BASE + 4 * (hart_id))              // 每个 hart 的 msip 软件中断控制寄存器（每个 hart 占 4 字节）
+#define CLINT_MTIMECMP(hart_id) (CLINT_BASE + 0x4000 + 8 * (hart_id)) // 定时器比较值寄存器 mtimecmp，控制何时触发定时器中断
+#define CLINT_MTIME (CLINT_BASE + 0xBFF8)                             // 当前时间寄存器 mtime（记录系统自启动以来的“周期数”）
+#define CLINT_TIMEBASE_FREQ 10000000                                  // 时间基准频率为 10 MHz（每秒计 10,000,000 次）
 
 
 // 任务上下文结构体定义

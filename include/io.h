@@ -11,15 +11,12 @@
 
 
 /*/
- * The UART control registers are memory-mapped at address UART0.
- * This macro returns the address of one of the registers.
- *
- * UART控制寄存器的地址被分配在 UART0 处，
+ * UART控制寄存器的地址被分配在 UART0 处
  * 这个宏据此计算某个寄存器的地址
  *
- * 通过 (volatile uint8_t*) 强制类型转换，把这个地址转换为指向 8 位无符号整型的易失性指针。
- * volatile 关键字告诉编译器，这个内存地址对应的值可能随时发生变化（比如被硬件修改），
- * 因此每次访问都必须直接从内存读取或写入，不能做优化缓存。
+ * 通过 (volatile uint8_t*) 强制类型转换，把这个地址转换为指向 8 位无符号整型的易失性指针
+ * volatile 关键字告诉编译器，这个内存地址对应的值可能随时发生变化（比如被硬件修改）
+ * 因此每次访问都必须直接从内存读取或写入，不能做优化缓存
 /*/
 #define UART_REG(reg) ((volatile uint8_t*)(UART0 + reg))
 

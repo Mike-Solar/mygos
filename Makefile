@@ -191,3 +191,5 @@ code: all
 clean:
 	@${RM} ${OUTPUT_PATH}
 
+
+crun: clean run
