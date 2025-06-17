@@ -26,11 +26,11 @@
 
 ```
 
-## 关于 `os.ld` 链接脚本
+---
+
+## **关于 `os.ld` 链接脚本**
 
 ### 一、`OUTPUT_ARCH` 命令指定输出文件的目标架构
-
-https://sourceware.org/binutils/docs/ld/Miscellaneous-Commands.html
 
 ```plaintext
 OUTPUT_ARCH( "riscv" )
@@ -41,8 +41,6 @@ OUTPUT_ARCH( "riscv" )
 具体的 -march 和 -mabi 会在调用 gcc 时进一步指定。
 
 ### 二、`ENTRY` 命令指定程序的入口点
-
-https://sourceware.org/binutils/docs/ld/Entry-Point.html
 
 ```plaintext
 ENTRY( _start )
@@ -57,8 +55,6 @@ ENTRY( _start )
 ### 三、`MEMORY` 命令
 
 **`MEMORY` 命令描述目标设备的内存布局**
-
-https://sourceware.org/binutils/docs/ld/MEMORY.html
 
 ```plaintext
 MEMORY
@@ -89,8 +85,6 @@ ORIGIN 用于设置内存区域的起始地址，将其放在 0x8000_0000 的开
 
 **`SECTIONS` 命令告诉链接器如何将输入节映射到输出节，以及如何将输出节放置在内存中**
 
-https://sourceware.org/binutils/docs/ld/SECTIONS.html
-
 ```plaintext
 SECTIONS
 {
@@ -110,8 +104,6 @@ sections-command-2
 | (4) an overlay description        |           | 一个覆盖描述   |
 
 仅使用（2）符号赋值和（3）输出节描述。
-
-https://sourceware.org/binutils/docs/ld/PROVIDE.html
 
 #### 使用 `PROVIDE` 命令来定义符号
 
@@ -155,9 +147,7 @@ PROVIDE 命令用于定义符号，如果符号未在输入文件中定义，则
 - `*` 是通配符，表示匹配所有输入节
 - `(.text .text.*)` 表示匹配所有以 `.text` 开头的输入节
 - `. = ALIGN(4096)` 确保 `.data` 节的起始地址是 4096(4K) 字节对齐的，这将插入填充字节，直到当前内存位置对齐到 4096 字节边界
-- `*(COMMON)` 用于处理未初始化的全局变量和静态变量，在大多数情况下，输入文件中的 common 符号将被放置在输出文件的 `.bss` 节中
-- common 符号就是未初始化的全局变量或静态变量，它们在链接时会被分配一个默认大小（通常是 0），并且在运行时会被清零
-- https://sourceware.org/binutils/docs/ld/Input-Section-Common.html
+- `*(COMMON)` 用于处理未初始化的全局变量和静态变量，在大多数情况下，输入文件中的 common 符号将被放置在输出文件的 `.bss` 节中。common 符号就是未初始化的全局变量或静态变量，它们在链接时会被分配一个默认大小（通常是 0），并且在运行时会被清零
 - `>ram` 表示将这些节放置在之前定义的 `ram` 内存区域中
 
 #### `PROVIDE` 命令定义的符号如下
@@ -177,9 +167,19 @@ PROVIDE 命令用于定义符号，如果符号未在输入文件中定义，则
 | `_heap_start`   | 堆的起始地址（为 `_bss_end`）            |
 | `_heap_size`    | `_heap_size = _memory_end - _heap_start` |
 
+### 五、参考资料链接汇总
+
+- [关于 GNU 链接器](https://sourceware.org/binutils/docs/ld/Miscellaneous-Commands.html)
+- [关于入口点](https://sourceware.org/binutils/docs/ld/Entry-Point.html)
+- [关于内存布局](https://sourceware.org/binutils/docs/ld/MEMORY.html)
+- [关于节的定义](https://sourceware.org/binutils/docs/ld/SECTIONS.html)
+- [关于符号定义](https://sourceware.org/binutils/docs/ld/PROVIDE.html)
+
 ---
 
-### MemoryMap
+## 其它
+
+### **MemoryMap 内存分配**
 
 see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
 
@@ -331,7 +331,7 @@ ram (从 0x80000000 开始)
 
 ---
 
-## 关于多任务
+### 关于多任务
 
 1. 协作式多任务 (Cooperative Multitasking)：
 
@@ -343,3 +343,8 @@ ram (从 0x80000000 开始)
    抢占式环境下，操作系统完全决定任务调度方案，操
    作系统可以剥夺当前任务对处理器的使用，将处理
    器提供给其它任务。
+
+## 其他参考资料
+
+- https://github.com/oscomp/testsuits-for-oskernel/
+- https://github.com/oscomp/oskernel-testsuits-cooperation
