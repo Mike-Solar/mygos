@@ -40,4 +40,8 @@ os_main(void)
     // task_create(task_count70);
 
     // task_create(page_test);
+
+    set_print_style(COLOR_BLUE, PRINT_STYLE_BOLD);
+    printf("=========================== User Tasks Created  ==============================\n");
+    reset_print_style();
 }

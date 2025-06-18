@@ -173,3 +173,19 @@ panic(char* s)
     printf("\n");
     while(1);
 }
+
+
+// 打印系统信息
+uint32_t
+os_message(const char* s, ...)
+{
+    // printf("MyGOS: ");
+    printf("\033[1;32mMyGOS: \033[0m"); // 使用绿色字体输出
+
+    uint32_t res = 0;
+    va_list  vl;
+    va_start(vl, s);
+    res = _vprintf(s, vl);
+    va_end(vl);
+    return res;
+}

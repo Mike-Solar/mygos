@@ -52,12 +52,12 @@ user_task1()
 void
 user_task_lock()
 {
-    print_create_task(r_mscratch(), (reg_t)user_task_lock, "Task Lock");
-    while(1)
+    for(int i = 0; i < 5; i++)
     {
 #ifdef USE_LOCK
         spin_lock();
 #endif
+        printf("Task Lock: 第%d次循环: \n", i);
         uart_puts("Task Lock: Begin ... \n");
         for(int i = 0; i < 15; i++)
         {

@@ -28,6 +28,7 @@ void        uart_puts(char* s);                             // 输出字符串�
 uint32_t    printf(const char* s, ...);                     // 格式化输出到串口，类似于 printf
 void        panic(char* s);                                 // 输出错误信息并进入死循环
 void        get_input(char* input_buffer, int buffer_size); // 获取用户输入，存入指定缓冲区
+uint32_t    os_message(const char* s, ...);                 // 打印系统信息，类似于 printf，但用于系统消息
 
 
 /* 内存管理 */

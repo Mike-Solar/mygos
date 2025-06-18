@@ -17,7 +17,7 @@ extern void timer_interrupt_handler();    // 定时器中断处理函数
 reg_t
 trap_handler(reg_t epc, reg_t cause)
 {
-    printf("Trap handler called! EPC = %p, Cause = %p\n", epc, cause);
+    os_message("Trap handler called! EPC = %p, Cause = %p ---> ", epc, cause);
     reg_t return_pc = epc;
 
     if(cause & MCAUSE_MASK_INTERRUPT)
@@ -63,6 +63,6 @@ trap_handler(reg_t epc, reg_t cause)
         // return_pc += 4;
     }
 
-    printf("Trap handler finished! Returning to: %p\n", return_pc);
+    os_message("Trap handler finished! Returning to: %p\n", return_pc);
     return return_pc;
 }
