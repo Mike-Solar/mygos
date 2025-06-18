@@ -1,7 +1,6 @@
 
 // timer.c
 
-#include "os.h"
 
 #include "timer.h"
 

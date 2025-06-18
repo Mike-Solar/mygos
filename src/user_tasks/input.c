@@ -1,7 +1,7 @@
 
 // tasks/input.c
 
-#include "os.h"
+#include "mygos.h"
 
 
 void

@@ -2,6 +2,7 @@
 // uart.c
 
 #include "io.h"
+
 #include "platform.h"
 #include "types.h"
 

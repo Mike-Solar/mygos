@@ -1,7 +1,6 @@
 
 // trap/trap_handler.c
 
-#include "os.h"
 
 #include "platform.h"
 #include "riscv.h"

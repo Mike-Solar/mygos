@@ -1,8 +1,6 @@
 
 // timer/trap_handler.c
 
-#include "os.h"
-
 #include "timer.h"
 
 #include "platform.h"

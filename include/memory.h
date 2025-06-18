@@ -32,3 +32,8 @@ typedef struct Page* page_ptr; // 页面指针类型
 #define PAGE_ORDER 12                // 页面大小的对数
 #define PAGE_TAKEN (uint8_t)(1 << 0) // 页面是否使用
 #define PAGE_LAST (uint8_t)(1 << 1)  // 是否是一个连续页面的最后一页
+
+
+void  page_init();            // 初始化页面管理
+void* page_alloc(int npages); // 分配一个内存块，由连续的物理页组成
+void  page_free(void* p);     // 释放一个内存块，回收连续的物理页

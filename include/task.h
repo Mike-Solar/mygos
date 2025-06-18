@@ -49,3 +49,17 @@ struct task_context
 
 
 typedef struct task_context* task_context_ptr;
+
+
+void    task_yield();                                   // 任务主动让出 CPU，允许其他任务运行
+int32_t task_create(void (*task)());                    // 创建一个新任务，传入任务函数指针
+void    task_delete(task_context_ptr task_context_ptr); // 删除指定任务
+void    task_delete_current();                          // 删除当前任务
+void    task_delay(volatile int count);                 // 延迟执行，消耗 CPU 时间
+
+uint32_t         task_get_count();                      // 获取当前活动任务数
+uint32_t         task_get_current();                    // 获取当前任务编号
+task_context_ptr task_get_current_context();            // 获取当前任务的上下文指针
+
+void sched_init();                                      // 初始化调度器、开始任务调度
+void schedule();                                        // 任务轮转调度，切换到下一个任务的上下文

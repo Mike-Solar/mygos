@@ -4,7 +4,8 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#include "os.h"
+#include "mygos.h"
+
 
 #define DELAY 1000
 

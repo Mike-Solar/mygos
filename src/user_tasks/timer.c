@@ -1,7 +1,8 @@
 
 // timer.c
 
-#include "os.h"
+#include "mygos.h"
+
 #include "riscv.h"
 #include "utils.h"
 

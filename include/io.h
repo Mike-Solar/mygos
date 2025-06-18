@@ -1,7 +1,8 @@
 
 // io.h
 
-#pragma once
+#ifndef __IO_H__
+#define __IO_H__
 
 #include "types.h"
 
@@ -92,7 +93,18 @@
 #define uart_write_reg(reg, v) (*(UART_REG(reg)) = (v)) // 写UART寄存器
 
 
-void     plic_init();                     // 初始化 PLIC（外部中断控制器），设置 UART0 的中断优先级和使能
-void     uart_init();                     // 初始化 UART，配置波特率和数据格式
-uint32_t plic_claim();                    // 查询 PLIC，获取当前需要处理的中断源 ID（如果有）
-void     plic_complete(uint32_t plic_id); // 完成中断处理，通知 PLIC 已经处理完指定的中断源 ID
+void     plic_init();                                    // 初始化 PLIC（外部中断控制器），设置 UART0 的中断优先级和使能
+void     uart_init();                                    // 初始化 UART，配置波特率和数据格式
+uint32_t plic_claim();                                   // 查询 PLIC，获取当前需要处理的中断源 ID（如果有）
+void     plic_complete(uint32_t plic_id);                // 完成中断处理，通知 PLIC 已经处理完指定的中断源 ID
+
+char     uart_getc();                                    // 从串口接收一个字符（阻塞，等待接收缓冲区有数据）
+void     uart_putc(char ch);                             // 输出一个字符到串口（阻塞，等待发送缓冲区空）
+void     uart_puts(char* s);                             // 输出字符串到串口（逐字符发送）
+void     panic(char* s);                                 // 输出错误信息并进入死循环
+uint32_t printf(const char* s, ...);                     // 格式化输出到串口，类似于 printf
+void     get_input(char* input_buffer, int buffer_size); // 获取用户输入，存入指定缓冲区
+uint32_t os_message(const char* s, ...);                 // 打印系统信息，类似于 printf，但用于系统消息
+
+
+#endif // __IO_H__

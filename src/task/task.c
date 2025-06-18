@@ -1,7 +1,7 @@
 
 // task.c
 
-#include "os.h"
+#include "task.h"
 
 #include "platform.h"
 #include "riscv.h"

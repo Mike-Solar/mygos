@@ -1,7 +1,7 @@
 
 // main.c
 
-#include "os.h"
+#include "mygos.h"
 
 
 extern void uart_init();         // 初始化串口

@@ -1,8 +1,6 @@
 
 // io/trap_handler.c
 
-#include "os.h"
-
 #include "io.h"
 
 #include "platform.h"

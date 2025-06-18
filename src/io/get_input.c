@@ -1,8 +1,6 @@
 
 // io/get_input.c
 
-#include "os.h"
-
 #include "io.h"
 
 
