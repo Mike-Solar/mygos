@@ -22,10 +22,12 @@ task_context_ptr task_get_current_context();            // 获取当前任务的
 
 
 /* IO 相关函数声明 */
-void     uart_putc(char ch);         // 输出一个字符到串口（阻塞，等待发送缓冲区空）
-void     uart_puts(char* s);         // 输出字符串到串口（逐字符发送）
-uint32_t printf(const char* s, ...); // 格式化输出到串口，类似于 printf
-void     panic(char* s);             // 输出错误信息并进入死循环
+extern char uart_getc();                                    // 从串口接收一个字符（阻塞，等待接收缓冲区有数据）
+void        uart_putc(char ch);                             // 输出一个字符到串口（阻塞，等待发送缓冲区空）
+void        uart_puts(char* s);                             // 输出字符串到串口（逐字符发送）
+uint32_t    printf(const char* s, ...);                     // 格式化输出到串口，类似于 printf
+void        panic(char* s);                                 // 输出错误信息并进入死循环
+void        get_input(char* input_buffer, int buffer_size); // 获取用户输入，存入指定缓冲区
 
 
 /* 内存管理 */

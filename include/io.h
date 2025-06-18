@@ -96,4 +96,3 @@ void     plic_init();                     // 初始化 PLIC（外部中断控制
 void     uart_init();                     // 初始化 UART，配置波特率和数据格式
 uint32_t plic_claim();                    // 查询 PLIC，获取当前需要处理的中断源 ID（如果有）
 void     plic_complete(uint32_t plic_id); // 完成中断处理，通知 PLIC 已经处理完指定的中断源 ID
-char     uart_getc();                     // 接收一个字符（阻塞，直到接收缓冲区有数据）

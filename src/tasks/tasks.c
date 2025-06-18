@@ -59,10 +59,10 @@ user_task_lock()
         spin_lock();
 #endif
         uart_puts("Task Lock: Begin ... \n");
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 15; i++)
         {
             uart_puts("Task Lock: Running... \n");
-            task_delay(DELAY * 5);
+            task_delay(DELAY);
         }
         uart_puts("Task Lock: End ... \n");
 #ifdef USE_LOCK

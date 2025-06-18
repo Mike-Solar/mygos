@@ -9,6 +9,7 @@ SRCS_ASM += ./src/trap/entry.S
 
 SRCS_C += ./src/kernel.c
 
+SRCS_C += ./src/io/get_input.c
 SRCS_C += ./src/io/uart.c
 SRCS_C += ./src/io/printf.c
 SRCS_C += ./src/io/plic.c
