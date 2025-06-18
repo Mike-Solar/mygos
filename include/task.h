@@ -1,7 +1,9 @@
 
 // task.h
 
-#pragma once
+#ifndef __TASK_H__
+#define __TASK_H__
+
 
 #include "types.h"
 
@@ -63,3 +65,6 @@ task_context_ptr task_get_current_context();            // 获取当前任务的
 
 void sched_init();                                      // 初始化调度器、开始任务调度
 void schedule();                                        // 任务轮转调度，切换到下一个任务的上下文
+
+
+#endif // __TASK_H__

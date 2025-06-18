@@ -8,6 +8,10 @@
 #include "riscv.h"
 
 
+extern void spin_lock();
+extern void spin_unlock();
+
+
 uint32_t     _tick = 0;             // 当前 tick 计数器
 struct timer timer_list[MAX_TIMER]; // 定义计时器列表
 

@@ -7,6 +7,11 @@
 #include "riscv.h"
 
 
+extern uint32_t os_message(const char* s, ...); // 打印系统信息，类似于 printf，但用于系统消息
+extern void     uart_puts(char* s);             // 输出字符串到串口（逐字符发送）
+extern void     uart_putc(char ch);             // 输出一个字符到串口（阻塞，等待发送缓冲区空）
+
+
 uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 在标准 RISC-V 调用约定中，堆栈指针 sp 始终是 16 字节对齐的
 struct task_context                  task_contexts[MAX_TASKS];          // 任务上下文结构体列表
 uint32_t                             _current    = -1;                  // 当前任务索引

@@ -7,6 +7,9 @@
 #include "riscv.h"
 
 
+extern uint32_t os_message(const char* s, ...); // 打印系统信息，类似于 printf，但用于系统消息
+
+
 extern uint32_t     _tick;                 // 当前 tick 计数器
 extern struct timer timer_list[MAX_TIMER]; // 定义计时器列表
 

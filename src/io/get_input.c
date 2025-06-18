@@ -8,6 +8,8 @@
 #define BACKSPACE_KEY 0x0000007f // 退格键 ASCII 码
 
 
+extern void spin_lock();   // 获取锁
+extern void spin_unlock(); // 释放锁
 void
 get_input(char* input_buffer, int buffer_size)
 {
