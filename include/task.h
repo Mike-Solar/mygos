@@ -60,8 +60,8 @@ void    task_delete_current();                          // 删除当前任务
 void    task_delay(volatile int count);                 // 延迟执行，消耗 CPU 时间
 
 uint32_t         task_get_count();                      // 获取当前活动任务数
-uint32_t         task_get_current();                    // 获取当前任务编号
-task_context_ptr task_get_current_context();            // 获取当前任务的上下文指针
+uint32_t         task_get_current_context_id();         // 获取当前任务编号
+task_context_ptr task_get_current_context_ptr();            // 获取当前任务的上下文指针
 
 void sched_init();                                      // 初始化调度器、开始任务调度
 void schedule();                                        // 任务轮转调度，切换到下一个任务的上下文

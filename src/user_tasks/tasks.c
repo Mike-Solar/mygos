@@ -2,8 +2,6 @@
 // tasks.c
 
 #include "mygos.h"
-
-#include "riscv.h"
 #include "utils.h"
 
 
@@ -12,7 +10,7 @@ user_task0()
 {
     static int sum = 0;
 
-    print_create_task(r_mscratch(), (reg_t)user_task0, "Task 0");
+    print_task_start(task_get_current_context_id(), (reg_t)user_task0, "Task 0");
     while(1)
     {
         printf("Task 0: sum = %d\n", sum);
@@ -33,7 +31,7 @@ user_task1()
 {
     static int product = 1;
 
-    print_create_task(r_mscratch(), (reg_t)user_task1, "Task 1");
+    print_task_start(task_get_current_context_id(), (reg_t)user_task1, "Task 1");
     while(1)
     {
         printf("Task 1: product = %d\n", product);
@@ -76,7 +74,7 @@ user_task_lock()
 void
 page_test()
 {
-    print_create_task(r_mscratch(), (reg_t)page_test, "Page Test");
+    print_task_start(task_get_current_context_id(), (reg_t)page_test, "Page Test");
 
     void* p1 = page_alloc(2);
     printf("p1 = %p\n", p1);
@@ -93,5 +91,5 @@ page_test()
 
     printf("\n");
 
-    print_delete_task(r_mscratch(), "Page Test");
+    print_task_end(task_get_current_context_id(), "Page Test");
 }

@@ -9,19 +9,6 @@
 
 #define DELAY 1000
 
-static inline void
-print_create_task(reg_t id, reg_t pc, const char* name)
-{
-    printf("====== Task Created: %p (%s) ======\n", id, name);
-    printf("PC = 0x%08x\n", pc);
-}
-
-static inline void
-print_delete_task(reg_t id, const char* name)
-{
-    printf("====== Task Deleted: %p (%s) ======\n", id, name);
-}
-
 
 enum colors
 {
@@ -63,6 +50,24 @@ static inline void
 reset_print_style()
 {
     printf("\033[0m");
+}
+
+static inline void
+print_task_start(int id, reg_t pc, const char* name)
+{
+    set_print_style(COLOR_YELLOW, PRINT_STYLE_NORMAL);
+    printf("====== Task Start: ");
+    reset_print_style();
+    printf("id = %d, pc = 0x%08lx, name = %s\n", id, pc, name);
+}
+
+static inline void
+print_task_end(int id, const char* name)
+{
+    set_print_style(COLOR_RED, PRINT_STYLE_NORMAL);
+    printf("====== Task End: ");
+    reset_print_style();
+    printf("id = %d, name = %s\n", id, name);
 }
 
 

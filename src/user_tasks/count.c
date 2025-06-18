@@ -2,8 +2,6 @@
 // tasks.c
 
 #include "mygos.h"
-
-#include "riscv.h"
 #include "utils.h"
 
 
@@ -12,7 +10,7 @@
 void
 task_count30()
 {
-    print_create_task(r_mscratch(), (reg_t)task_count30, "Task Count 30");
+    print_task_start(task_get_current_context_id(), (reg_t)task_count30, "Task Count 30");
 
     int loop_count = 0;
 
@@ -32,13 +30,13 @@ task_count30()
         task_delay(DELAY);
     }
 
-    printf("Task Count 30: Finished!\n");
+    print_task_end(task_get_current_context_id(), "Task Count 30");
 }
 
 void
 task_count50()
 {
-    print_create_task(r_mscratch(), (reg_t)task_count50, "Task Count 50");
+    print_task_start(task_get_current_context_id(), (reg_t)task_count50, "Task Count 50");
 
     int loop_count = 0;
 
@@ -58,13 +56,13 @@ task_count50()
         task_delay(DELAY);
     }
 
-    printf("Task Count 50: Finished!\n");
+    print_task_end(task_get_current_context_id(), "Task Count 50");
 }
 
 void
 task_count70()
 {
-    print_create_task(r_mscratch(), (reg_t)task_count70, "Task Count 70");
+    print_task_start(task_get_current_context_id(), (reg_t)task_count70, "Task Count 70");
 
     int loop_count = 0;
 
@@ -84,5 +82,5 @@ task_count70()
         task_delay(DELAY);
     }
 
-    printf("Task Count 70: Finished!\n");
+    print_task_end(task_get_current_context_id(), "Task Count 70");
 }

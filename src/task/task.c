@@ -27,14 +27,14 @@ task_get_count()
 
 // 获取当前任务编号
 uint32_t
-task_get_current()
+task_get_current_context_id()
 {
     return _current;
 }
 
 // 获取当前任务的上下文指针
 task_context_ptr
-task_get_current_context()
+task_get_current_context_ptr()
 {
     return &task_contexts[_current];
 }

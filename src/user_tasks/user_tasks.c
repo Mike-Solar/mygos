@@ -2,7 +2,6 @@
 // user_tasks/user_tasks.c
 
 #include "mygos.h"
-
 #include "utils.h"
 
 
