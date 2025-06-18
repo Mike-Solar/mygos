@@ -143,7 +143,7 @@ _vsnprintf(char* out, size_t n, const char* s, va_list vl)
 static int
 _vprintf(const char* s, va_list vl)
 {
-    int res = _vsnprintf(NULL, -1, s, vl);
+    int res = _vsnprintf(nullptr, -1, s, vl);
     if(res + 1 >= sizeof(out_buf))
     {
         uart_puts("error: output string size overflow\n");

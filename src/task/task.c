@@ -72,6 +72,9 @@ task_create(void (*start_routine)())
 void
 task_delete(task_context_ptr task_context_ptr)
 {
+    // 如果任务上下文指针为空，默认删除当前任务
+    if(task_context_ptr == nullptr) task_context_ptr = &task_contexts[_current];
+
     os_message("Deleting Task: [%d] ---> ", task_context_ptr - task_contexts);
 
     // 检查任务上下文指针是否有效，或者任务是否已被删除

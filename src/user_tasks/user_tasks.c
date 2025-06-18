@@ -1,5 +1,5 @@
 
-// user.c
+// user_tasks/user_tasks.c
 
 #include "os.h"
 #include "utils.h"
@@ -24,7 +24,7 @@ extern void test_input_print();
 
 
 void
-os_main(void)
+create_user_tasks()
 {
     // task_create(test_input_print);
     task_create(test_input);

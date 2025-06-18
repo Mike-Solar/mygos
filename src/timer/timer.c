@@ -68,7 +68,7 @@ timer_ptr
 timer_create(void (*callback)(void*), void* arg, uint32_t timeout)
 {
     // 参数检查：处理函数和超时时间不能为空
-    if(!callback || !timeout) return NULL;
+    if(!callback || !timeout) return nullptr;
 
     spin_lock(); // 使用锁来保护多个任务之间共享的 timer_list
 
@@ -79,7 +79,7 @@ timer_create(void (*callback)(void*), void* arg, uint32_t timeout)
         t++;
     }
 
-    if(0 != t->func) t = NULL; // 如果没有可用的计时器，则返回 NULL
+    if(0 != t->func) t = nullptr; // 如果没有可用的计时器，则返回 NULL
     else
     {
         t->func         = callback;        // 设置回调函数

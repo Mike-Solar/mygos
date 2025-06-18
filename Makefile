@@ -2,39 +2,45 @@
 # 源文件定义
 # 汇编文件（.S）和 C 文件（.c）分别存储在不同的变量中
 
+
+# 程序入口
+SRCS_C += ./src/main.c
 SRCS_ASM += ./src/start.S
-SRCS_ASM += ./src/memory/memory.S
-SRCS_ASM += ./src/trap/entry.S
 
-
-SRCS_C += ./src/kernel.c
-
+# io 相关
 SRCS_C += ./src/io/get_input.c
 SRCS_C += ./src/io/uart.c
 SRCS_C += ./src/io/printf.c
 SRCS_C += ./src/io/plic.c
 SRCS_C += ./src/io/trap_handler.c
 
-SRCS_C += ./src/tasks/count.c
-SRCS_C += ./src/tasks/tasks.c
-SRCS_C += ./src/tasks/timer.c
-SRCS_C += ./src/tasks/input.c
+# 用户任务相关
+SRCS_C += ./src/user_tasks/user_tasks.c
+SRCS_C += ./src/user_tasks/count.c
+SRCS_C += ./src/user_tasks/tasks.c
+SRCS_C += ./src/user_tasks/timer.c
+SRCS_C += ./src/user_tasks/input.c
 
+# 内存管理相关
 SRCS_C += ./src/memory/page.c
+SRCS_ASM += ./src/memory/memory.S
 
-SRCS_C += ./src/user.c
-
+# 任务调度相关
 SRCS_C += ./src/task/sched.c
 SRCS_C += ./src/task/task.c
 SRCS_C += ./src/task/trap_handler.c
 
+# 中断/异常处理相关
 SRCS_C += ./src/trap/trap.c
 SRCS_C += ./src/trap/trap_handler.c
+SRCS_ASM += ./src/trap/entry.S
 
+# 定时器相关
 SRCS_C += ./src/timer/timer.c
 SRCS_C += ./src/timer/trap_handler.c
 
-SRCS_C += ./src/lock.c
+# 锁相关
+SRCS_C += ./src/lock/lock.c
 
 
 INCLUDE_DIRS += ./include/

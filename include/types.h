@@ -21,7 +21,7 @@ typedef uint32_t reg_t;
 typedef uint32_t ptr_t;
 
 
-#define NULL ((void*)0)
+#define nullptr ((void*)0)
 
 typedef enum
 {
