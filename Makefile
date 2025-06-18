@@ -23,6 +23,7 @@ SRCS_C += ./src/user_tasks/input.c
 
 # 内存管理相关
 SRCS_C += ./src/memory/page.c
+SRCS_C += ./src/memory/print_info.c
 SRCS_ASM += ./src/memory/memory.S
 
 # 任务调度相关
