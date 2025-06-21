@@ -10,6 +10,20 @@
  *
  * maximum number of CPUs
  * see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
+ *
+ *
+ * ## MemoryMap
+ *
+ * see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c, virt_memmap[]
+ *
+ * | 地址范围     | 设备        | 描述                                |
+ * | ------------ | ----------- | ----------------------------------- |
+ * | `0x00001000` | boot ROM    | QEMU 提供的启动 ROM                 |
+ * | `0x02000000` | CLINT       | Core Local Interrupt Controller     |
+ * | `0x0C000000` | PLIC        | Platform Level Interrupt Controller |
+ * | `0x10000000` | UART0       | 串口 UART（输出调试信息）           |
+ * | `0x10001000` | virtio disk | 虚拟磁盘                            |
+ * | `0x80000000` | DRAM base   | 内核加载的起始地址                  |
 /*/
 
 #define MAXNUM_CPU 8                 // 最大 CPU 数量，QEMU virt 机器支持最多 8 个 CPU 核心
@@ -40,15 +54,15 @@ This machine puts platform-level interrupt controller (PLIC) here.
 Here only list PLIC registers in Machine mode.
 see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
 
-#define VIRT_PLIC_HART_CONFIG "MS"
-#define VIRT_PLIC_NUM_SOURCES 127
-#define VIRT_PLIC_NUM_PRIORITIES 7
-#define VIRT_PLIC_PRIORITY_BASE 0x00
-#define VIRT_PLIC_PENDING_BASE 0x1000
-#define VIRT_PLIC_ENABLE_BASE 0x2000
-#define VIRT_PLIC_ENABLE_STRIDE 0x80
-#define VIRT_PLIC_CONTEXT_BASE 0x200000
-#define VIRT_PLIC_CONTEXT_STRIDE 0x1000
+#define VIRT_PLIC_HART_CONFIG       "MS"
+#define VIRT_PLIC_NUM_SOURCES       127
+#define VIRT_PLIC_NUM_PRIORITIES    7
+#define VIRT_PLIC_PRIORITY_BASE     0x00
+#define VIRT_PLIC_PENDING_BASE      0x1000
+#define VIRT_PLIC_ENABLE_BASE       0x2000
+#define VIRT_PLIC_ENABLE_STRIDE     0x80
+#define VIRT_PLIC_CONTEXT_BASE      0x200000
+#define VIRT_PLIC_CONTEXT_STRIDE    0x1000
 #define VIRT_PLIC_SIZE(__num_context) (VIRT_PLIC_CONTEXT_BASE + (__num_context) * VIRT_PLIC_CONTEXT_STRIDE)
 
 /*/
@@ -90,11 +104,11 @@ see https://github.com/qemu/qemu/blob/master/include/hw/riscv/virt.h
  * 在复位时，每个 msip 寄存器都被清零（不触发中断）。
 /*/
 
-#define CLINT_BASE 0x2000000L                                       // CLINT 模块基地址（从这里开始访问各种中断相关寄存器）
-#define CLINT_MSIP(hartid) (CLINT_BASE + 4 * (hartid))              // 每个 hart 的 msip 软件中断控制寄存器（每个 hart 占 4 字节）
-#define CLINT_MTIMECMP(hartid) (CLINT_BASE + 0x4000 + 8 * (hartid)) // 定时器比较值寄存器 mtimecmp，控制何时触发定时器中断
-#define CLINT_MTIME (CLINT_BASE + 0xBFF8)                           // 当前时间寄存器 mtime（记录系统自启动以来的“周期数”）
-#define CLINT_TIMEBASE_FREQ 10000000                                // 时间基准频率为 10 MHz（每秒计 10,000,000 次）
+#define CLINT_BASE 0x2000000L                                         // CLINT 模块基地址（从这里开始访问各种中断相关寄存器）
+#define CLINT_MSIP(hart_id) (CLINT_BASE + 4 * (hart_id))              // 每个 hart 的 msip 软件中断控制寄存器（每个 hart 占 4 字节）
+#define CLINT_MTIMECMP(hart_id) (CLINT_BASE + 0x4000 + 8 * (hart_id)) // 定时器比较值寄存器 mtimecmp，控制何时触发定时器中断
+#define CLINT_MTIME (CLINT_BASE + 0xBFF8)                             // 当前时间寄存器 mtime（记录系统自启动以来的“周期数”）
+#define CLINT_TIMEBASE_FREQ 10000000                                  // 时间基准频率为 10 MHz（每秒计 10,000,000 次）
 
 
 // 任务上下文结构体定义

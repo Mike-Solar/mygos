@@ -1,13 +1,15 @@
 
 // timer.c
 
-#include "os.h"
 
 #include "timer.h"
 
 #include "platform.h"
 #include "riscv.h"
-#include "typedefs.h"
+
+
+extern void spin_lock();
+extern void spin_unlock();
 
 
 uint32_t     _tick = 0;             // 当前 tick 计数器
@@ -33,7 +35,7 @@ _timer_checkout()
         {
             // 调用回调函数
             // 删除该计时器
-            t->func();
+            t->func(t->arg);
             t->func = 0;
             t->arg  = 0;
         }
@@ -66,13 +68,12 @@ timer_init()
 
 // 创建一个新的定时器
 timer_ptr
-timer_create(void (*callback)(void), void* arg, uint32_t timeout)
+timer_create(void (*callback)(void*), void* arg, uint32_t timeout)
 {
     // 参数检查：处理函数和超时时间不能为空
-    if(!callback || !timeout) return NULL;
-    struct spin_lock_t lock;
-    spin_init(&lock);
-    spin_lock(&lock); // 使用锁来保护多个任务之间共享的 timer_list
+    if(!callback || !timeout) return nullptr;
+
+    spin_lock(); // 使用锁来保护多个任务之间共享的 timer_list
 
     timer_ptr t = &(timer_list[0]);
     for(int i = 0; i < MAX_TIMER; i++)
@@ -81,7 +82,7 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
         t++;
     }
 
-    if(0 != t->func) t = NULL; // 如果没有可用的计时器，则返回 NULL
+    if(0 != t->func) t = nullptr; // 如果没有可用的计时器，则返回 NULL
     else
     {
         t->func         = callback;        // 设置回调函数
@@ -89,7 +90,7 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
         t->timeout_tick = _tick + timeout; // 设置超时时间（当前 tick + 超时值）
     }
 
-    spin_unlock(&lock);
+    spin_unlock();
 
     return t;
 }
@@ -97,9 +98,7 @@ timer_create(void (*callback)(void), void* arg, uint32_t timeout)
 void
 timer_delete(timer_ptr timer)
 {
-    struct spin_lock_t lock;
-    spin_init(&lock);
-    spin_lock(&lock); // 使用锁来保护 timer_list
+    spin_lock(); // 使用锁来保护 timer_list
 
     timer_ptr t = &(timer_list[0]);
     for(int i = 0; i < MAX_TIMER; i++)
@@ -113,5 +112,5 @@ timer_delete(timer_ptr timer)
         t++;
     }
 
-    spin_unlock(&lock);
+    spin_unlock();
 }

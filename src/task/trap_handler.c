@@ -1,11 +1,8 @@
 
 // task/trap_handler.c
 
-#include "os.h"
-
 #include "platform.h"
 #include "riscv.h"
-#include "typedefs.h"
 
 
 // 任务切换处理函数，处理机器模式软件中断

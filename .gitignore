@@ -8,6 +8,8 @@
 
 out
 
+/gdb_init
+
 .idea
 cmake-build-debug
 bin

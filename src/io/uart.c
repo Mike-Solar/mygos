@@ -2,15 +2,17 @@
 // uart.c
 
 #include "io.h"
+
 #include "platform.h"
-#include "typedefs.h"
-#include "uart.h"
+#include "types.h"
+
 
 // 初始化 UART，配置波特率和数据格式
 void
 uart_init()
 {
-    /* disable interrupts. */
+    // 禁用中断。
+    // 这一步是为了确保在配置 UART 时不会有中断干扰。
     uart_write_reg(IER, 0x00);
 
     /*/
@@ -34,10 +36,10 @@ uart_init()
      * 当 1.8432 MHZ 晶体时，我们使用 38.4K，因此对应的值为 3。
      * 并且由于除数寄存器是两个字节（16 位），所以我们需要将 3（0x0003） 的值分成两个字节，DLL 存储低字节，DLM 存储高字节。
     /*/
-    uint8_t lcr = uart_read_reg(LCR);
-    uart_write_reg(LCR, lcr | (1 << 7));
-    uart_write_reg(DLL, 0x03);
-    uart_write_reg(DLM, 0x00);
+    uint8_t lcr = uart_read_reg(LCR);    // 读取线路控制寄存器（LCR）的当前值
+    uart_write_reg(LCR, lcr | (1 << 7)); // 打开除数锁存器访问位（DLAB），允许我们设置波特率
+    uart_write_reg(DLL, 0x03);           // 设置除数锁存器低字节（DLL），波特率值的低字节为 0x03
+    uart_write_reg(DLM, 0x00);           // 设置除数锁存器高字节（DLM），波特率值的高字节为 0x00
 
     /*/
      * Continue setting the asynchronous data communication format.
@@ -49,7 +51,12 @@ uart_init()
      *
      * 继续设置异步数据通信格式。
      * - 字长：8 bit
-     * -
+     * - 停止位：1 bit（当字长为 8 bit 时）
+     * - 无奇偶校验
+     * - 无断开控制
+     * - 禁用波特率锁存器
+     *
+     * 继续设置异步数据通信格式。
     /*/
     lcr = 0;
     uart_write_reg(LCR, lcr | (3 << 0));

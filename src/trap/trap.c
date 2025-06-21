@@ -1,11 +1,9 @@
 
 // trap.c
 
-#include "os.h"
 
 #include "platform.h"
 #include "riscv.h"
-#include "typedefs.h"
 
 
 extern void trap_vector(void); // 异常/中断向量表入口函数，处理各种异常和中断
