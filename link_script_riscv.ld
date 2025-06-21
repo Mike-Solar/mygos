@@ -14,35 +14,39 @@ SECTIONS {
     /* 首先放置入口段 */
     .text.entry : {
         *(.text.entry)  /* 确保 _start 在此处 */
-    }
+    } > LOAD_RAM
+
+    __text_entry_size = SIZEOF(.text.entry);
+
     .early_page (NOLOAD): {
         . = ALIGN(PAGE_SIZE);
         early_pg_dir = .;
         . += PAGE_SIZE;  /* 分配一页（4KB）作为早期页目录 */
-    }
-    . = VIRT_BASE;
+    } > LOAD_RAM
+     __early_size = SIZEOF(.early_page);
+
     .text : {
             . = ALIGN(PAGE_SIZE);
     		PROVIDE(_text_start = .);   /* 将 _text_start 定义为当前地址 */
     		*(.text .text.*)            /* 将所有 .text 和 .text.* 节添加到当前地址 */
     		PROVIDE(_text_end = .);     /* 将 _text_end 定义为当前地址 */
-    } > RAM AT > LOAD_RAM
-
+    } > LOAD_RAM
+    __text_size = SIZEOF(.text);
     .buddy_meta : {
         . = ALIGN(PAGE_SIZE);
         __buddy_meta_start = .;
         *(.buddy_meta)
         __buddy_meta_end = .;
-    } > RAM AT > LOAD_RAM
-
+    } > LOAD_RAM
+    __buddy_meta_size = SIZEOF(.buddy_meta);
     .rodata : {
         . = ALIGN(PAGE_SIZE);
 
     	PROVIDE(_rodata_start = .);
     	*(.rodata .rodata.*)
     	PROVIDE(_rodata_end = .);
-    } > RAM AT > LOAD_RAM
-
+    } > LOAD_RAM
+    __rodata_size = SIZEOF(.rodata);
 
     .data : {
     	/*
@@ -61,7 +65,8 @@ SECTIONS {
     	*(.sdata .sdata.*)
     	*(.data .data.*)
     	PROVIDE(_data_end = .);
-    } > RAM AT > LOAD_RAM
+    } > LOAD_RAM
+    __data_size = SIZEOF(.data);
     .bss :{
     	/*
     	 * https://sourceware.org/binutils/docs/ld/Input-Section-Common.html
@@ -76,16 +81,17 @@ SECTIONS {
     	*(.bss .bss.*)
     	*(COMMON)
     	PROVIDE(_bss_end = .);
-    } > RAM AT > LOAD_RAM
-    PROVIDE(_kernel_end = .);
+    } > LOAD_RAM
+    __bss_size = SIZEOF(.bss);
     . = ALIGN(PAGE_SIZE);
-
+    __kernel_size = __text_entry_size + __early_size + __text_size + __buddy_meta_size + __rodata_size + __data_size + __bss_size;
+    PROVIDE(__kernel_end = PHYS_BASE + __kernel_size);
     /* 堆区域：从 0xFFFFFFC020000000 开始 */
     .heap : {
         . = ALIGN(PAGE_SIZE);
         __heap_start = .;
         . += 512M;  /* 预留 1024MB 堆空间 */
         __heap_end = .;
-    } > RAM AT > LOAD_RAM
+    } > LOAD_RAM
 }
 

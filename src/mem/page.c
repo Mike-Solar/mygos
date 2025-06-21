@@ -4,26 +4,29 @@
 
 #include "page.h"
 #include "list.h"
-#include <stddef.h>
 
 
 #include "device_tree_parser.h"
-#include "typedefs.h"
 #include "kmath.h"
 #define PAGE_SHIFT	12
 uint64_t page_count=0;
 // 物理页帧状态位图（每个位表示一页：0-空闲，1-已分配）
  struct page phys_page_array[PAGE_COUNT];
+// 物理地址
 struct page *phys_page_array_phys_addr;
+// 虚拟地址
 struct page *phys_page_array_virt_addr;
+// 早期页表
 extern void *early_page_dir;
+// 伙伴系统链表
 struct zone memory_zone __attribute__((section(".buddy_meta")));
+
+
 const uintptr_t KERNEL_PHYS_ADDR=0x80200000uL;
-const uintptr_t KERNEL_VIRT_ADDR=0xFFFFFFFF80000000;
+const uintptr_t KERNEL_VIRT_ADDR=0xFFFFFFFF80000000uL;
 #define PHYS_TO_VIRT(phys) ((void*)((uint64_t)(phys) + KERNEL_VIRT_ADDR))
 
 const uintptr_t OPEN_SBI_PHYS_ADDR=0x80000000uL;
-# define  KERNEL_PHYS_END (uintptr_t)_kernel_end
 #define ALIGN_UP(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
 
 void buddy_init_stage1(void) {
@@ -59,18 +62,20 @@ void buddy_init_stage2(void) {
 		memory_zone.free_area[i].free_list.prev = PHYS_TO_VIRT(memory_zone.free_area[i].free_list.prev);
 	}
 }*/
+// 早期分页
 void early_enable_paging(stap_t satp) {
 	// 设置 satp 寄存器（Sv39 模式）
 	asm volatile("csrw satp, %0" : : "r"(satp));
 	asm volatile("sfence.vma"); // 刷新 TLB
 }
+// 启用分页
 void enable_paging(pte_t* pagetable) {
 	// 设置 satp 寄存器（Sv39 模式）
 	uint64_t satp_value = ((uint64_t)pagetable >> 12) | (8ULL << 60); // MODE=8 (Sv39)
 	asm volatile("csrw satp, %0" : : "r"(satp_value));
 	asm volatile("sfence.vma"); // 刷新 TLB
 }
-//建立初始映射
+// 建立初始映射，先初始化1GiB
 stap_t early_paging_init(void) {
 	zero(early_pt_2, sizeof(pte_t)*PAGE_SIZE/sizeof(pte_t));
 	zero(early_pt_1, sizeof(pte_t)*PAGE_SIZE/sizeof(pte_t));
@@ -129,11 +134,12 @@ stap_t early_paging_init(void) {
 	}
 	return stap;
 }
-
+// 早期分配页的函数
+//// 这个函数返回NULL不知为啥
 void* early_alloc() {
 	uintptr_t cur=KERNEL_PHYS_END;
 	for (int j=0;j<PAGE_SIZE/sizeof(pte_t) && cur <= OPEN_SBI_PHYS_ADDR+memory.size;j++) {
-		for (int i=0;i<PAGE_SIZE/sizeof(pte_t);i++) {
+		for (int i=0;i<PAGE_SIZE/sizeof(pte_t);i++, cur+=PAGE_SIZE) {
 			if (early_pt_0[j][i].RSW & 1 == 1) {
 				continue;
 			}
@@ -203,7 +209,7 @@ void map_pages(pte_t* pt, uint64_t virt_addr, uint64_t phys_addr, uint64_t size,
 }
 // 从虚拟地址 va 遍历页表，返回对应 PTE 的指针（alloc=1 时自动创建缺失的页表）
 pte_t* walk(pte_t* pagetable, uint64_t virt_addr, int alloc) {
-	for (int level = 2; level > 0; level--) {
+	for (int level = 2; level >= 0; level--) {
 		pte_t *pte = &pagetable[PX(level, virt_addr)];  // PX 宏提取当前层索引
 		if (!pte->V) {                   // PTE 无效
 			if (!alloc || !((pagetable = early_alloc())))

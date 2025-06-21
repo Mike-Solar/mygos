@@ -25,8 +25,9 @@ BSS_START: SIZE_PTR _bss_start
 
 .global BSS_END
 BSS_END: SIZE_PTR _bss_end
-.global HEAP_START
-HEAP_START: SIZE_PTR _heap_start
 
-.global HEAP_SIZE
-HEAP_SIZE: SIZE_PTR _heap_size
+.global HEAP_START
+HEAP_START: SIZE_PTR __heap_start
+
+.global HEAP_END
+HEAP_SIZE: SIZE_PTR __heap_end
