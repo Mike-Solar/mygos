@@ -6,7 +6,7 @@
 
 
 void
-on_shot()
+on_shot(void *data)
 {
     printf("进入 on_shot\n");
     for(int i = 0; i < 10; i++)

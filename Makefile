@@ -7,6 +7,10 @@
 SRCS_C += ./src/main.c
 SRCS_ASM += ./src/start.S
 
+# 设备树相关
+SRCS_C += ./src/device_tree/device_tree_parser.c
+
+
 # io 相关
 SRCS_C += ./src/io/get_input.c
 SRCS_C += ./src/io/uart.c
@@ -44,7 +48,7 @@ SRCS_C += ./src/timer/trap_handler.c
 SRCS_C += ./src/lock/lock.c
 
 
-INCLUDE_DIRS += ./include/
+INCLUDE_DIRS += ./include/ ./src/mem ./src/algs
 
 
 # 支持“是否启用系统调用”这一功能的可配置编译
@@ -64,17 +68,17 @@ OBJDUMP       = ${CROSS_COMPILE}objdump
 # | `-fno-builtin` | 禁用 GCC 内建函数优化（例如 `memcpy`, `printf` 等） |
 # | `-g`           | 生成调试信息                                        |
 # | `-Wall`        | 打开所有警告信息（推荐）                            |
-# | `-march=rv32g` | 指定 RISC-V 架构为 RV32G（通用指令集）              |
-# | `-mabi=ilp32e` | 指定 ABI 为 ILP32E（整数、长整型和指针为 32 位）    |
+# | `-march=rv32g` | 指定 RISC-V 架构为 RV32GC（通用指令集）              |
+# | `-mabi=ilp32e` | 指定 ABI 为 ILP64D（整数、长整型和指针为 32 位）    |
 # | `-I./include`  | 添加头文件搜索路径（包含目录）                      |
 CFLAGS += -nostdlib
 CFLAGS += -fno-builtin
 CFLAGS += -g
 CFLAGS += -Wall
-CFLAGS += -march=rv32g
-CFLAGS += -mabi=ilp32e
+CFLAGS += -march=rv64gc
+CFLAGS += -mabi=lp64d
 CFLAGS += $(addprefix -I, ${INCLUDE_DIRS})
-
+CFLAGS += -fPIC
 
 # QEMU 运行参数
 # | 参数            | 说明                                 |
@@ -83,11 +87,12 @@ CFLAGS += $(addprefix -I, ${INCLUDE_DIRS})
 # | `-smp 1`        | 单核                                 |
 # | `-machine virt` | 使用 `virt` 机器模型（虚拟硬件平台） |
 # | `-bios none`    | 不使用 BIOS ，直接加载内核 ELF 文件   |
-QEMU    = qemu-system-riscv32
+QEMU    = qemu-system-riscv64
 QFLAGS += -nographic
 QFLAGS += -smp 1
 QFLAGS += -machine virt
 QFLAGS += -bios none
+QFLAGS += -s -S
 
 
 # 多架构 GDB，用于调试非本地架构（如 RISC-V）
@@ -120,9 +125,10 @@ ifeq (${USE_LINKER_SCRIPT}, true)
     # 表示链接时使用这个生成的 linker script 来安排内存布局（非常关键，比如 .text, .data, .bss 等段放在哪些地址）
     LDFLAGS = -T ${OUTPUT_PATH}/os.ld.generated
 else
-    # 直接强行把代码段 .text 放到地址 0x8000_0000 起始
-    LDFLAGS = -Ttext=0x80000000
+    # 直接强行把代码段 .text 放到地址 0x8020_0000 起始, 避免覆盖OpenSBI
+    LDFLAGS = -Ttext=0x80200000
 endif
+LDFLAGS += -fPIC
 
 
 # Makefile 的默认目标

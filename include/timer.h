@@ -22,7 +22,7 @@ struct timer
 #define MAX_TIMER 10
 
 
-void _timer_load(uint32_t interval); // 加载下一个定时器中断的时间间隔（以计时周期为单位）
+void _timer_load(uint64_t interval); // 加载下一个定时器中断的时间间隔（以计时周期为单位）
 void _timer_checkout();              // 检查定时器列表，调用超时的计时器回调函数，并删除它们
 
 timer_ptr timer_create(void (*callback)(void*), void* arg, uint32_t timeout);

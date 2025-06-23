@@ -12,7 +12,7 @@ ENTRY( _start )         /* ENTRY 命令用于设置程序的入口点 */
 /* MEMORY 命令描述目标设备的内存布局 */
 MEMORY
 {
-    ram (wxa!ri) : ORIGIN = 0x80000000, LENGTH = LENGTH_RAM /* 128M */
+    ram (wxa!ri) : ORIGIN = 0x80200000, LENGTH = LENGTH_RAM /* 128M */
 }
 
 
@@ -26,6 +26,11 @@ SECTIONS
         PROVIDE(_text_end = .);
     } >ram
 
+    .early_page (NOLOAD): {
+            . = ALIGN(4096);
+            early_pg_dir = .;
+            . += 4096;  /* 分配一页（4KB）作为早期页目录 */
+    } > ram
     /* 只读数据段 */
     .rodata : {
         PROVIDE(_rodata_start = .);

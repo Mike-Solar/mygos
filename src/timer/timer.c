@@ -19,7 +19,7 @@ struct timer timer_list[MAX_TIMER]; // 定义计时器列表
 // 加载下一个定时器中断的时间间隔（以计时周期为单位）
 // 每个 CPU 都有一个独立的定时器中断源
 inline void
-_timer_load(uint32_t interval)
+_timer_load(uint64_t interval)
 {
     *(uint64_t*)CLINT_MTIMECMP(r_mhartid()) = *(uint64_t*)CLINT_MTIME + interval;
 }

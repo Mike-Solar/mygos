@@ -17,18 +17,11 @@ typedef signed long long   int64_t;
 /*/
  * Register Width
 /*/
-typedef uint32_t reg_t;
-typedef uint32_t ptr_t;
+typedef uint64_t reg_t;
+typedef uint64_t ptr_t;
 
 
 #define nullptr ((void*)0)
-
-typedef enum
-{
-    false = 0,
-    true  = 1
-} bool;
-
 
 typedef struct timer* timer_ptr; // 计时器指针类型
 
